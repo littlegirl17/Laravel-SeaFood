@@ -15,7 +15,7 @@
                                 <div class="row">
                                     @foreach ($productImage as $item)
                                         <div class="col-sm-3 mt-3">
-                                            <img src="{{ asset('img/seafood/'.$item->image) }}" class="img-fluid"  onclick="clickChangeImg(this)" >
+                                            <img src="{{ asset('img/seafood/'.$item->images) }}" class="img-fluid"  onclick="clickChangeImg(this)" >
                                         </div>
                                     @endforeach
                                 </div>

@@ -13,14 +13,14 @@
 
     <div class="form-group mt-3">
         <label for="title" class="form-label">Tên danh mục</label>
-        <input type="text" class="form-control" name="name" id="title" aria-describedby="title" placeholder="Nhập danh mục bài viết">
+        <input type="text" class="form-control" name="name" onkeyup="ChangeToSlug();" id="slug" aria-describedby="title" placeholder="Nhập danh mục bài viết">
     </div>
     <div class="form-group mt-3">
         <label for="title" class="form-label">Slug</label>
-        <input type="text" class="form-control" name="slug" id="title" aria-describedby="title" placeholder="Nhập slug">
+        <input type="text" class="form-control" name="slug" id="convert_slug" aria-describedby="title" placeholder="Nhập slug">
     </div>
     <div class="form-group mt-3">
-        <label for="exampleInputFile" class="label_admin" >Ảnh bài viêt
+        <label for="exampleInputFile" class="label_admin" >Ảnh danh mục
         <div class="custom-file">
             <input type="file" name="image" id="HinhAnh" >
             <div id="preview"></div>

@@ -6,10 +6,11 @@
 <h3 class="title-page ">
     Danh mục
 </h3>
+<button class="btnFormAdd mb-3">
+    <a href="{{route('categoryAdd')}}" class="text-decoration-none ">Thêm</a>
+</button>
 <div class="row " style="margin-left: 1100px;">
-    <button class="btnFormAdd ">
-        <a href="{{route('categoryAdd')}}" class="text-decoration-none ">Thêm</a>
-    </button>
+
 </div>
 <div class="table pt-3">
     <div class="table-header">

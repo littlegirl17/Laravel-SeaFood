@@ -24,24 +24,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script>
-        AOS.init();
-    </script>
-    <script>
-        function imagePreview(fileInput) {
-            if (fileInput.files && fileInput.files[0]) {
-                var fileReader = new FileReader();
-                fileReader.onload = function (event) {
-                    $('#preview').html('<img src="'+event.target.result+'" width="300" height="auto"/>');
-                };
-                fileReader.readAsDataURL(fileInput.files[0]);
-            }
-        }
-        $("#HinhAnh").change(function () {
-            imagePreview(this);
-        });
+    <script src="{{asset('js/admin.js')}}"></script>
 
-    </script>
 </body>
 </html>
 

@@ -7,7 +7,7 @@
 </h3>
 <div class="row " style="margin-left: 1100px;">
     <button class="btnFormAdd ">
-        <a href="#" class="text-decoration-none ">Thêm</a>
+        <a href="{{route('productAdd')}}" class="text-decoration-none ">Thêm</a>
     </button>
 </div>
 <div class="table pt-3">
@@ -38,8 +38,8 @@
                 <div class="table-data">{{$item->slug}}</div>
                 <div class="table-data">{{$item->status == 0 ? 'Tắt' : 'Bật' }}</div>
                 <div class="table-data">
-                    <a href="" class="text-decoration-none px-2"><button class="btn btn-outline-warning ">Edit</button></a>
-                    <a href="" class="text-decoration-none "><button class="btn btn-outline-danger">Delete</button></a>
+                    <a href="{{route('productEdit', $item['id'])}}" class="text-decoration-none px-2"><button class="btn btn-outline-warning ">Edit</button></a>
+                    <a href="{{route('productDelete', $item['id'])}}" class="text-decoration-none "><button class="btn btn-outline-danger">Delete</button></a>
                 </div>
             </div>
         @endforeach

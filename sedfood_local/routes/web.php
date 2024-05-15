@@ -75,6 +75,11 @@ Route::prefix('admin')->group(function(){
     Route::get('delete-category/{id}', [AdminController::class , 'categoryDelete'])->name('categoryDelete');
 
     Route::get('product', [AdminController::class , 'product'])->name('product');
+    Route::get('addproduct', [AdminController::class , 'productAdd'])->name('productAdd');
+    Route::post('add-product', [AdminController::class , 'productAdd']);
+    Route::get('edit-product/{id}', [AdminController::class , 'productEdit'])->name('productEdit');
+    Route::put('edit-product/{id}', [AdminController::class , 'productUpdate'])->name('productUpdate');
+    Route::get('delete-product/{id}', [AdminController::class , 'productDelete'])->name('productDelete');
 
     Route::get('user', [AdminController::class , 'user'])->name('user');
 

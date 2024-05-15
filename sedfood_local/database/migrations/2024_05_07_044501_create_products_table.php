@@ -24,6 +24,7 @@ return new class extends Migration
             $table->tinyInteger('outstanding')->default(0);
             $table->tinyInteger('status')->default(0);
             $table->string('slug');
+            $table->longText('description');
             $table->timestamps();
         });
     }

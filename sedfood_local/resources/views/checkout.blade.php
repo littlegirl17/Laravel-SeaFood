@@ -4,14 +4,11 @@
 
 
 <div class="container mt-5">
-    <div class="container mt-5">
-        @if (session('message'))
-            <div class="alert alert-success">{{ session('message') }}</div>
-        @elseif (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-        <!-- Phần nội dung form checkout -->
-</div>
+    @if (session('message'))
+        <div class="alert alert-success">{{ session('message') }}</div>
+    @elseif (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
     <form action="{{route('coupon')}}" method="post" id="coupon-form">
         @csrf
@@ -218,25 +215,7 @@
                         @endif
                     </h6>
                 </div>
-                {{-- <div class="d-flex justify-content-between">
-                    <h6>Mã giảm giá</h6>
-                    <h6>
-                        @if (Session::has('coupon'))
-                            @foreach (Session::get('coupon') as $key => $cou)
-                                @if (isset($cou['type']))
-                                    @if ($cou['type'] == 0)
-                                        Mã giảm :{{$cou['total']}}%
-                                        <p>Tổng giảm: {{ number_format($cou['discount'], 0, ',', '.') }}đ</p>
-                                        <p>{{ number_format($newTotal, 0, ',', '.') }}đ</p>
-                                    @else
-                                        Mã giảm: {{ number_format($cou['total'], 0, ',', '.') }}đ
-                                        <p>{{ number_format($newTotal, 0, ',', '.') }}đ</p>
-                                    @endif
-                                @endif
-                            @endforeach
-                        @endif
-                    </h6>
-                </div> --}}
+
                 <div class="d-flex justify-content-between">
                     <h6>Phí vận chuyển</h6>
                     <h6>------</h6>
@@ -244,10 +223,10 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                     <h4>Tổng cộng</h4>
-                    <h4>{{isset($total_coupon) ? number_format($total_coupon, 0, ',', '.').'đ' : ''}}</h4>
+                    <h4>{{isset($total_coupon) ? number_format($total_coupon, 0, ',', '.').'đ' :  number_format($TongTien, 0, ',', '.').'đ'}}</h4>
                 </div>
-                {{-- <input type="hidden" name="total" value="{{isset($total_coupon) ? $total_coupon : ''}}"> --}}
-                <input type="hidden" name="total" value="{{$TongTien}}">
+                <input type="hidden" name="total" value="{{isset($total_coupon) ? $total_coupon : $TongTien}}">
+                {{-- <input type="hidden" name="total" value="{{$TongTien}}"> --}}
 
             </div>
         </div>

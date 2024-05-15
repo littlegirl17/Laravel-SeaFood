@@ -12,16 +12,14 @@
         Lưu
     </button>
     @method('PUT')
-    <div class="row " style="margin-left: 1100px;">
-    </div>
 
     <div class="form-group mt-3">
         <label for="title" class="form-label" >Tên danh mục</label>
-        <input type="text" class="form-control" id="" name="name" value="{{$category->name}}">
+        <input type="text" class="form-control" onkeyup="ChangeToSlug();" id="slug" name="name" value="{{$category->name}}">
     </div>
     <div class="form-group mt-3">
         <label for="title" class="form-label" >Slug</label>
-        <input type="text" class="form-control" id="" name="slug" value="{{$category->slug}}">
+        <input type="text" class="form-control" id="convert_slug" name="slug" value="{{$category->slug}}">
     </div>
     <div class="form-group mt-3">
         <label for="exampleInputFile" class="label_admin" >Ảnh bài viêt

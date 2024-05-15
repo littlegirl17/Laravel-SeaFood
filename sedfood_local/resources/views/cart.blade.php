@@ -2,15 +2,6 @@
 @Section('title','Giỏ hàng')
 @Section('content')
 
-{{-- <div class="card border-0 rounded-0 bg-dark text-white cartBanner">
-    <img src="img/bannerItemCon.png" class="card-img" alt="...">
-    <div class="card-img-overlay text-center">
-        <h5 class="card-title ">Gio hàng</h5>
-        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-        <p class="card-text">Last updated 3 mins ago</p>
-    </div>
-</div> --}}
-
 <div class="container mt-3">
     <div class="table-responsive">
         <table class="table table-borderless tableMobie">
@@ -25,49 +16,52 @@
             </thead>
             <tbody>
                 @if(is_array($cart))
-                @php
-                    $TongTien = 0;
-                    $SoTien =0;
-                @endphp
-                @foreach ($cart as $item) @if(is_array($item))
                     @php
-                        $SoTien = isset($item['discount_price']) ? intval($item['discount_price']) * $item['quantity'] : intval($item['price']) * $item['quantity'];
-                        $TongTien += $SoTien;
+                        $TongTien = 0;
+                        $SoTien =0;
                     @endphp
-                    <tr class="itemcart">                                 <input type="text" class="input-number border" value="{{ $item['quantity'] }}" min="1" max="10">
+                    @foreach ($cart as $item)
+                        @if(is_array($item))
+                            @php
+                                $SoTien = isset($item['discount_price']) ? intval($item['discount_price']) * $item['quantity'] : intval($item['price']) * $item['quantity'];
+                                $TongTien += $SoTien;
+                            @endphp
+                            <tr class="itemcart">
 
-                        <td class="col-4">
-                            <div class="imgName">
-                                <img src="img/seafood/{{ $item['image'] }}" class="imgCart" alt="">
-                                <h6 class="ps-2">{{ $item['name'] }}</h6>
-                            </div>
-                        </td>
-                        <td class="col-2">
-                            <p class="card-text text-center">
-                                {{-- <span class="text-decoration-line-through priceSale">{{ number_format($item['discount_price'], 0, ',', ',')  }}đ</span> --}}
-                                <span class="price">{{ isset($item['discount_price']) ? number_format($item['discount_price'], 0, ',', ',') : number_format($item['price'], 0, ',', ',') }}đ</span>
+                                <td class="col-4">
+                                    <div class="imgName">
+                                        <img src="img/seafood/{{ $item['image'] }}" class="imgCart" alt="">
+                                        <h6 class="ps-2">{{ $item['name'] }}</h6>
+                                    </div>
+                                </td>
+                                <td class="col-2">
+                                    <p class="card-text text-center">
+                                        {{-- <span class="text-decoration-line-through priceSale">{{ number_format($item['discount_price'], 0, ',', ',')  }}đ</span> --}}
+                                        <span class="price">{{ isset($item['discount_price']) ? number_format($item['discount_price'], 0, ',', ',') : number_format($item['price'], 0, ',', ',') }}đ</span>
 
-                            </p>
-                        </td>
-                        <td class="col-3">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default btn-number" ><a href="{{route('giam', $item['id'])}}" class="text-decoration-none text-black">-</a></button>
-                                </span>
-                                <input type="text" class="input-number border" value="{{ $item['quantity'] }}" min="1" max="10">
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default btn-number" ><a href="{{route('tang', $item['id'])}}" class="text-decoration-none text-black">+</a></button>
-                                </span>
-                            </div>
-                        </td>
-                        <td class="col-2 text-center">
-                            <span class="price ">{{number_format($SoTien, 0, ',', ',')}}đ</span>
-                        </td>
-                        <td class="col-1">
-                            <span><a href="{{ route('deleteItem', $item['id']) }}" class="text-black d-flex justify-content-center text-decoration-none"><i class="fa-solid fa-trash" style="color: #0286e7;"></i></a></span>
-                        </td>
-                    </tr>
-                    @endif    @endforeach @endif
+                                    </p>
+                                </td>
+                                <td class="col-3">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-number" ><a href="{{route('giam', $item['id'])}}" class="text-decoration-none text-black">-</a></button>
+                                        </span>
+                                        <input type="text" class="input-number border" value="{{ $item['quantity'] }}" min="1" max="10">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default btn-number" ><a href="{{route('tang', $item['id'])}}" class="text-decoration-none text-black">+</a></button>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="col-2 text-center">
+                                    <span class="price ">{{number_format($SoTien, 0, ',', ',')}}đ</span>
+                                </td>
+                                <td class="col-1">
+                                    <span><a href="{{ route('deleteItem', $item['id']) }}" class="text-black d-flex justify-content-center text-decoration-none"><i class="fa-solid fa-trash" style="color: #0286e7;"></i></a></span>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                @endif
             </tbody>
         </table>
     </div>

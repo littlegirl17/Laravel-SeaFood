@@ -18,11 +18,12 @@ class AdminController extends Controller {
     private $commentModel;
     private $orderModel;
     private $userModel;
-
+    private $productImage;
 
     public function __construct(){
         $this->categoryModel = new Category;
         $this->productModel = new Product;
+        $this->productImage = new ProductImage;
         $this->commentModel = new Comment;
         $this->orderModel = new Order;
         $this->userModel = new User;
@@ -60,21 +61,51 @@ class AdminController extends Controller {
         return view('admin.dashboard');
     }
 
-    public function category(){
-        $categorys = $this->categoryModel->categoryAll();
+    // category
+        public function category(){
+            $categorys = $this->categoryModel->categoryAll();
 
-        return view('admin.category', compact('categorys'));
-    }
+            return view('admin.category', compact('categorys'));
+        }
 
-    public function categoryAdd(Request $request){
-        if($request->isMethod('post')){
+        public function categoryAdd(Request $request){
+            if($request->isMethod('post')){
+                $validated = $request->validate([
+                    'name' => ['required', 'max:255'],
+                    'slug' => ['required', 'max:255'],
+                    'image' => ['sometimes', 'image', 'max:208'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn tại
+                    'status' => ['required','integer', Rule::in(0,1)], // Kiểm tra giá trị là số nguyên và chỉ chấp nhận 0 hoặc 1
+                ]);
+
+                if($request->hasFile('image')){
+                    // Lấy tên gốc của tệp
+                    $imagePath = $request->file('image')->getClientOriginalName();
+                    // Lưu tệp vào thư mục 'public/uploads' với tên gốc
+                    $request->file('image')->storeAs('public/uploads',$imagePath);
+                    // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
+                    $validated['image'] = $imagePath;
+                }
+
+                $this->categoryModel->create($validated);
+                return redirect()->route('category');
+            }
+            return view('admin.categoryAdd');
+
+        }
+
+        public function categoryEdit($id){
+            $category = $this->categoryModel->findOrFail($id);
+            return view('admin.categoryEdit', compact('category'));
+        }
+
+        public function categoryUpdate(Request $request,$id){
             $validated = $request->validate([
                 'name' => ['required', 'max:255'],
                 'slug' => ['required', 'max:255'],
                 'image' => ['sometimes', 'image', 'max:208'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn tại
                 'status' => ['required','integer', Rule::in(0,1)], // Kiểm tra giá trị là số nguyên và chỉ chấp nhận 0 hoặc 1
             ]);
-
+            //dd($validated);
             if($request->hasFile('image')){
                 // Lấy tên gốc của tệp
                 $imagePath = $request->file('image')->getClientOriginalName();
@@ -84,50 +115,130 @@ class AdminController extends Controller {
                 $validated['image'] = $imagePath;
             }
 
-            $this->categoryModel->create($validated);
+            $category = $this->categoryModel->findOrFail($id);
+            $category->update($validated);
             return redirect()->route('category');
         }
-        return view('admin.categoryAdd');
 
-    }
-
-    public function categoryEdit($id){
-        $category = $this->categoryModel->findOrFail($id);
-        return view('admin.categoryEdit', compact('category'));
-    }
-
-    public function categoryUpdate(Request $request,$id){
-        $validated = $request->validate([
-            'name' => ['required', 'max:255'],
-            'slug' => ['required', 'max:255'],
-            'image' => ['sometimes', 'image', 'max:208'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn tại
-            'status' => ['required','integer', Rule::in(0,1)], // Kiểm tra giá trị là số nguyên và chỉ chấp nhận 0 hoặc 1
-        ]);
-        //dd($validated);
-        if($request->hasFile('image')){
-            // Lấy tên gốc của tệp
-            $imagePath = $request->file('image')->getClientOriginalName();
-            // Lưu tệp vào thư mục 'public/uploads' với tên gốc
-            $request->file('image')->storeAs('public/uploads',$imagePath);
-            // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
-            $validated['image'] = $imagePath;
+        public function categoryDelete($id){
+            $category = $this->categoryModel->findOrFail($id);
+            $category->delete();
+            return redirect()->route('category');
         }
 
-        $category = $this->categoryModel->findOrFail($id);
-        $category->update($validated);
-        return redirect()->route('category');
-    }
+    // product
+        public function product(){
+            $products = $this->productModel->productAll();
+            return view('admin.product', compact('products'));
+        }
 
-    public function categoryDelete($id){
-        $category = $this->categoryModel->findOrFail($id);
-        $category->delete();
-        return redirect()->route('category');
-    }
+        public function productAdd(Request $request){
+            if($request->isMethod('post')){
+                $validated = $request->validate([
+                    'name' => ['required', 'max:255'],
+                    'slug' => ['required', 'max:255'],
+                    'description' => ['required', 'string'],
+                    'category_id' => ['required', 'integer', 'exists:products,category_id'],  //Giá trị của category_id phải tồn tại trong bảng categories và cột category_id.
+                    'price' => ['required', 'integer'],
+                    'discount_price' => ['required', 'integer'],
+                    'view' => ['required', 'integer'],
+                    'outstanding' => ['required', 'string'],
+                    'image' => ['sometimes', 'image', 'max:208'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn
+                    'status' => ['required','integer', Rule::in([0, 1])], // Kiểm tra giá trị là số nguyên và chỉ chấp nhận 0 hoặc 1
+                ]);
 
-    public function product(){
-        $products = $this->productModel->productAll();
-        return view('admin.product', compact('products'));
-    }
+                // Lưu hình ảnh chính của sản phẩm
+                if($request->hasFile('image')){
+                    // Lấy tên gốc của tệp
+                    $imagePath = $request->file('image')->getClientOriginalName();
+                    // Lưu tệp vào thư mục 'public/uploads' với tên gốc
+                    $request->file('image')->storeAs('public/uploads',$imagePath);
+                    // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
+                    $validated['image'] = $imagePath;
+                }
+
+                $product =$this->productModel->create($validated);
+
+                // Lưu các hình ảnh khác vào bảng ProductImage
+                if ($request->hasFile('images')) {
+                    foreach ($request->file('images') as $file) {
+                        $imagePath = $file->getClientOriginalName();
+                        $file->storeAs('public/uploads', $imagePath);
+                        $this->productImage->create([
+                            'product_id' => $product->id,
+                            'images' => $imagePath,
+                        ]);
+                    }
+                }
+                return redirect()->route('product');
+            }
+            $category = $this->categoryModel->all();
+            return view('admin.productAdd', compact('category'));
+
+        }
+
+        public function productEdit($id){
+            $product = $this->productModel->findOrFail($id);
+            $category = $this->categoryModel->all();
+            $productImages = $this->productImage->productImages($id);
+            return view('admin.productEdit', compact('product','category','productImages'));
+        }
+
+        public function productUpdate(Request $request,$id){
+
+            $product = $this->productModel->findOrFail($id);
+            $product->name = $request->name;
+            $product->slug = $request->slug;
+            $product->description = $request->description;
+            $product->category_id = $request->category_id;
+            $product->price = $request->price;
+            $product->discount_price = $request->discount_price;
+            $product->view = $request->view;
+            $product->outstanding = $request->outstanding;
+            $product->status = $request->status;
+
+            $imagePath = null;
+            if($request->hasFile('image')){
+                // Lấy tên gốc của tệp
+                $imagePath = $request->file('image')->getClientOriginalName();
+                // Lưu tệp vào thư mục 'public/uploads' với tên gốc
+                $request->file('image')->storeAs('public/uploads',$imagePath);
+                // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
+                $product->image = $imagePath;
+
+
+            }
+                $product->update();
+
+                // Cập nhật bảng ProductImage
+                    if ($request->hasFile('images')) { // kiểm tra xem liệu có tệp hình ảnh mới nào được gửi trong yêu cầu không ->  Điều này đảm bảo rằng người dùng đã tải lên các hình ảnh mới hoặc không.
+                        $productImages = $this->productImage->productImages($id); // lấy danh sách các hình ảnh của product cụ thể thông qua id
+                        //Lặp qua các hình ảnh hiện tại:
+                        foreach ($productImages as $key => $item) {
+                            //kiểm tra xem liệu có tệp hình ảnh mới nào được tải lên cho hình ảnh hiện tại không.
+                            if ($request->hasFile("images.$key")) {
+                                $imagePath = $request->file("images.$key")->getClientOriginalName(); //lấy tên gốc của tệp hình ảnh được tải lên từ yêu cầu HTTP ->giúp bạn lưu lại tên gốc của hình ảnh để sau này sử dụng hoặc hiển thị nó.
+                                $request->file("images.$key")->storeAs('public/uploads', $imagePath); //lưu trữ tệp hình ảnh được tải lên vào thư mục
+                                $item->images = $imagePath;
+                                $item->update();
+                            }
+                        }
+                    }
+
+
+            return redirect()->route('product');
+        }
+
+        public function productDelete($id){
+            $product = $this->productModel->findOrFail($id);
+            $productImages = $this->productImage->productImages($id);
+            foreach ($productImages as $item) {
+                $item->delete();
+            }
+
+            $product->delete();
+            return redirect()->route('product');
+        }
 
     public function user(){
         $users = $this->userModel->userAll();
