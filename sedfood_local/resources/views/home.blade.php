@@ -2,7 +2,7 @@
 @Section('title','SeaFood | website hải sản')
 @Section('content')
 <div>
-    <div class="container-fluid p-0" >
+    <div class="container pt-3" >
         <div id="carouselExampleInterval" class="carousel slide" data-aos="fade-right" data-aos-offset="300" data-aos-easing="ease-in-sine">
             <div class="carousel-inner">
                 <div class="carousel-item active" data-bs-interval="10000">
@@ -54,14 +54,13 @@
                 @foreach ($productOutstanding as $item)
                     <div class="col-md-3 col-sm-6 col-6 p-0 position-relative  px-3">
                         <div class="cardhover">
-
                             <a href="/detail-product/{{$item->slug}}" class="text-black text-decoration-none">
                                 <div class="card rounded-0 border-0 cardhover2">
                                     <img src="img/seafood/{{$item->image}}" class="card-img-top" alt="...">
                                 </div>
                                 <h5 class="card-title pt-2">{{$item->name}}</h5>
                                 <p class="card-text py-1">
-                                    <span class="price">{{number_format($item->price, 0, ',', '.').'đ'}}</span>
+                                    <span class="price">{{number_format($item->price, 0, ',', '.').'đ'}}</span> <br>
                                 </p>
                                 <div class="hoverAddcart">
                                     <form action="/add-to-cart" method="post">
@@ -71,7 +70,7 @@
                                         <input type="hidden" name="image" value="{{$item->image}}">
                                         <input type="hidden" name="price" value="{{$item->price}}">
                                         <input type="hidden" name="quantity" value="1">
-                                        <button class="btnForm" type="submit" onclick="sweetAlertAddCart()"> Thêm giỏ hàng</button>
+                                        <button class="btnForm" type="submit"> Thêm giỏ hàng</button>
                                     </form>
                                 </div>
                             </a>
@@ -87,17 +86,6 @@
     <div class="container mt-5" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="1500">
         <div class="card border-0 rounded-0  cardImg ">
             <img src="img/banner/banner.png" class="card-img-top" alt="...">
-            {{-- <div class="card-img-overlay bg-dark  bg-opacity-25">
-                <div class="col-md-7 text_imgfluid">
-                    <h1 class="card-title text-black">Organic thiên nhiên tươi xanh</h1>
-                    <p class="text-black">
-                        Tại đây, chúng tôi không chỉ chú trọng đến việc cung cấp những sản phẩm chất lượng cao mà còn tôn trọng và bảo vệ môi trường. Tất cả những gì chúng tôi làm đều được thực hiện một cách tự nhiên và bền vững, từ quy trình chăm sóc cây trồng cho đến việc thu hoạch và chế biến sản phẩm.
-                    </p>
-                    <button class="btn btn-success btn_imgfluid">
-                        <span>Xem nhiều sản phẩm hơn <i class="fa-solid fa-arrow-right"></i></span>
-                    </button>
-                </div>
-            </div> --}}
         </div>
     </div>
 
@@ -198,6 +186,39 @@
         </div>
     </section>
     {{-- END SẢN PHẨM LƯỢT XEM --}}
+
+    {{-- START SẢN PHẨM HẾT HÀNG --}}
+    @if ($soldout && count($soldout) > 0)
+        <section class="product">
+            <div class="container ">
+                <div class="row text-center" data-aos="fade-right" data-aos-offset="300" data-aos-easing="ease-in-sine">
+                    <div class="title">
+                        <h2 class="py-3 my-5 title_h2">SẢN PHẨM BÁN HẾT</h2>
+                    </div>
+                    @foreach ($soldout as $item)
+                        <div class="col-md-3 col-sm-6 col-6 p-0 position-relative  px-3">
+                            <div class="cardhover">
+                                <a href="/detail-product/{{$item->slug}}" class="text-black text-decoration-none">
+                                    <div class="soldout">
+                                        <div class="card rounded-0 border-0 cardhover2">
+                                            <img src="img/seafood/{{$item->image}}" class="card-img-top grayscale" alt="...">
+                                        </div>
+                                        <h5 class="card-title pt-2">Hết hàng</h5>
+                                        <div class="soldout_item">
+                                            <p>Hết Hàng</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- END SẢN PHẨM HẾT HÀNG --}}
 
 
     <section class="blog">

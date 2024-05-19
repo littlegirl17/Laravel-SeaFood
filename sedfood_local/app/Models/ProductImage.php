@@ -27,6 +27,7 @@ class ProductImage extends Model
     public function productImages($id){
         return $this->where('product_id',$id)->get();//product_id khớp với $id được truyền vào.
     }
+
     public function product(){
         return $this->belongsTo(Product::class, 'product_id');
     }

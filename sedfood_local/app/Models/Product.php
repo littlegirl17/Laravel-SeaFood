@@ -26,6 +26,8 @@ class Product extends Model
 
     public function getOutstandingProducts($limit = 8){
         return $this->where('outstanding', 1)
+                    ->where('status', 1)
+                    ->where('quantity', '>', 0)
                     ->orderBy('id', 'desc')
                     ->take($limit)
                     ->get();
@@ -33,6 +35,8 @@ class Product extends Model
 
     public function getViewedProducts($limit = 4){
         return $this->where('view', '>', 0)
+                    ->where('status', 1)
+                    ->where('quantity', '>', 0)
                     ->orderBy('view', 'desc')
                     ->take($limit)
                     ->get();
@@ -40,7 +44,17 @@ class Product extends Model
 
     public function getDiscountProducts($limit = 4){
         return $this->where('discount_price', '>', 0)
+                            ->where('status', 1)
+                            ->where('quantity', '>', 0)
                             ->orderBy('discount_price', 'asc')
+                            ->take($limit)
+                            ->get();
+    }
+
+    public function getSoldOut($limit = 4){
+        return $this->where('quantity', 0)
+                            ->where('status', 1)
+                            ->orderBy('id', 'desc')
                             ->take($limit)
                             ->get();
     }
@@ -49,6 +63,8 @@ class Product extends Model
         $product = Product::whereSlug($slugProduct)->firstOrFail(); //lấy ra slug product
         return $this->where('category_id', $detail->category_id) // lọc sao cho $detail->category_id của sản phẩm hienj tại phải bằng $category trong csdl
         ->where('id' ,'!=' ,$product->id) //$id hienj tại phải khác với 'id' trong csdl để: Loại trừ sản phẩm hiện tại
+        ->where('status', 1)
+        ->where('quantity', '>', 0)
         ->inRandomOrder()
         ->take(4)
         ->get()
@@ -57,7 +73,10 @@ class Product extends Model
 
     public function productIddm($slugCategory){
         $category = Category::whereSlug($slugCategory)->firstOrFail();//dựa trên slug về danh mục đó để lấy ra id của danh mục đó
-        return $this->where('category_id', $category->id)->get();
+        return $this->where('category_id', $category->id)
+                    ->where('status', 1)
+                    ->where('quantity', '>', 0)
+                    ->get();
         // lấy danh mục dựa trên slug, sau đó $category->id trả về ID của danh mục này.
     }
 
@@ -68,7 +87,7 @@ class Product extends Model
 
     //admin
     public function productAll(){
-        return $this->orderBy('id', 'desc')->get();
+        return $this->orderBy('id', 'desc')->paginate(8);
     }
 
 }

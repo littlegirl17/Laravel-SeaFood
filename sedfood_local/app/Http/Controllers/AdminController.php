@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller {
@@ -28,6 +29,16 @@ class AdminController extends Controller {
         $this->orderModel = new Order;
         $this->userModel = new User;
     }
+
+    public function search(Request $request){
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $search = $request->input('search');
+
+        $categorys = $this->categoryModel->search($search);
+
+        return view('admin.category', compact('categorys'));
+    }
+
 
     public function manage(Request $request){
         try {
@@ -211,19 +222,33 @@ class AdminController extends Controller {
                 $product->update();
 
                 // Cập nhật bảng ProductImage
-                    if ($request->hasFile('images')) { // kiểm tra xem liệu có tệp hình ảnh mới nào được gửi trong yêu cầu không ->  Điều này đảm bảo rằng người dùng đã tải lên các hình ảnh mới hoặc không.
-                        $productImages = $this->productImage->productImages($id); // lấy danh sách các hình ảnh của product cụ thể thông qua id
+                if ($request->hasFile('images')) { // kiểm tra xem liệu có tệp hình ảnh mới nào được gửi trong yêu cầu không
+                    $productImages = $this->productImage->productImages($id); // lấy danh sách các hình ảnh của product cụ thể thông qua id
+
+                    if ($productImages->isEmpty()) { // nếu sản phẩm chưa có ảnh phụ
+                        foreach ($request->file('images') as $key => $image) {
+                            $imagePath = $image->getClientOriginalName();
+                            $image->storeAs('public/uploads', $imagePath);
+                            $this->productImage->create([
+                                'product_id' => $product->id,
+                                'images' => $imagePath,
+                            ]);
+                        }
+                    } else { // nếu sản phẩm đã có ảnh phụ
                         //Lặp qua các hình ảnh hiện tại:
                         foreach ($productImages as $key => $item) {
                             //kiểm tra xem liệu có tệp hình ảnh mới nào được tải lên cho hình ảnh hiện tại không.
                             if ($request->hasFile("images.$key")) {
-                                $imagePath = $request->file("images.$key")->getClientOriginalName(); //lấy tên gốc của tệp hình ảnh được tải lên từ yêu cầu HTTP ->giúp bạn lưu lại tên gốc của hình ảnh để sau này sử dụng hoặc hiển thị nó.
-                                $request->file("images.$key")->storeAs('public/uploads', $imagePath); //lưu trữ tệp hình ảnh được tải lên vào thư mục
+                                $imagePath = $request->file("images.$key")->getClientOriginalName();
+                                $request->file("images.$key")->storeAs('public/uploads', $imagePath);
                                 $item->images = $imagePath;
                                 $item->update();
+                            }else if($request->has("delete_image.$key")){
+                                $item->delete();
                             }
                         }
                     }
+                }
 
 
             return redirect()->route('product');
@@ -240,10 +265,95 @@ class AdminController extends Controller {
             return redirect()->route('product');
         }
 
-    public function user(){
-        $users = $this->userModel->userAll();
-        return view('admin.user', compact('users'));
-    }
+        public function deleteImages($id,$product_id){
+            $productImages = $this->productImage->findOrFail($product_id);
+            $productImages->delete();
+            return redirect()->back();
+        }
+
+    // user
+        public function user(){
+            $users = $this->userModel->userAll();
+            return view('admin.user', compact('users'));
+        }
+        public function userAdd(Request $request)
+        {
+            if ($request->isMethod('post')) {
+                // Validate dữ liệu đầu vào
+                $validated = $request->validate([
+                    'name' => 'required',
+                    'email' => 'required',
+                    'password' => 'required',
+                    'phone' => 'required',
+                    'province' => 'required',
+                    'district' => 'required',
+                    'ward' => 'required',
+                    'role' => 'required',
+                    'status' => 'required',
+                ]);
+
+                // Xử lý mật khẩu
+                $validated['password'] = bcrypt($request->password);
+
+                // Xử lý hình ảnh nếu có
+                if ($request->hasFile('image')) {
+                    // Lấy tên gốc của tệp
+                    $imagePath = $request->file('image')->getClientOriginalName();
+                    // Lưu tệp vào thư mục 'public/uploads' với tên gốc
+                    $request->file('image')->storeAs('public/uploads', $imagePath);
+                    // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
+                    $validated['image'] = $imagePath;
+                }
+
+                // Tạo người dùng mới
+                $this->userModel->create($validated);
+
+                // Chuyển hướng về trang danh sách người dùng
+                return redirect()->route('user');
+            }
+
+            return view('admin.userAdd');
+        }
+
+
+        public function userEdit($id){
+            $user = $this->userModel->findOrFail($id);
+            return view('admin.userEdit', compact('user'));
+        }
+
+        public function userUpdate(Request $request,$id){
+
+            $user = $this->userModel->findOrFail($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = $request->password;
+            $user->phone = $request->phone;
+            $user->province = $request->province;
+            $user->district = $request->district;
+            $user->ward = $request->ward;
+            $user->role = $request->role;
+            $user->status = $request->status;
+
+            $imagePath = null;
+            if($request->hasFile('image')){
+                // Lấy tên gốc của tệp
+                $imagePath = $request->file('image')->getClientOriginalName();
+                // Lưu tệp vào thư mục 'public/uploads' với tên gốc
+                $request->file('image')->storeAs('public/uploads',$imagePath);
+                // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
+                $user->image = $imagePath;
+            }
+                $user->update();
+
+            return redirect()->route('user');
+        }
+
+        public function userDelete($id){
+            $user = $this->userModel->findOrFail($id);
+            $user->delete();
+            return redirect()->route('user');
+        }
+
 
     public function comment(){
         $comments = $this->commentModel->commentAll();

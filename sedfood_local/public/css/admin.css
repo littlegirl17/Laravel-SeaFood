@@ -220,7 +220,12 @@ right: 0;
 opacity: 1;
 }
 /**/
-
+.pagination{
+    background-color: #191c24;
+}
+.pagination li{
+    background-color: #191c24;
+}
 /**/
 
 
@@ -421,3 +426,7 @@ opacity: 1;
     padding: 8px 15px;
     border-radius: 20px;
   }
+/**/
+.imageAdd{
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+}

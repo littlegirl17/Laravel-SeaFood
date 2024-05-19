@@ -25,10 +25,18 @@
                 <div class="table-data">{{$item->user->name}}</div>
                 <div class="table-data">{{$item->product->name}}</div>
                 <div class="table-data">{{$item->content}}</div>
-                <div class="table-data">{{$item->status == 0 ? 'Tắt' : 'Bật' }}</div>
                 <div class="table-data">
-                    <a href="" class="text-decoration-none  px-2"><button class="btn btn-outline-warning ">Edit</button></a>
-                    <a href="" class="text-decoration-none "><button class="btn btn-outline-danger">Delete</button></a>
+                    @if($item->status == 0)
+                        <img src="https://img.icons8.com/material-rounded/24/FA5252/toggle-off.png" alt="toggle-off" style="width:25px;height:25px; object-fit:cover;"/>
+                    @else
+                    <div class="" >
+                        <img src="https://img.icons8.com/ios-filled/50/40C057/toggle-on.png" alt="toggle-on"  style="width:25px;height:25px; object-fit:cover;"/>
+                    </div>
+                    @endif
+                </div>
+                <div class="table-data">
+                    <a href="" class="text-decoration-none px-2"><img src="https://img.icons8.com/sf-black-filled/64/1f508d/create-new.png" alt="create-new" style="width:35px;height:35px; object-fit:cover;"/></a>
+                    <a href="" class="text-decoration-none "><i class="fa-solid fa-trash" style="color: #ff0505; font-size: 25px;  "></i></a>
                 </div>
             </div>
         @endforeach

@@ -22,7 +22,7 @@
         <input type="text" class="form-control" id="convert_slug" name="slug" value="{{$category->slug}}">
     </div>
     <div class="form-group mt-3">
-        <label for="exampleInputFile" class="label_admin" >Ảnh bài viêt
+        <label for="exampleInputFile" class="label_admin" >Ảnh danh mục
         <div class="custom-file">
             <input type="file" name="image" id="HinhAnh">
             @if ($category->image)

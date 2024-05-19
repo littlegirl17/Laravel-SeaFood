@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Ramsey\Uuid\Type\Decimal;
 
+
 class ProductController extends Controller
 {
     private $productModel;
@@ -21,6 +22,7 @@ class ProductController extends Controller
     private $productImageModel;
     private $couponModel;
     private $userModel;
+
 
     public function __construct(){
         $this->productModel = new Product;
@@ -71,11 +73,13 @@ class ProductController extends Controller
     }
 
     public function viewCart(Request $request){
-        $cart = $request->session()->get('cart', []);
+        $cart = session()->get('cart', []);
+
         return view('cart',compact('cart'));
     }
 
     public function addToCart(Request $request){
+
         $id = $request->input('id');
         $name = $request->input('name');
         $image = $request->input('image');
@@ -100,8 +104,6 @@ class ProductController extends Controller
                 'quantity' => 1,
             ];
         }
-
-
 
         //Lưu cart vào session
         session()->put('cart', $cart);
@@ -153,6 +155,22 @@ class ProductController extends Controller
         return redirect('/viewCart');
     }
 
+    public function vieworder(){
+        $cart = session()->get('cart', []);
+        if(empty($cart)){
+            return redirect('/');
+        }
+        return view('viewOrder');
+    }
+
+    public function viewcheckout(){
+        $cart = session()->get('cart', []);
+        if(empty($cart)){
+            return redirect('/');
+        }
+
+        return view('checkout');
+    }
     public function checkout(Request $request){
 
         //Tạo mẫu đơn hàng
@@ -160,6 +178,7 @@ class ProductController extends Controller
         if(Auth::check()){
             $order->user_id = Auth::id(); // gán ID của người dùng đang đăng nhập
         }else{
+
             $user = $this->userModel->create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
@@ -171,6 +190,7 @@ class ProductController extends Controller
 
             // Gán ID của người dùng mới vào bảng Order
             $order->user_id = $user->id;
+
         }
 
 
@@ -187,7 +207,7 @@ class ProductController extends Controller
 
         // Lưu các sản phẩm vào bảng OrderProduct
         $cart = session()->get('cart', []);
-       // $total = 0;
+
 
         foreach($cart as $item){
           //  $total += $item['price'] * $item['quantity'];
@@ -200,6 +220,7 @@ class ProductController extends Controller
             $orderProduct->save();
         }
 
+
         // Xóa sản phẩm khỏi giỏ hàng sau khi tạo đơn hàng
         session()->forget('cart');
         session()->forget('coupon');
@@ -211,17 +232,31 @@ class ProductController extends Controller
         $coupon = Session::get('coupon');
         if($coupon == true){
             session()->forget('coupon');
-            return redirect('/checkout')->with('message','Xóa mã giảm giá thành công');
+            return redirect('/viewCart')->with('message','Xóa mã giảm giá thành công');
         }
     }
 
     public function couponApply(Request $request){
-        $data = $request->all();
-        $coupon = $this->couponModel->where('code', $data['coupon'])->first();
 
+        // Kiểm tra tồn tại giỏ hàng
+        if(!Session::has('cart')){
+            return redirect('/');
+        }
+
+        $data = $request->all();// Lấy dữ liệu từ yêu cầu
+
+        $coupon = $this->couponModel->where('code', $data['coupon'])->first();// Tìm kiếm mã giảm giá trong cơ sở dữ liệu
+
+        // Kiểm tra xem giỏ hàng có sản phẩm nào không
+        $cart = Session::get('cart', []);
+        if(empty($cart) || count($cart) == 0){
+            return redirect('/viewCart')->with('error', 'Không có sản phẩm trong giỏ hàng để áp mã giảm giá');
+        }
+        // Nếu tìm thấy mã giảm giá
         if($coupon){
-            $count_coupon = $coupon->count();
-            $cart = Session::get('cart', []);
+            $count_coupon = $coupon->count(); //Đếm số lượng mã giảm giá.
+
+            // Tính tổng giá trị của giỏ hàng
             $total = 0;
             foreach ($cart as $item) {
                 if (is_array($item)) { // Kiểm tra xem $item có phải là một mảng hay không
@@ -229,38 +264,27 @@ class ProductController extends Controller
                     $total += $ThanhTien;
                 }
             }
+
+            // Kiểm tra điều kiện mã giảm giá có hợp lệ không
             if($count_coupon > 0){
                 if($total >= $coupon->total){
-                    $coupon_session = Session::get('coupon');
-                    if($coupon_session == true){
-                        $is_avaiable = 0;
-                        if($is_avaiable == 0){
-                            $cou[] = array(
-                                'code'=>$coupon->code,
-                            'type'=>$coupon->type,
-                            'total'=>$coupon->total,
-                            'discount'=>$coupon->discount,
-                            );
-                            Session::put('coupon', $cou);
-                        }
-                    }else{
-                        $cou[] = array(
-                            'code'=>$coupon->code,
-                            'type'=>$coupon->type,
-                            'total'=>$coupon->total,
-                            'discount'=>$coupon->discount,
-                        );
-                        Session::put('coupon', $cou);
-                    }
+                    $cou[] = array(
+                        'code'=>$coupon->code,
+                        'type'=>$coupon->type,
+                        'total'=>$coupon->total,
+                        'discount'=>$coupon->discount,
+                    );
+                    Session::put('coupon', $cou);
                     Session::save();
-                    return redirect('/checkout')->with('message','Thêm mã giảm giá thành công');
+                    return redirect('/viewCart')->with('message','Thêm mã giảm giá thành công');
                 }else{
-                    return redirect('/checkout')->with('error','Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá này');
+                    return redirect('/viewCart')->with('error','Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá này');
                 }
 
             }
+
         }else{
-            return redirect('/checkout')->with('error','Mã giảm giá không đúng');
+            return redirect('/viewCart')->with('error','Mã giảm giá không đúng');
         }
     }
 }

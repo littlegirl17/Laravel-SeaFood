@@ -7,7 +7,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 
-
     Route::get('/', [HomeController::class, 'index']);
 
 // ROUTE USER
@@ -43,17 +42,17 @@ use App\Http\Controllers\ProductController;
     Route::post('/add-comment', [ProductController::class, 'comment']);
 
 // ROUTE CHECKOUT
-    Route::get('/checkout', function(){
-        return view('checkout');
-    });
+    Route::get('/checkout', [ProductController::class, 'viewcheckout']);
+
     Route::post('/checkout', [ProductController::class, 'checkout']);
 
-    Route::get('/vieworder', function(){
-        return view('viewOrder');
-    });
+    Route::get('/vieworder', [ProductController::class, 'vieworder']);
 
     Route::post('/coupon', [ProductController::class, 'couponApply'])->name('coupon');
     Route::get('/delete-coupon', [ProductController::class, 'couponDelete'])->name('couponDelete');
+
+//
+Route::get('/search', [AdminController::class, 'search'])->name('search');
 
 
 // ROTE ADMIN
@@ -80,8 +79,14 @@ Route::prefix('admin')->group(function(){
     Route::get('edit-product/{id}', [AdminController::class , 'productEdit'])->name('productEdit');
     Route::put('edit-product/{id}', [AdminController::class , 'productUpdate'])->name('productUpdate');
     Route::get('delete-product/{id}', [AdminController::class , 'productDelete'])->name('productDelete');
+    Route::get('product/{id}/delete-image/{product_id}', [AdminController::class , 'deleteImages'])->name('product.delete-images');
 
     Route::get('user', [AdminController::class , 'user'])->name('user');
+    Route::get('adduser', [AdminController::class , 'userAdd'])->name('userAdd');
+    Route::post('add-user', [AdminController::class , 'userAdd']);
+    Route::get('edit-user/{id}', [AdminController::class , 'userEdit'])->name('userEdit');
+    Route::put('edit-user/{id}', [AdminController::class , 'userUpdate'])->name('userUpdate');
+    Route::get('delete-user/{id}', [AdminController::class , 'userDelete'])->name('userDelete');
 
     Route::get('comment', [AdminController::class , 'comment'])->name('comment');
 

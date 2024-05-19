@@ -100,7 +100,7 @@ class UserController extends Controller
                     return redirect('/')->with('success', 'Đăng nhập thành công');
                 }else{
                     Session::put('user', auth()->user());
-                    return redirect('dashboard');
+                    return redirect('admin/dashboard');
                 }
 
             }else{

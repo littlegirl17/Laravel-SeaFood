@@ -84,24 +84,93 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-sm-6 col-12">
+            <form action="{{route('coupon')}}" method="post" id="coupon-form">
+                @csrf
+                <div class="row my-4">
+                    <div class="col-md-8 col-sm-8 col-12">
+                        <input type="text" class="form-control p-2" name="coupon" id="coupon-input" placeholder="Mã giảm giá">
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-12">
+                        @if (Session::get('coupon'))
+                            <a class="btn btn-danger" href="{{route('couponDelete')}}">Xóa mã giảm</a>
+                        @else
+                            <button type="submit" name="check_coupon" class="btn-coupon"> Áp mã</button>
+                        @endif
+                    </div>
+                </div>
+            </form>
+            @if (session('message'))
+                <div id="noneCoupon" class="alert alert-success">{{ session('message') }}</div>
+            @elseif (session('error'))
+                <div id="noneCoupon" class="alert alert-danger">{{ session('error') }}</div>
+            @endif
         </div>
         <div class="col-md-6 col-sm-6 col-12 totalAll_cart">
             <div class="totalCart">
                 <h4>Tổng tiền giỏ hàng</h4>
                 <div class="row totalCartIt">
-                    <div class="col-md-6 ">
-                        <p >Thành tiền</p>
-                        <p >Tổng tiền</p>
+
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="">Tạm tính</span><span class="price text-light ">{{number_format($TongTien, 0, ',', ',')}}đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="">Giảm giá</span>
+                            <span class="price text-light ">
+                                @if (Session::has('coupon'))
+                                    @foreach (Session::get('coupon') as $key => $cou)
+                                        @if (isset($cou['type']))
+
+                                            @if ($cou['type'] == 0)
+
+                                                <span>
+                                                    @php
+                                                        $total_coupon = ($TongTien*$cou['discount'])/100;
+                                                        // echo '<p>Tổng giảm:'.number_format($total_coupon, 0, ',', '.').'đ</p>';
+                                                    @endphp
+                                                </span>
+                                                <span>{{number_format($TongTien - $total_coupon, 0, ',', '.').'đ'}}</span>( {{$cou['discount']}}%)
+                                            @else
+                                                {{number_format($cou['discount'], 0, ',', '.').'đ'}}
+                                                <span>
+                                                    @php
+                                                        $total_coupon = $TongTien - $cou['discount'];
+                                                    @endphp
+                                                </span>
+                                                {{-- <p>{{number_format($total_coupon, 0, ',', '.').'đ'}}</p> --}}
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="">Thành tiền</span>
+                            <span class="price text-light ">
+                                @if (Session::has('coupon'))
+                                    @php
+                                        if (isset($total_coupon)) {
+                                            if ($cou['type'] == 0) {
+                                                $final_total = $TongTien - $total_coupon;
+                                            } else {
+                                                $final_total = $TongTien - $cou['discount'];
+                                            }
+                                        } else {
+                                            $final_total = $TongTien;
+                                        }
+                                    @endphp
+                                    <p>{{number_format($final_total, 0, ',', '.')}}đ</p>
+                                @else
+                                    <p>{{number_format($TongTien, 0, ',', '.')}}đ</p>
+                                @endif
+                            </span>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p class="price text-light">{{number_format($TongTien, 0, ',', ',')}}đ</p>
-                        <p class="price text-light">{{number_format($TongTien, 0, ',', ',')}}đ</p>
-                    </div>
+
                 </div>
                 <button class="btnCartCheckout mt-3"><a href="/checkout">Thanh toán</a href=""></button>
 
             </div>
-
         </div>
     </div>
 </div>
@@ -132,6 +201,13 @@
             }
         });
     }
+
 </script>
+<script>
+    setTimeout(function() {
+        $('#noneCoupon').fadeOut(); //fadeOut để ẩn một phần tử HTMLs
+    }, 3000);
+</script>
+
 @endsection
 

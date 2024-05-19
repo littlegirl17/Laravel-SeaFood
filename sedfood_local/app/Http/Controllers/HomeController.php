@@ -24,7 +24,8 @@ class HomeController extends Controller
             //Load product nổi bật
             'productOutstanding' => $this->productModel->getOutstandingProducts(),
             'productView' => $this->productModel->getViewedProducts(),
-            'productDiscount' => $this->productModel->getDiscountProducts()
+            'productDiscount' => $this->productModel->getDiscountProducts(),
+            'soldout' => $this->productModel->getSoldOut()
         ];
 
         return view('home', $data);

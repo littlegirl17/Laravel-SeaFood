@@ -9,12 +9,12 @@
 
 <form action="{{ route('productUpdate', $product->id) }}" method="post" class="formAdmin" enctype="multipart/form-data">
     @csrf
-    <button class="btnFormAdd mb-3">
+    <button class="btnFormAdd mb-5">
         Lưu
     </button>
     @method('PUT')
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Chung</button>
         </li>
@@ -78,39 +78,40 @@
             </div>
         </div>
         <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-            <div class="form-group mt-3">
-                <label for="exampleInputFile" class="label_admin" >Ảnh bài viêt
-                <div class="custom-file">
+            <div class="form-group  mt-3">
+                <h4  class="label_admin" >Ảnh bài viêt</h4>
+                <div class="custom-file imageAdd p-3 ">
                     <input type="file" name="image" id="HinhAnh" >
                     @if ($product->image)
                         <img src="{{ asset('img/seafood/'.$product->image)}}" alt="" style="width:80px; height:80px; object-fit:cover;">
                     @endif
                 </div>
-                </label>
+
             </div>
             <div class="form-group mt-3">
-                @if($productImages->isNotEmpty())
-                        <label for="">Hình ảnh sản phẩm</label>
-                        <div class="row">
-                            @foreach($productImages as $key => $item)
-                                <div class="col-12">
-                                    <img src="{{ asset('img/seafood/' . $item->images) }}" alt="" class="img-fluid mt-5" style="width:80px; height:80px; object-fit:cover;">
-                                    <input type="file" name="images[{{ $key }}]" id="HinhAnh" >
-                                </div>
-                            @endforeach
-                        </div>
-                @else
+                <h4 >Hình ảnh bổ sung</h4>
+                <div class="row imageAdd">
                     @for ($i = 0; $i < 4; $i++)
-                        <div class="form-group mt-3">
-                            <label for="exampleInputFile" class="label_admin">Ảnh sản phẩm</label>
-                            <div class="custom-file">
-                                <input type="file" name="images[]" id="HinhAnh">
-                                <div id="preview"></div>
-                            </div>
+                        <div class="col-12">
+                            @if(isset($productImages[$i]))
+                                <img src="{{ asset('img/seafood/' . $productImages[$i]->images) }}" alt="" class="img-fluid mt-5" style="width:80px; height:80px; object-fit:cover;">
+                                <input type="file" name="images[{{ $i }}]" id="HinhAnh">
+                                <a class="btn btn-danger" href="{{route('product.delete-images', ['id' => $product->id,'product_id'=>$productImages[$i]->id])}}">Xóa</a>
+                            @else
+                                <div class="form-group mt-3">
+                                    <label for="exampleInputFile" class="label_admin">Ảnh sản phẩm</label>
+                                    <div class="custom-file">
+                                        <input type="file" name="images[]" id="HinhAnh">
+                                        <div id="preview"></div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endfor
-                @endif
+                </div>
             </div>
+
+
         </div>
     </div>
 

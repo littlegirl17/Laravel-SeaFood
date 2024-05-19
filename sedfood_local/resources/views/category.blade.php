@@ -24,15 +24,15 @@
                                     </div>
                                     <h5 class="card-title pt-2">{{$product->name}}</h5>
                                     <p class="card-text py-1">
-                                        <span class="price">{{$product->price}}đ</span>
+                                        <span class="price">{{number_format($product->price, 0, ',', '.').'đ'}}</span>
                                     </p>
                                     <div class="hoverAddcart">
                                         <form action="/add-to-cart" method="post">
                                             @csrf
-                                            <input type="hidden" name="id" value=">id">
-                                            <input type="hidden" name="name" value=">name">
-                                            <input type="hidden" name="image" value=">image">
-                                            <input type="hidden" name="price" value=">price">
+                                            <input type="hidden" name="id" value="{{$product->id}}">
+                                            <input type="hidden" name="name" value="{{$product->name}}">
+                                            <input type="hidden" name="image" value="{{$product->image}}">
+                                            <input type="hidden" name="price" value="{{$product->price}}">
                                             <input type="hidden" name="quantity" value="1">
                                             <button class="btnForm" type="submit"> Thêm giỏ hàng</button>
                                         </form>

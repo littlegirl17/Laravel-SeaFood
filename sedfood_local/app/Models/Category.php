@@ -18,6 +18,10 @@ class Category extends Model
         'slug'
     ];
 
+    public function search($search){
+        return $this->where('name', 'LIKE', "%{$search}%")
+                    ->get();
+    }
     //admin
     public function categoryAll(){
         return $this->orderBy('id', 'desc')->get();

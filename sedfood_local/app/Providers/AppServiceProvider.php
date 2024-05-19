@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Category;
 use Illuminate\Support\Facades\View; // nó được sử dụng để đăng ký một composer view. Composer view cho phép chúng ta thêm dữ liệu vào các view trước khi chúng được hiển thị.
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,5 +26,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer(['layout.header', 'layout.footer'], function ($view) {
             $view->with('categories', Category::all());
         });
+
+        Paginator::useBootstrap();
     }
 }

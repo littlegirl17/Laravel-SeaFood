@@ -48,15 +48,20 @@
                                     </div>
 
                                 <div class="py-5">
-                                    <form action="/add-to-cart" method="post">
-                                        @csrf
-                                        <input type="hidden" name="id" value="{{$detail->id}}">
-                                        <input type="hidden" name="name" value="{{$detail->name}}">
-                                        <input type="hidden" name="image" value="{{$detail->image}}">
-                                        <input type="hidden" name="price" value="{{$detail->price}}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="buttonDetail"> <span>Thêm vào giỏ hàng</span></button>
-                                    </form>
+                                    @if ($detail->quantity > 0)
+                                        <form action="/add-to-cart" method="post">
+                                            @csrf
+                                            <input type="hidden" name="id" value="{{$detail->id}}">
+                                            <input type="hidden" name="name" value="{{$detail->name}}">
+                                            <input type="hidden" name="image" value="{{$detail->image}}">
+                                            <input type="hidden" name="price" value="{{$detail->price}}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="buttonDetail"> <span>Thêm vào giỏ hàng</span></button>
+                                        </form>
+                                    @else
+                                        <span class="btnsoldout">Sản Phẩm Hết Hàng</span>
+                                    @endif
+
                                 </div>
                             </div>
                         </div>
