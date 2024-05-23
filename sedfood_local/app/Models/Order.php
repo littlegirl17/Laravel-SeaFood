@@ -23,6 +23,10 @@ class Order extends Model
         'coupon_code'
     ];
 
+    public function orderAll(){
+        return $this->orderBy('id', 'desc')->get();
+    }
+
     public function user(){
         return $this->belongsTo(User::class, 'user_id');//mỗi Order sẽ có một User
     }

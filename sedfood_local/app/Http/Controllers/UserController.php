@@ -3,14 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Mail\ForgotPasswordMail;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
+    private $userModel;
+
+
+    public function __construct(){
+        $this->userModel = new User;
+
+    }
 
     public function register(Request $request){
 
@@ -81,20 +92,20 @@ class UserController extends Controller
         return redirect('/');
     }
 
-    public function login(Request $request){
-        try {
+    public function login(LoginRequest $request){
 
-            $incommingFields = $request->validate([
-                'name' => 'required',
-                'password' => 'required'
-            ]);
+        $incommingFields = $request->validated();
 
-            if(auth()->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])){
-                $request->session()->regenerate(); //Laravel sẽ tạo ra một phiên làm việc mới, và tất cả các dữ liệu trong phiên làm việc cũ sẽ không còn có hiệu lực nữa.
+        if(auth()->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])){
+            $request->session()->regenerate(); //Laravel sẽ tạo ra một phiên làm việc mới, và tất cả các dữ liệu trong phiên làm việc cũ sẽ không còn có hiệu lực nữa.
 
-                $role = auth()->user()->role;
+            $user = auth()->user();
 
-                if($role == 0){
+            if($user->status == 0){
+                auth()->logout();
+                return redirect('/login')->with('danger', 'Tài khoản của bạn đã bị khóa');
+            }else{
+                if($user->role == 0){
                     //Lưu thông tin user vào session
                     Session::put('user', auth()->user());
                     return redirect('/')->with('success', 'Đăng nhập thành công');
@@ -102,16 +113,26 @@ class UserController extends Controller
                     Session::put('user', auth()->user());
                     return redirect('admin/dashboard');
                 }
-
-            }else{
-                return redirect('/login')->withErrors(['danger'=> 'Username hoặc password đã sai! Vui lòng nhập lại']);
             }
-
-        } catch (\Throwable $th) {
-            return redirect()->back()->withErrors(['login' => 'Lỗi trong quá trình đăng nhập vui lòng thử lại'.$th->getMessage()]);
+        }else{
+            return redirect('/login')->withErrors(['danger'=> 'Username hoặc password đã sai! Vui lòng nhập lại']);
         }
-
     }
+
+    // public function forgetPassword(Request $request){
+    //     // dd($request->all());
+    //     $count = $this->userModel->where('email', '=', $request->email)->count();
+
+    //     if($count > 0){
+    //         $user =  $this->userModel->where('email', '=', $request->email)->first();
+    //         $user->remember_token = Str::random(50);
+    //         $user->save();
+    //         Mail::to($user->email)->send(new ForgotPasswordMail($user));
+    //         return redirect()->back()->with('success', 'Hướng dẫn đặt lại mật khẩu đã được gửi đến email của bạn.');
+    //     }else{
+    //         return redirect()->back()->with('error', 'Email không có trong hệ thống');
+    //     }
+    // }
 
     public function logout(Request $request){
         Auth::logout();

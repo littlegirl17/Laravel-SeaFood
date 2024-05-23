@@ -24,12 +24,17 @@ class Product extends Model
         'slug'
     ];
 
-    public function getOutstandingProducts($limit = 8){
+    public function search($search){
+        return $this->where('name', 'LIKE', "%{$search}%")
+        ->orderBy('id','desc')
+        ->paginate(8);
+    }
+
+    public function getOutstandingProducts(){
         return $this->where('outstanding', 1)
                     ->where('status', 1)
                     ->where('quantity', '>', 0)
                     ->orderBy('id', 'desc')
-                    ->take($limit)
                     ->get();
     }
 
@@ -40,6 +45,14 @@ class Product extends Model
                     ->orderBy('view', 'desc')
                     ->take($limit)
                     ->get();
+    }
+
+    public function getBestSellerProducts(){
+        $bestSellers = (new OrderProduct)->getBestSeller();
+
+        return $this->whereIn('id', $bestSellers->pluck('product_id'))->get();
+        //whereIn sử dụng để lọc các bản ghi dựa trên các giá trị trong một mảng.
+        //pluck  sử dụng để lấy ra một hoặc nhiều cột của một tập hợp bản ghi và trả về một mảng.
     }
 
     public function getDiscountProducts($limit = 4){
@@ -80,14 +93,27 @@ class Product extends Model
         // lấy danh mục dựa trên slug, sau đó $category->id trả về ID của danh mục này.
     }
 
+    // public function productCategory(){
+    //     return $this->where('category_id')->get();
+    // }
+
     //kết nối đến category thông qua category_id
     public function category(){
         return $this->belongsTo(Category::class, 'category_id');
     }
+
+    public function orderProduct(){
+        return $this->hasMany(OrderProduct::class, 'product_id', 'id');
+        //hasMany : 1-n
+    }
+
 
     //admin
     public function productAll(){
         return $this->orderBy('id', 'desc')->paginate(8);
     }
 
+    public function productByOrder(){
+        return $this->hasMany(orderProduct::class, 'product_id');
+    }
 }

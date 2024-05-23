@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\Comment;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Coupon;
+use App\Models\OrderProduct;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -19,7 +21,9 @@ class AdminController extends Controller {
     private $commentModel;
     private $orderModel;
     private $userModel;
+    private $orderProductModel;
     private $productImage;
+    private $couponModel;
 
     public function __construct(){
         $this->categoryModel = new Category;
@@ -27,7 +31,9 @@ class AdminController extends Controller {
         $this->productImage = new ProductImage;
         $this->commentModel = new Comment;
         $this->orderModel = new Order;
+        $this->orderProductModel = new OrderProduct;
         $this->userModel = new User;
+        $this->couponModel = new Coupon;
     }
 
     public function search(Request $request){
@@ -40,6 +46,15 @@ class AdminController extends Controller {
     }
 
 
+    public function logout(Request $request){
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        $request->session()->flush();
+
+        return redirect('admin/manage');
+    }
+
     public function manage(Request $request){
         try {
 
@@ -51,14 +66,21 @@ class AdminController extends Controller {
             if(auth()->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])){
                 $request->session()->regenerate(); //Laravel sẽ tạo ra một phiên làm việc mới, và tất cả các dữ liệu trong phiên làm việc cũ sẽ không còn có hiệu lực nữa.
 
-                $role = auth()->user()->role;
+                $user = auth()->user();
 
-                if($role >= 1){
-                    //Lưu thông tin user vào session
-                    Session::put('user', auth()->user());
-                    return redirect('admin/dashboard')->with('success', 'Đăng nhập thành công');
+                if($user->status == 0){
+                    auth()->logout();
+                    return redirect('/login')->with('danger', 'Tài khoản của bạn đã bị khóa');
+                }else{
+                    if($user->role >= 1){
+                        //Lưu thông tin user vào session
+                        Session::put('user', auth()->user());
+                        return redirect('admin/dashboard')->with('success', 'Đăng nhập thành công');
+                    }else{
+                        Session::put('user', auth()->user());
+                        return redirect('/')->with('success', 'Đăng nhập thành công');
+                    }
                 }
-
             }else{
                 return redirect('/')->withErrors(['danger'=> 'Đăng nhập thất bại']);
             }
@@ -84,7 +106,8 @@ class AdminController extends Controller {
                 $validated = $request->validate([
                     'name' => ['required', 'max:255'],
                     'slug' => ['required', 'max:255'],
-                    'image' => ['sometimes', 'image', 'max:208'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn tại
+                    'sort_order' => ['required'],
+                    'image' => ['required','sometimes', 'mimes:png,jpg,gif', 'max:1000'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn tại
                     'status' => ['required','integer', Rule::in(0,1)], // Kiểm tra giá trị là số nguyên và chỉ chấp nhận 0 hoặc 1
                 ]);
 
@@ -113,6 +136,7 @@ class AdminController extends Controller {
             $validated = $request->validate([
                 'name' => ['required', 'max:255'],
                 'slug' => ['required', 'max:255'],
+                'sort_order' => ['required'],
                 'image' => ['sometimes', 'image', 'max:208'], // 'sometimes' dùng để xác thực ảnh chỉ khi nó tồn tại
                 'status' => ['required','integer', Rule::in(0,1)], // Kiểm tra giá trị là số nguyên và chỉ chấp nhận 0 hoặc 1
             ]);
@@ -271,6 +295,57 @@ class AdminController extends Controller {
             return redirect()->back();
         }
 
+    // coupon
+        public function coupon(){
+            $coupons = $this->couponModel->all();
+            return view('admin.coupon', compact('coupons'));
+        }
+
+        public function couponAdd(Request $request){
+            if($request->isMethod('POST')){
+
+                $validated = $request->validate([
+                    'name_coupon' => 'required',
+                    'code' => 'required',
+                    'type' => 'required',
+                    'total' => 'required',
+                    'discount' => 'required',
+                    'status' => 'required',
+                ]);
+
+                // khởi tạo bản ghi
+                $this->couponModel->create($validated);
+
+                return redirect()->route('admin.coupon');
+            }
+
+            return view('admin.couponAdd');
+        }
+
+        public function couponEdit($id){
+            $coupon = $this->couponModel->findOrFail($id);
+            return view('admin.couponEdit', compact('coupon'));
+        }
+
+        public function couponUpdate(Request $request,$id){
+            $coupon = $this->couponModel->findOrFail($id);
+
+            $coupon->name_coupon = $request->name_coupon;
+            $coupon->code = $request->code;
+            $coupon->type = $request->type;
+            $coupon->total = $request->total;
+            $coupon->discount = $request->discount;
+            $coupon->status = $request->status;
+            $coupon->update();
+            return redirect()->route('admin.coupon');
+        }
+
+        public function couponDelete($id){
+            $coupon = $this->couponModel->findOrFail($id);
+            $coupon->delete();
+            return redirect()->route('admin.coupon');
+        }
+
     // user
         public function user(){
             $users = $this->userModel->userAll();
@@ -315,7 +390,6 @@ class AdminController extends Controller {
             return view('admin.userAdd');
         }
 
-
         public function userEdit($id){
             $user = $this->userModel->findOrFail($id);
             return view('admin.userEdit', compact('user'));
@@ -326,7 +400,7 @@ class AdminController extends Controller {
             $user = $this->userModel->findOrFail($id);
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->password = $request->password;
+            //$user->password = $request->password;
             $user->phone = $request->phone;
             $user->province = $request->province;
             $user->district = $request->district;
@@ -343,7 +417,8 @@ class AdminController extends Controller {
                 // Lưu đường dẫn của hình ảnh vào mảng đã xác thực
                 $user->image = $imagePath;
             }
-                $user->update();
+
+            $user->update();
 
             return redirect()->route('user');
         }
@@ -354,6 +429,33 @@ class AdminController extends Controller {
             return redirect()->route('user');
         }
 
+        // public function updatePassword(Request $request){
+        //     //dd($request->all());
+        //     $user = auth()->user();
+
+        //     $request->validate([
+        //         'current_password' => ['required', 'current_password'],
+        //         'password' => ['required', 'confirmed', 'min:8']
+        //     ]);
+
+        //     $request->user()->update([
+        //         'password' =>bcrypt($request->password)
+        //     ]);
+
+        //     return redirect()->back();
+        // }
+
+    // ĐƠN HÀNG
+        public function order(){
+            $orders = $this->orderModel->orderAll();
+
+            $productByOrder = [];
+            foreach ($orders as $orderItem) {
+                $productByOrder[$orderItem->id] = $this->orderProductModel->orderProductId($orderItem->id);
+            }
+
+            return view('admin.order', compact('orders','productByOrder'));
+        }
 
     public function comment(){
         $comments = $this->commentModel->commentAll();

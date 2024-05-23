@@ -36,6 +36,6 @@ class Comment extends Model
     }
     //admin
     public function commentAll(){
-        return $this->orderBy('id', 'desc')->get();
+        return $this->orderBy('id', 'desc')->paginate(10);
     }
 }

@@ -61,6 +61,6 @@ class User extends Authenticatable
 
     //admin
     public function userAll(){
-        return $this->orderBy('id', 'desc')->get();
+        return $this->orderBy('id', 'desc')->paginate(6);
     }
 }

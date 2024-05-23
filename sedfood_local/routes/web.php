@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
 
     Route::get('/', [HomeController::class, 'index']);
 
@@ -21,6 +22,11 @@ use App\Http\Controllers\ProductController;
         return view('login');
     })->name('login');
 
+    Route::get('/forget-password', function () {
+        return view('forgetPassword');
+    })->name('forgetPassword');
+
+    Route::post('/forgetPassword', [UserController::class, 'forgetPassword']);
     Route::post('/login', [UserController::class, 'login']);
 
     Route::get('/logout', [UserController::class, 'logout']);
@@ -52,6 +58,7 @@ use App\Http\Controllers\ProductController;
     Route::get('/delete-coupon', [ProductController::class, 'couponDelete'])->name('couponDelete');
 
 //
+Route::get('/search-home', [HomeController::class, 'search'])->name('home.search');
 Route::get('/search', [AdminController::class, 'search'])->name('search');
 
 
@@ -81,6 +88,20 @@ Route::prefix('admin')->group(function(){
     Route::get('delete-product/{id}', [AdminController::class , 'productDelete'])->name('productDelete');
     Route::get('product/{id}/delete-image/{product_id}', [AdminController::class , 'deleteImages'])->name('product.delete-images');
 
+    Route::get('order', [AdminController::class , 'order'])->name('admin.order');
+    Route::get('addorder', [AdminController::class , 'orderAdd'])->name('admin.orderAdd');
+    Route::post('add-order', [AdminController::class , 'orderAdd']);
+    Route::get('edit-order/{id}', [AdminController::class , 'orderEdit'])->name('admin.orderEdit');
+    Route::put('edit-order/{id}', [AdminController::class , 'orderUpdate'])->name('admin.orderUpdate');
+    Route::get('delete-order/{id}', [AdminController::class , 'orderDelete'])->name('admin.orderDelete');
+
+    Route::get('coupon', [AdminController::class , 'coupon'])->name('admin.coupon');
+    Route::get('addcoupon', [AdminController::class , 'couponAdd'])->name('admin.couponAdd');
+    Route::post('add-coupon', [AdminController::class , 'couponAdd']);
+    Route::get('edit-coupon/{id}', [AdminController::class , 'couponEdit'])->name('admin.couponEdit');
+    Route::put('edit-coupon/{id}', [AdminController::class , 'couponUpdate'])->name('admin.couponUpdate');
+    Route::get('delete-coupon/{id}', [AdminController::class , 'couponDelete'])->name('admin.couponDelete');
+
     Route::get('user', [AdminController::class , 'user'])->name('user');
     Route::get('adduser', [AdminController::class , 'userAdd'])->name('userAdd');
     Route::post('add-user', [AdminController::class , 'userAdd']);
@@ -90,4 +111,14 @@ Route::prefix('admin')->group(function(){
 
     Route::get('comment', [AdminController::class , 'comment'])->name('comment');
 
+    Route::get('logout', [AdminController::class, 'logout'])->name('logout');
+
+});
+
+Route::post('paypal/payment', [PaypalController::class, 'payment'])->name('paypal.payment');
+Route::get('paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
+Route::get('paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
+
+Route::fallback(function(){
+    return view('notFound');
 });

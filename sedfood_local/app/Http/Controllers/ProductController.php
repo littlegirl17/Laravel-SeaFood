@@ -107,7 +107,7 @@ class ProductController extends Controller
 
         //Lưu cart vào session
         session()->put('cart', $cart);
-        return redirect('/viewCart');
+        return redirect('/');
     }
 
     public function tangQuantity($id){
@@ -216,6 +216,7 @@ class ProductController extends Controller
             $orderProduct->product_id = $item['id'];//ID của sản phẩm trong giỏ hàng.
             $orderProduct->name = $item['name'];
             $orderProduct->price = $item['price'];
+            $orderProduct->quantity = $item['quantity'];
             $orderProduct->total =  $item['price']*$item['quantity'];
             $orderProduct->save();
         }

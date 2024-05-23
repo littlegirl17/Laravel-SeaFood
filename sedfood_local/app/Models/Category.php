@@ -22,9 +22,24 @@ class Category extends Model
         return $this->where('name', 'LIKE', "%{$search}%")
                     ->get();
     }
-    //admin
-    public function categoryAll(){
-        return $this->orderBy('id', 'desc')->get();
+
+    public function categoryHome(){
+        return $this->where('status', 1)
+                    ->orderBy('sort_order', 'asc')
+                    ->get();
     }
 
+    //admin
+    public function categoryAll(){
+        return $this->orderBy('id', 'desc')->paginate(6);
+    }
+
+    public function productByCate(){
+        return $this->hasMany(Product::class, 'category_id')->where('status', 1)
+                                                            ->get();
+    }
+
+    public function product(){
+        return $this->hasMany(Product::class , 'category_id');
+    }
 }

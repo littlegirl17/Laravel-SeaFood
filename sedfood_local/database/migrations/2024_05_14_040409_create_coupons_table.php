@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('date_start')->nullable();
             $table->date('date_end')->nullable();
             $table->decimal('discount',10,2);
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }

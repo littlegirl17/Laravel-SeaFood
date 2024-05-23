@@ -1,48 +1,153 @@
+<!--  Body Wrapper -->
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar ">
+        <!-- Sidebar scroll-->
+        <div>
+            <div class="brand-logo d-flex align-items-center justify-content-between">
+                <a href="{{ route('dashboard') }}" class="text-nowrap logo-img">
+                    <img src="{{ asset('storage/uploads/LoGo.png') }}" width="180" alt="" />
+                </a>
+                <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                    <img width="40" height="40" src="https://img.icons8.com/ios/50/FFFFFF/close-window--v1.png"
+                        alt="close-window--v1" />
+                </div>
+            </div>
+            <!-- Sidebar navigation-->
+            <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+                <ul id="sidebarnav">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('dashboard') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti fa-solid fa-gauge-high ico-side" style="color: #B197FC;"></i>
+                            </span>
+                            <span class="hide-menu">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('category') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti fa-solid fa-list ico-side" style="color: #FFD43B;"></i> </span>
+                            <span class="hide-menu">Danh mục</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('product') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA1UlEQVR4nO2WMQ6CQBREf2WlF7KQMaClHbueFsbEI3gAPAmGxMLQqZgBMy/ZkmRn3n52I4z5HWDul7zCQai3ABuhvnnYCPVtw0aobxg2Qn2rNsKXJ4qZK1jq/TFGvTE4yIh3GymYOjS5rG/1Kj5k+LZoU1W0+a4z0uQyJmLH80EWpGjr9VRBttfTRhgkVf9hhKkbNvDtjOwv+aidEWpXOAj1FmAj1DcPG6G+bdhI+B7pfbToGen9RMEMfrfwE4X61mEj1DcNG3mibhg2MkLdMGzExOx4ALZ46X829vEOAAAAAElFTkSuQmCC"
+                                    style="width:18px; height:18px;">
+                            </span>
+                            <span class="hide-menu">Sản phẩm</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('admin.coupon') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti"><img width="20" height="20"
+                                        src="https://img.icons8.com/sf-regular-filled/20/FAB005/loyalty-card.png"
+                                        alt="loyalty-card" /></i>
+                            </span>
+                            <span class="hide-menu">Mã giảm giá</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('admin.order') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti"><img width="20" height="20"
+                                        src="https://img.icons8.com/ios/20/FFFFFF/purchase-order.png"
+                                        alt="purchase-order" /></i>
+                            </span>
+                            <span class="hide-menu">Đơn hàng</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti fa-solid fa-user ico-side" style="color: #fa0000;"></i>
+                            </span>
+                            <span class="hide-menu">Khách hàng</span>
+                        </a>
+                    </li>
+                    {{-- <li class="sidebar-item">
+                        <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
+                            <span>
+                                <i class="ti ti-login"></i>
+                            </span>
+                            <span class="hide-menu">Bài viết</span>
+                        </a>
+                    </li> --}}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('comment') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti fa-regular fa-message ico-side" style="color: #74C0FC;"></i> </span>
+                            <span class="hide-menu">Bình luận</span>
+                        </a>
+                    </li>
 
-<div class="container-fluid main-page">
-    <div class="app-main">
-        <nav class="sidebar rounded-0">
-            <section class="infocol1 row">
-                <div class="col-12 d-flex justify-content-center pb-3">
-                    <img src="{{asset('img/logo/LoGo.png')}}" alt="">
-                </div>
-            </section>
-            <section class="infocol2 row">
-                <div class="col-md-4">
-                    <img src="{{asset('img/logo/'.Session::get('user')->image)}}" alt="">
-                </div>
-                <div class="col-md-8">
-                    <h6>{{Session::get('user')->name}}</h6>
-                    <p>Quản trị viên</p>
-                </div>
-            </section>
-            <ul>
-                <li>
-                    <a href="{{route ('dashboard')}}"><i class="fa-solid fa-gauge-high ico-side" style="color: #B197FC;"></i>Dashboards</a>
-                </li>
-                <li>
-                    <a href="{{route ('category')}}"><i class="fa-solid fa-list ico-side" style="color: #FFD43B;"></i>Quản kí danh mục</a>
-                </li>
-                <li>
-                    <a href="{{route ('product')}}"><i class="fa-solid fa-pen-to-square ico-side" style="color: #63E6BE;"></i>Quản lí sản phẩm</a>
-                </li>
-                <li>
-                    <a href="{{route ('user')}}"><i class="fa-solid fa-user ico-side" style="color: #fa0000;"></i>Quản lí thành viên</a>
-                </li>
-                <li>
-                    <a href="{{route ('comment')}}"><i class="fa-regular fa-message ico-side" style="color: #74C0FC;"></i>Quản lí bình luận</a>
-                </li>
-            </ul>
-        </nav>
-        <div class="main-content">
-            <section class="headerTop row ">
-                <div class="dropdown d-flex justify-content-end align-items-center" style="padding: 0px 0px;">
-                    <img src="{{asset('img/logo/'.Session::get('user')->image)}}" alt="">
-                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Hi, {{Session::get('user')->name}}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{{ route('logout') }}" aria-expanded="false">
+                            <span style="width:20px">
+                                <i class="ti fa-solid fa-right-from-bracket ico-side" style="color: #ffffff;"></i>
+                            </span>
+                            <span class="hide-menu">Đăng xuất</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+            <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+    </aside>
+    <!--  Sidebar End -->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <ul class="navbar-nav">
+                    <li class="nav-item d-block d-xl-none">
+                        <a class="nav-link sidebartoggler " id="headerCollapse" href="javascript:void(0)">
+                            <img width="50" height="50"
+                                src="https://img.icons8.com/ios/50/FFFFFF/menu-squared-2.png" alt="menu-squared-2" />
+                        </a>
+                    </li>
+
+                </ul>
+                <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                    <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{{ asset('storage/uploads/' . Session::get('user')->image) }}"
+                                    alt="" width="35" height="35" class="rounded-circle">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+                                aria-labelledby="drop2">
+                                <div class="message-body">
+                                    <a href="javascript:void(0)"
+                                        class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-user fs-6"></i>
+                                        <p class="mb-0 fs-3">My Profile</p>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                        class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-mail fs-6"></i>
+                                        <p class="mb-0 fs-3">My Account</p>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                        class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-list-check fs-6"></i>
+                                        <p class="mb-0 fs-3">My Task</p>
+                                    </a>
+                                    <a href="./authentication-login.html"
+                                        class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
-            </section>
+            </nav>
+        </header>

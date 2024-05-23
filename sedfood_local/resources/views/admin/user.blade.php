@@ -1,52 +1,63 @@
 @extends('admin.layout.layoutAdmin')
-@Section('title','Admin | Thành viên')
+@Section('title', 'Admin | Thành viên')
 @Section('content')
 
-<h3 class="title-page ">
-    Người dùng
-</h3>
-<div class="row " style="margin-left: 1100px;">
-    <button class="btnFormAdd ">
-        <a href="{{route('userAdd')}}" class="text-decoration-none ">Thêm</a>
-    </button>
-</div>
-<div class="table pt-3">
-    <div class="table-header">
-        <div class="header__item"><a id="name" class="filter__link" href="#">Image</a></div>
-        <div class="header__item"><a id="draws" class="filter__link filter__link--number" href="#">Email</a></div>
-        <div class="header__item"><a id="total" class="filter__link filter__link--number" href="#">Quyền</a></div>
-        <div class="header__item"><a id="total" class="filter__link filter__link--number" href="#">Trạng thái</a></div>
-        <div class="header__item"><a id="total" class="filter__link filter__link--number" href="#">Hành động</a></div>
-    </div>
-    <div class="table-content">
-        @foreach ($users as $item)
-            <div class="table-row">
-                <div class="table-data"><img src="{{asset('img/logo/'.$item->image)}}" alt=""></div>
-                <div class="table-data">{{$item->email}}</div>
-                <div class="table-data">{{$item->role}}</div>
-                <div class="table-data">
-                    @if($item->status == 0)
-                        <img src="https://img.icons8.com/material-rounded/24/FA5252/toggle-off.png" alt="toggle-off" style="width:25px;height:25px; object-fit:cover;"/>
-                    @else
-                    <div class="" >
-                        <img src="https://img.icons8.com/ios-filled/50/40C057/toggle-on.png" alt="toggle-on"  style="width:25px;height:25px; object-fit:cover;"/>
-                    </div>
-                    @endif
-                </div>
-                <div class="table-data">
-                    <a href="{{route('userEdit', $item->id)}}" class="text-decoration-none px-2"><img src="https://img.icons8.com/sf-black-filled/64/1f508d/create-new.png" alt="create-new" style="width:35px;height:35px; object-fit:cover;"/></a>
-                    <a href="{{route('userDelete', $item->id)}}" class="text-decoration-none "><i class="fa-solid fa-trash" style="color: #ff0505; font-size: 25px;  "></i></a>
-                </div>
-            </div>
-        @endforeach
-    </div>
-</div>
+    <div class="container-fluid">
 
-<ul class="pagination">
-    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-</ul>
+        <h3 class="title-page ">
+            Người dùng
+        </h3>
+        <div class="d-flex justify-content-between">
+
+            <form action="/search" method="GET">
+                <input class="inputSearch_Admin" name="search" placeholder="Nhập từ khóa tìm kiếm" type="search">
+                <button type="submit" class="btn-coupon">Tìm kiếm</button>
+            </form>
+            <button class="btnFormAdd mb-3">
+                <a href="{{ route('userAdd') }}" class="text-decoration-none ">Thêm</a>
+            </button>
+        </div>
+        <table class="table pt-3">
+            <thead class="">
+                <tr>
+                    <th class="py-2">Image</th>
+                    <th class="py-2">Email</th>
+                    <th class="py-2">Quyền</th>
+                    <th class="py-2">Trạng thái</th>
+                    <th class="py-2">Hành động</th>
+
+                </tr>
+            </thead>
+            <tbody class="">
+                @foreach ($users as $item)
+                    <tr class="">
+                        <td class=""><img src="{{ asset('storage/uploads/' . $item->image) }}" alt=""
+                                style="width: 80px; height: 80px; object-fit: cover;"></td>
+                        <td class="">{{ $item->email }}</td>
+                        <td class="">{{ $item->role }}</td>
+                        <td class="">
+                            @if ($item->status == 0)
+                                <img src="https://img.icons8.com/material-rounded/24/FA5252/toggle-off.png" alt="toggle-off"
+                                    style="width:25px;height:25px; object-fit:cover;" />
+                            @else
+                                <div class="">
+                                    <img src="https://img.icons8.com/ios-filled/50/40C057/toggle-on.png" alt="toggle-on"
+                                        style="width:25px;height:25px; object-fit:cover;" />
+                                </div>
+                            @endif
+                        </td>
+                        <td class="d-flex justify-content-center align-items-center">
+                            <a href="{{ route('userEdit', $item->id) }}" class="text-decoration-none px-2"><img
+                                    src="https://img.icons8.com/sf-black-filled/64/1f508d/create-new.png" alt="create-new"
+                                    style="width:35px;height:35px; object-fit:cover;" /></a>
+                            <a href="{{ route('userDelete', $item->id) }}" class="text-decoration-none "><i
+                                    class="fa-solid fa-trash" style="color: #ff0505; font-size: 25px;  "></i></a>
+                        </td>
+                    </tr>
+                @endforeach
+                {{ $users->links() }}
+            </tbody>
+        </table>
+    </div>
+
 @endsection

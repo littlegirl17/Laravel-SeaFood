@@ -15,6 +15,7 @@ class Coupon extends Model
         'total',
         'date_start',
         'date_end',
-        'discount'
+        'discount',
+        'status'
     ];
 }
