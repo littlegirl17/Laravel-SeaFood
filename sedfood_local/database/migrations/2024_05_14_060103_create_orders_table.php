@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('ward');
             $table->float('total');
             $table->tinyInteger('payment');
-            $table->tinyInteger('status_id');
+            $table->foreignId('status_id')->constrained();
             $table->integer('coupon_code');
             $table->timestamps();
         });

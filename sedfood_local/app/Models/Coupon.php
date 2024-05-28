@@ -18,4 +18,15 @@ class Coupon extends Model
         'discount',
         'status'
     ];
+
+
+    public function searchCoupon($search){
+        return $this->where('name_coupon', 'LIKE', "%{$search}%")
+                    ->orWhere('code', 'LIKE', "%{$search}%")
+                    ->orWhere('type', 'LIKE', "%{$search}%")
+                    ->orWhere('total', 'LIKE', "%{$search}%")
+                    ->orWhere('discount', 'LIKE', "%{$search}%")
+                    ->paginate(10);
+    }
+
 }

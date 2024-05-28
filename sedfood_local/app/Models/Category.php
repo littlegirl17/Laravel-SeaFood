@@ -18,9 +18,9 @@ class Category extends Model
         'slug'
     ];
 
-    public function search($search){
+    public function searchCategory($search){
         return $this->where('name', 'LIKE', "%{$search}%")
-                    ->get();
+        ->paginate(10);
     }
 
     public function categoryHome(){
@@ -31,7 +31,7 @@ class Category extends Model
 
     //admin
     public function categoryAll(){
-        return $this->orderBy('id', 'desc')->paginate(6);
+        return $this->orderBy('id', 'desc')->paginate(10);
     }
 
     public function productByCate(){

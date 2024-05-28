@@ -101,14 +101,46 @@ class ProductController extends Controller
                 'image' => $image,
                 'price' => $price,
                 'discount_price' => $discount_price,
-                'quantity' => 1,
+                'quantity' => $quantity,
             ];
         }
 
         //Lưu cart vào session
         session()->put('cart', $cart);
+        return redirect()->back();
+    }
+
+    public function buyNow(Request $request){
+
+        $id = $request->input('id');
+        $name = $request->input('name');
+        $image = $request->input('image');
+        $price = $request->input('price');
+        $discount_price = $request->input('discount_price');
+        $quantity = $request->input('quantity');
+
+
+            // chưa có, thì lưu các item đó vào mảng $cart[$id] $id để xác định sản phẩm trong giỏ hàng bằng một định danh duy nhất
+            $buyNowCart = [
+                'id' => $id,
+                'name' => $name,
+                'image' => $image,
+                'price' => $price,
+                'discount_price' => $discount_price,
+                'quantity' => $quantity,
+            ];
+
+
+        //Lưu cart vào session
+        session()->put('buyNowCart', $buyNowCart);
+        return redirect('checkout');
+    }
+
+    public function clearBuyNowCart() {
+        session()->forget('buyNowCart');
         return redirect('/');
     }
+
 
     public function tangQuantity($id){
         $cart = session()->get('cart', []);
@@ -186,6 +218,7 @@ class ProductController extends Controller
                 'province' => $request->input('province'),
                 'district' => $request->input('district'),
                 'ward' => $request->input('ward'),
+                'status_id' => 1, //mặc định là 1
             ]);
 
             // Gán ID của người dùng mới vào bảng Order
@@ -203,6 +236,7 @@ class ProductController extends Controller
         $order->ward = $request->input('ward');
         $order->total = $request->input('total');
         $order->coupon_code = $request->input('coupon_code');
+        $order->status_id = 1; //mặc định là 1
         $order->save();
 
         // Lưu các sản phẩm vào bảng OrderProduct
@@ -215,9 +249,9 @@ class ProductController extends Controller
             $orderProduct->order_id = $order->id;//Đây là ID của đơn hàng mới vừa được tạo. Khi tạo một mẫu OrderProduct, cần liên kết nó với ID của đơn hàng đó.
             $orderProduct->product_id = $item['id'];//ID của sản phẩm trong giỏ hàng.
             $orderProduct->name = $item['name'];
-            $orderProduct->price = $item['price'];
+            $orderProduct->price =  $item['discount_price'] ?? $item['price'];
             $orderProduct->quantity = $item['quantity'];
-            $orderProduct->total =  $item['price']*$item['quantity'];
+            $orderProduct->total =  $orderProduct->price * $item['quantity']; //Điều này có nghĩa là giá (price) có thể là giá giảm (discount_price) nếu nó tồn tại, nếu không sẽ sử dụng giá gốc (price).
             $orderProduct->save();
         }
 

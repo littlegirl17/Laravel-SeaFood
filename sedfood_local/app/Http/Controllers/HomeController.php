@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -49,6 +50,8 @@ class HomeController extends Controller
             'soldout' => $this->productModel->getSoldOut()
         ];
 
+        //Khi nguoi dung back chuyển về trang chủ thì tự động xoa san phẩm MUA NGAY LIỀN
+        Session::forget('buyNowCart');
         return view('home', $data);
     }
 

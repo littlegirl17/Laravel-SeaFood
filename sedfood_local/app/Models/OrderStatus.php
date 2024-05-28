@@ -11,4 +11,10 @@ class OrderStatus extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function getOrderStatus(){
+        return $this->all();
+    }
+
+
 }

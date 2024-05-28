@@ -26,9 +26,21 @@ class Product extends Model
 
     public function search($search){
         return $this->where('name', 'LIKE', "%{$search}%")
+        ->where('status', 1)
         ->orderBy('id','desc')
         ->paginate(8);
     }
+
+    public function searchProduct($search){
+        return $this->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhereHas('category', function ($query) use ($search) {
+                        $query->where('name', 'LIKE', "%{$search}%");
+                    })
+                    ->orderBy('id', 'desc')
+                    ->paginate(10);
+    }
+
 
     public function getOutstandingProducts(){
         return $this->where('outstanding', 1)

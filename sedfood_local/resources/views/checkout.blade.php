@@ -162,39 +162,63 @@
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-6 col-12 px-3 bg-body-tertiary checkoutbox2">
+                    @if (session()->has('buyNowCart'))
+                        @php
+                            $item = session()->get('buyNowCart');
+                            $ThanhTien = isset($item['discount_price'])
+                                ? intval($item['discount_price']) * $item['quantity']
+                                : intval($item['price']) * $item['quantity'];
+                            $TongTien = $ThanhTien;
+                        @endphp
+                        <div class="row mt-3">
+                            <input type="hidden" name="id" value="{{ $item['id'] }}">
 
-                    @php
-                        $cart = Session::get('cart');
-                        $TongTien = 0;
-                        $ThanhTien = 0;
-                    @endphp@if (is_array($cart))
-                        @foreach ($cart as $item)
-                            @if (is_array($item))
-                                @php
-                                    $ThanhTien = isset($item['discount_price'])
-                                        ? intval($item['discount_price']) * $item['quantity']
-                                        : intval($item['price']) * $item['quantity'];
-                                    $TongTien += $ThanhTien;
-                                @endphp
-                                <div class="row mt-3">
-                                    <input type="hidden" name="id" value="{{ $item['id'] }}">
+                            <div class="col-md-3 col-sm-3 imgCheckout">
+                                <img src="{{ asset('storage/uploads/' . $item['image']) }}" class="rounded-3"
+                                    alt="">
+                            </div>
+                            <div class="col-md-6 col-sm-9">
+                                <h5>{{ $item['name'] }}</h5>
+                                <p>Số lượng: {{ $item['quantity'] }}</p>
+                            </div>
+                            <div class="col-md-3 ">
+                                <h5>{{ number_format($ThanhTien, 0, ',', '.') . 'đ' }}</h5>
+                            </div>
+                        </div>
+                    @else
+                        @php
+                            $cart = Session::get('cart');
+                            $TongTien = 0;
+                            $ThanhTien = 0;
+                        @endphp
+                        @if (is_array($cart))
+                            @foreach ($cart as $item)
+                                @if (is_array($item))
+                                    @php
+                                        $ThanhTien = isset($item['discount_price'])
+                                            ? intval($item['discount_price']) * $item['quantity']
+                                            : intval($item['price']) * $item['quantity'];
+                                        $TongTien += $ThanhTien;
+                                    @endphp
+                                    <div class="row mt-3">
+                                        <input type="hidden" name="id" value="{{ $item['id'] }}">
 
-                                    <div class="col-md-3 col-sm-3 imgCheckout">
-                                        <img src="{{ asset('storage/uploads/' . $item['image']) }}" class="rounded-3"
-                                            alt="">
+                                        <div class="col-md-3 col-sm-3 imgCheckout">
+                                            <img src="{{ asset('storage/uploads/' . $item['image']) }}" class="rounded-3"
+                                                alt="">
+                                        </div>
+                                        <div class="col-md-6 col-sm-9">
+                                            <h5>{{ $item['name'] }}</h5>
+                                            <p>Số lượng: {{ $item['quantity'] }}</p>
+                                        </div>
+                                        <div class="col-md-3 ">
+                                            <h5>{{ number_format($ThanhTien, 0, ',', '.') . 'đ' }}</h5>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6 col-sm-9">
-                                        <h5>{{ $item['name'] }}</h5>
-                                        <p>Số lượng: {{ $item['quantity'] }}</p>
-                                    </div>
-                                    <div class="col-md-3 ">
-                                        <h5>{{ number_format($ThanhTien, 0, ',', '.') . 'đ' }}</h5>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
+                                @endif
+                            @endforeach
+                        @endif
                     @endif
-
                     <hr>
 
                     <hr>

@@ -9,11 +9,13 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\OrderProduct;
+use App\Models\OrderStatus;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use phpDocumentor\Reflection\Types\This;
 
 class AdminController extends Controller {
     private $categoryModel;
@@ -22,6 +24,7 @@ class AdminController extends Controller {
     private $orderModel;
     private $userModel;
     private $orderProductModel;
+    private $orderStatus;
     private $productImage;
     private $couponModel;
 
@@ -34,18 +37,69 @@ class AdminController extends Controller {
         $this->orderProductModel = new OrderProduct;
         $this->userModel = new User;
         $this->couponModel = new Coupon;
+        $this->orderStatus = new OrderStatus;
     }
 
-    public function search(Request $request){
+    public function searchCategory(Request $request){
         //Lấy từ khóa tìm kiếm từ yêu cầu
         $search = $request->input('search');
 
-        $categorys = $this->categoryModel->search($search);
+        $categorys = $this->categoryModel->searchCategory($search);
 
         return view('admin.category', compact('categorys'));
     }
 
+    public function searchProduct(Request $request){
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $search = $request->input('search');
 
+        $products = $this->productModel->searchProduct($search);
+
+        return view('admin.product', compact('products'));
+    }
+
+    public function searchCoupon(Request $request){
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $search = $request->input('search');
+
+        $coupons = $this->couponModel->searchCoupon($search);
+
+        return view('admin.coupon', compact('coupons'));
+    }
+
+    public function searchorder(Request $request){
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $search = $request->input('search');
+
+        $orders = $this->orderModel->searchOrder($search);
+
+        $productByOrder = [];
+        foreach ($orders as $orderItem) {
+            $productByOrder[$orderItem->id] = $this->orderProductModel->orderProductId($orderItem->id);
+        }
+
+        $isSearching = true; // Biến trạng thái để kiểm tra xem có đang tìm kiếm hay không
+
+        return view('admin.order', compact('orders', 'productByOrder' ,'isSearching'));
+    }
+
+    public function searchComment(Request $request){
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $search = $request->input('search');
+
+        $comments = $this->commentModel->searchComment($search);
+
+        return view('admin.comment', compact('comments'));
+    }
+
+    public function searchUser(Request $request){
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $search = $request->input('search');
+
+        $users = $this->userModel->searchUser($search);
+
+        return view('admin.user', compact('users'));
+    }
     public function logout(Request $request){
         Auth::logout();
         $request->session()->invalidate();
@@ -446,15 +500,97 @@ class AdminController extends Controller {
         // }
 
     // ĐƠN HÀNG
-        public function order(){
+        public function order(Request $request){
+            $status_id = $request->input('status_id', 'all');
             $orders = $this->orderModel->orderAll();
+
+            if ($status_id === 'all') {
+                $orders = $this->orderModel->orderAll();
+            } else {
+                $orders = $this->orderModel->getOrderByStatus($status_id);
+            }
 
             $productByOrder = [];
             foreach ($orders as $orderItem) {
                 $productByOrder[$orderItem->id] = $this->orderProductModel->orderProductId($orderItem->id);
             }
 
-            return view('admin.order', compact('orders','productByOrder'));
+            // Đếm số lượng đơn hàng theo trạng thái
+            $countNew = $this->orderModel->countNew();
+            $countProcessing = $this->orderModel->countProcessing();
+            $countShipped = $this->orderModel->countShipped();
+            $countCompleted = $this->orderModel->countCompleted();
+            $countCancelled  = $this->orderModel->countCancelled();
+
+            $isSearching = false; // Biến trạng thái để kiểm tra xem có đang tìm kiếm hay không
+
+            return view('admin.order', compact('orders','productByOrder','countNew','countProcessing','countShipped','countCompleted','countCancelled','isSearching'));
+        }
+
+        public function orderEdit($id){
+            $order = $this->orderModel->findOrFail($id);
+            $orderStatuses = $this->orderStatus->getOrderStatus();
+            $productByOrderEdit =  $this->orderProductModel->orderProductEdit($id);
+            return view('admin.orderEdit', compact('order','productByOrderEdit','orderStatuses'));
+        }
+
+        // public function orderUpdate(Request $request,$id){
+
+        //     $order = $this->orderModel->findOrFail($id);
+        //     //update thông tin của bảng order
+        //     $order->name = $request->name;
+        //     $order->email = $request->email;
+        //     $order->phone = $request->phone;
+        //     $order->province = $request->province;
+        //     $order->district = $request->district;
+        //     $order->ward = $request->ward;
+        //     $order->total = $request->total; //đây là tổng total của 1 đơn hàng
+        //     $order->update();
+
+        //     //update thông tin product vào bảng orderProduct
+        //     foreach($request->productByOrderEdit as $item){
+        //         $orderProduct = $this->orderProductModel->getorderProductEdit($order->id, $item['product_id']);
+        //         $orderProduct->quantity = $item['quantity'];
+        //         $orderProduct->total = $item['total']; //đây là total trong bảng orderproduct
+        //         $orderProduct->update();
+        //     }
+        //     return redirect()->route('admin.order');
+        // }
+        public function orderUpdate(Request $request, $id)
+        {
+            // Kiểm tra xem request gửi lên có chứa thông tin của orderproduct hay không
+            if ($request->has('productByOrderEdit')) {
+                // Nếu có, thực hiện cập nhật quantity của orderproduct
+                foreach ($request->productByOrderEdit as $item) {
+                    $orderProduct = OrderProduct::where('order_id', $id)
+                        ->where('product_id', $item['product_id'])
+                        ->first();
+                    if ($orderProduct) {
+                        // Cập nhật quantity của orderproduct
+                        $orderProduct->quantity = $item['newQuantity'];
+                        $orderProduct->total = $item['newTotalOrderProduct'];
+                        $orderProduct->save();
+                    }
+                }
+
+            }
+
+            // Tiếp tục xử lý cập nhật thông tin của đơn hàng
+            $order = Order::findOrFail($id);
+            $order->name = $request->name;
+            $order->email = $request->email;
+            $order->phone = $request->phone;
+            $order->province = $request->province;
+            $order->district = $request->district;
+            $order->ward = $request->ward;
+            $order->total = $request->total;
+            $order->status_id = $request->status_id;
+            //$order->total = (float)str_replace(',', '', $request->total); // Chuyển đổi chuỗi tiền tệ thành số
+            //dd($order->toArray()); // Kiểm tra dữ liệu của đơn hàng trước khi lưu
+
+            $order->save();
+
+            return redirect()->route('admin.order');
         }
 
     public function comment(){

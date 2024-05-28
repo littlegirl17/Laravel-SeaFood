@@ -8,7 +8,7 @@
             Phiếu giảm giá
         </h3>
         <div class="d-flex justify-content-between">
-            <form action="/search" method="GET">
+            <form action="{{ route('searchCoupon') }}" method="GET">
                 <input class="inputSearch_Admin" name="search" placeholder="Nhập từ khóa tìm kiếm" type="search">
                 <button type="submit" class="btn-coupon">Tìm kiếm</button>
             </form>
@@ -31,11 +31,13 @@
             <tbody class="">
                 @foreach ($coupons as $item)
                     <tr class="">
-                        <td class="">{{ $item->name_coupon }}</td>
+                        <td class="nameAdmin">
+                            <p>{{ $item->name_coupon }}</p>
+                        </td>
                         <td class="">{{ $item->code }}</td>
                         <td class="">{{ $item->discount }}</td>
 
-                        <td class="d-flex justify-content-center align-items-center">
+                        <td class="actionAdmin">
                             <a href="{{ route('admin.couponEdit', $item['id']) }}" class="text-decoration-none px-2"><img
                                     src="https://img.icons8.com/sf-black-filled/64/1f508d/create-new.png" alt="create-new"
                                     style="width:35px;height:35px; object-fit:cover;" /></a>

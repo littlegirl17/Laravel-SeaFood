@@ -63,4 +63,19 @@ class User extends Authenticatable
     public function userAll(){
         return $this->orderBy('id', 'desc')->paginate(6);
     }
+
+
+    public function searchUser($search){
+        return $this->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhere('phone', 'LIKE', "%{$search}%")
+                    ->orWhere('province', 'LIKE', "%{$search}%")
+                    ->orWhere('district', 'LIKE', "%{$search}%")
+                    ->orWhere('ward', 'LIKE', "%{$search}%")
+                    ->paginate(10);
+    }
+
+    public function getCheckEmail($email){
+        return $this->where('email',$email)->first();
+    }
 }

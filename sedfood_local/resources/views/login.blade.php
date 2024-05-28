@@ -16,22 +16,40 @@
                 @if (session('danger'))
                     <div class="alert alert-danger py-2">{{ session('danger') }}</div>
                 @endif
+
+                @if (session('success'))
+                    <div class="alert alert-success py-2">{{ session('success') }}</div>
+                @endif
             </div>
-            <form action="/login" method="post" class="formMau py-5">
-                @csrf
-                <h2 class="text-center">ĐĂNG NHẬP</h2>
-                <div class="inputGroup my-3">
-                    <input type="text" name="name" class="inputLogin">
-                    <label class="user-label">Username</label>
+            <div class="formUser py-5">
+                <form action="/login" method="post" class="formMau ">
+                    @csrf
+                    <h2 class="text-center">ĐĂNG NHẬP</h2>
+                    <div class="inputGroup my-3">
+                        <input required type="text" name="name" class="inputLogin">
+                        <label class="user-label">Username</label>
+                    </div>
+                    <div class="inputGroup my-3">
+                        <input required type="password" name="password" class="inputLogin">
+                        <label class="user-label">Password</label>
+                    </div>
+                    <button class="btnFormUser" onclick="sweetAlertLogin()">Đăng nhập</button>
+                </form>
+
+                <div class="loginOr">
+                    <p>Hoặc</p>
                 </div>
-                <div class="inputGroup my-3">
-                    <input type="password" name="password" class="inputLogin">
-                    <label class="user-label">Password</label>
+                <div class="loginUser_a">
+                    <a href="{{ route('forgetPassword') }}" class="text-decoration-none text-body-tertiary">Quên mật
+                        khẩu</a>
+                    <a href="{{ route('register') }}" class="mt-2 text-decoration-none text-body-tertiary">Bạn mới
+                        biết đến
+                        SeaFood?
+                        <strong style="color: #31629e"> Đăng
+                            ký</strong></a>
                 </div>
 
-                <button class="btnForm" onclick="sweetAlertLogin()">Đăng nhập</button>
-            </form>
-
+            </div>
         </div>
     </div>
 

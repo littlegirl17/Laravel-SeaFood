@@ -8,8 +8,7 @@
             Người dùng
         </h3>
         <div class="d-flex justify-content-between">
-
-            <form action="/search" method="GET">
+            <form action="{{ route('searchUser') }}" method="GET">
                 <input class="inputSearch_Admin" name="search" placeholder="Nhập từ khóa tìm kiếm" type="search">
                 <button type="submit" class="btn-coupon">Tìm kiếm</button>
             </form>
@@ -46,7 +45,7 @@
                                 </div>
                             @endif
                         </td>
-                        <td class="d-flex justify-content-center align-items-center">
+                        <td class="actionAdmin">
                             <a href="{{ route('userEdit', $item->id) }}" class="text-decoration-none px-2"><img
                                     src="https://img.icons8.com/sf-black-filled/64/1f508d/create-new.png" alt="create-new"
                                     style="width:35px;height:35px; object-fit:cover;" /></a>

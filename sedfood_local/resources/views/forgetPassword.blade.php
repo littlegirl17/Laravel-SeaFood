@@ -13,21 +13,18 @@
                     </div>
                 @endif
 
-                @if (session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
             </div>
-            <form action="/forgetPassword" method="post" class="formMau py-5">
-                {{ csrf_field() }}
-                <div class="inputGroup my-3">
-                    <input type="text" name="email" value="{{ old('email') }}" class="inputLogin">
-                    <label class="user-label">email</label>
-                </div>
-                <button class="btnForm">Đăng nhập</button>
-            </form>
+            <div class="formUser py-5">
+                <form action="{{ route('form-forget-passwword') }}" method="post" class="formMau">
+                    @csrf
+                    <div class="inputGroup my-3">
+                        <input type="text" name="email" value="{{ old('email') }}" class="inputLogin">
+                        <label class="user-label">email</label>
+                    </div>
+                    <button class="btnFormUser">Tiếp theo</button>
+                </form>
+            </div>
+
         </div>
     </div>
 

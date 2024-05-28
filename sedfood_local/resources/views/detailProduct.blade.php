@@ -45,34 +45,49 @@
 
                                 <div class="input-groupDetail pt-5">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default btn-number"><a href=""
-                                                class="text-decoration-none text-black">-</a></button>
+                                        <button type="button" class="btn btn-default btn-number"
+                                            onclick="decrementQuantity()">
+                                            <a class="text-decoration-none text-black">-</a>
+                                        </button>
                                     </span>
-                                    <input type="text" class="input-number border" value="1" min="1"
-                                        max="10">
+                                    <input type="text" class="input-number border" id="quantityInput" value="1"
+                                        min="1" max="10" onchange="validateQuantity()">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default btn-number"><a href=""
-                                                class="text-decoration-none text-black">+</a></button>
+                                        <button type="button" class="btn btn-default btn-number"
+                                            onclick="incrementQuantity()">
+                                            <a class="text-decoration-none text-black">+</a>
+                                        </button>
                                     </span>
                                 </div>
-
-                                <div class="py-5">
-                                    @if ($detail->quantity > 0)
+                                @if ($detail->quantity >= 1)
+                                    <div class="py-5 d-flex ">
                                         <form action="/add-to-cart" method="post">
                                             @csrf
                                             <input type="hidden" name="id" value="{{ $detail->id }}">
                                             <input type="hidden" name="name" value="{{ $detail->name }}">
                                             <input type="hidden" name="image" value="{{ $detail->image }}">
                                             <input type="hidden" name="price" value="{{ $detail->price }}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit" class="buttonDetail"> <span>Thêm vào giỏ
-                                                    hàng</span></button>
+                                            <input type="hidden" id="quantityHidden" name="quantity" value="1">
+                                            <button type="submit" class="buttonDetail">
+                                                <span>Thêm vào giỏ hàng</span>
+                                            </button>
                                         </form>
-                                    @else
-                                        <span class="btnsoldout">Sản Phẩm Hết Hàng</span>
-                                    @endif
 
-                                </div>
+                                        <form action="/buy-now" method="post">
+                                            @csrf
+                                            <input type="hidden" name="id" value="{{ $detail->id }}">
+                                            <input type="hidden" name="name" value="{{ $detail->name }}">
+                                            <input type="hidden" name="image" value="{{ $detail->image }}">
+                                            <input type="hidden" name="price" value="{{ $detail->price }}">
+                                            <input type="hidden" id="quantityHiddenBuyNow" name="quantity" value="1">
+                                            <button type="submit" class="buttonDetail ms-3"> <span>Mua ngay</span></button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <div class="py-5">
+                                        <span class="btnsoldout">Sản Phẩm Hết Hàng</span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -98,13 +113,15 @@
             <div class="container pt-4" style="background-color: #fff;">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
-                            type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Mô tả sản
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                            data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+                            aria-selected="true">Mô tả sản
                             phẩm</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
-                            type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Bình
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#profile-tab-pane" type="button" role="tab"
+                            aria-controls="profile-tab-pane" aria-selected="false">Bình
                             luận</button>
                     </li>
                 </ul>
@@ -114,7 +131,8 @@
                         <div class="row">
                             <h3 class="pt-3">{{ $detail->name }}</h3>
                             <p class="pt-1">
-                                {{ $detail->description }}
+                                {!! $detail->description !!}
+
                             </p>
                         </div>
                     </div>
@@ -157,46 +175,53 @@
                                         ? ceil((($item->price - $item->discount_price) / $item->price) * 100)
                                         : 0;
                                 @endphp
-                                <div class="position-relative  px-3">
-                                    <div class="cardhover">
-                                        <a href="/detail/{{ $item->slug }}" class="text-black text-decoration-none">
-                                            @if (!empty($phamTram))
-                                                <div class="productSale">
-                                                    <p>{{ $phamTram }}%</p>
-                                                </div>
-                                            @endif
-                                            <div class="card rounded-0 border-0 cardhover2">
-                                                <img src="{{ asset('storage/uploads/' . $item->image) }}"
-                                                    class="card-img-top" alt="...">
-                                            </div>
-                                            <h5 class="card-title">{{ $item->name }}</h5>
-                                            <p class="card-text py-1">
-                                                @if (isset($item->discount_price))
-                                                    <span
-                                                        class="text-decoration-line-through priceSale">{{ number_format($item->price, 0, ',', '.') . 'đ' }}</span>
-                                                    <span
-                                                        class="price">{{ number_format($item->discount_price, 0, ',', '.') . 'đ' }}</span>
-                                                @else
-                                                    <span
-                                                        class="price">{{ number_format($item->price, 0, ',', '.') . 'đ' }}</span>
-                                                @endif
-                                            </p>
-                                            <div class="hoverAddcart">
-                                                <form action="/add-to-cart" method="post">
-                                                    @csrf
-                                                    <input type="hidden" name="id" value="{{ $item->id }}">
-                                                    <input type="hidden" name="name" value="{{ $item->name }}">
-                                                    <input type="hidden" name="image" value="{{ $item->image }}">
-                                                    <input type="hidden" name="price" value="{{ $item->price }}">
-                                                    <input type="hidden" name="discount_price"
-                                                        value="{{ $item->discount_price }}">
-                                                    <input type="hidden" name="quantity" value="1">
-                                                    <button class="btnForm" type="submit"> Thêm giỏ hàng</button>
-                                                </form>
-                                            </div>
-                                        </a>
+
+                                <div class="cardhover">
+
+                                    @if (!empty($phamTram))
+                                        <div class="productSale">
+                                            <p>{{ $phamTram }}%</p>
+                                        </div>
+                                    @endif
+                                    <div class="card rounded-0 border-0 cardhover2">
+                                        <img src="{{ asset('storage/uploads/' . $item->image) }}" class=""
+                                            alt="...">
                                     </div>
+                                    <a href="/detail-product/{{ $item->slug }}"
+                                        class="text-black text-decoration-none">
+                                        <h5 class="card-title">{{ $item->name }}</h5>
+                                    </a>
+                                    <p class="card-text py-1">
+                                        @if (isset($item->discount_price))
+                                            <span
+                                                class="text-decoration-line-through priceSale">{{ number_format($item->price, 0, ',', '.') . 'đ' }}</span>
+                                            <span
+                                                class="price">{{ number_format($item->discount_price, 0, ',', '.') . 'đ' }}</span>
+                                        @else
+                                            <span
+                                                class="price">{{ number_format($item->price, 0, ',', '.') . 'đ' }}</span>
+                                        @endif
+                                    </p>
+                                    <div class="hoverAddcart btnFormBox">
+                                        <form action="/add-to-cart" method="post">
+                                            @csrf
+                                            <input type="hidden" name="id" value="{{ $item->id }}">
+                                            <input type="hidden" name="name" value="{{ $item->name }}">
+                                            <input type="hidden" name="image" value="{{ $item->image }}">
+                                            <input type="hidden" name="price" value="{{ $item->price }}">
+                                            <input type="hidden" name="discount_price"
+                                                value="{{ $item->discount_price }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button class="btnForm" type="submit"><i class="fa-solid fa-cart-plus"
+                                                    style="color: #1f508ds;"></i></button>
+                                        </form>
+                                        <button class="btnForm"
+                                            onclick="showPopup('{{ $item->id }}', '{{ $item->name }}', '{{ $item->image }}', '{{ $item->price }}', '{{ $item->discount_price }}')"><i
+                                                class="fa-solid fa-eye" style="color: #1f508ds;"></i></button>
+                                    </div>
+
                                 </div>
+
                             </div>
                         @endforeach
                     </div>
@@ -213,6 +238,51 @@
             document.getElementById('image_box').setAttribute('src',
                 imageItem); //đặt giá trị của thuộc tính src của một thẻ hình ảnh khác có id là image_box
         }
+    </script>
+
+    <script>
+        function incrementQuantity() {
+            var quantityInput = document.getElementById('quantityInput');
+            var quantityHidden = document.getElementById('quantityHidden');
+            var quantityHiddenBuyNow = document.getElementById('quantityHiddenBuyNow');
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+            quantityHidden.value = quantityInput.value; // Cập nhật giá trị của trường ẩn
+            quantityHiddenBuyNow.value = quantityInput.value; // Cập nhật giá trị của trường ẩn
+
+        }
+
+        function decrementQuantity() {
+            var quantityInput = document.getElementById('quantityInput');
+            var quantityHidden = document.getElementById('quantityHidden');
+            var quantityHiddenBuyNow = document.getElementById('quantityHiddenBuyNow');
+
+            // Nếu giá trị hiện tại của trường nhập liệu lớn hơn 1
+            if (parseInt(quantityInput.value) > 1) {
+                // Thì giá trị đó sẽ được giảm đi 1
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+                quantityHidden.value = quantityInput.value; // Cập nhật giá trị của trường ẩn
+                quantityHiddenBuyNow.value = quantityInput.value; // Cập nhật giá trị của trường ẩn
+
+            }
+        }
+
+        function validateQuantity() {
+            var quantityInput = document.getElementById('quantityInput');
+            var quantityHidden = document.getElementById('quantityHidden');
+            var quantityHiddenBuyNow = document.getElementById('quantityHiddenBuyNow');
+
+            if (parseInt(quantityInput.value) < 1) {
+                quantityInput.value = 1;
+            }
+            quantityHidden.value = quantityInput.value; // Cập nhật giá trị của trường ẩn
+            quantityHiddenBuyNow.value = quantityInput.value; // Cập nhật giá trị của trường ẩn
+
+        }
+
+        // Sự kiện thay đổi trên trường input
+        document.getElementById('quantityInput').addEventListener('change', function() {
+            validateQuantity();
+        });
     </script>
 
 @endsection

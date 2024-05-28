@@ -22,8 +22,15 @@ class Comment extends Model
         $product = Product::whereSlug($slugProduct)->firstOrFail();
         return $this->with('user') //gọi hàm user thông qua một instance
                     ->where('product_id', $product->id)
+                    ->where('status',1)
                     ->orderBy('id','desc')
                     ->get();
+    }
+
+    public function searchComment($search){
+        return $this->where('content', 'LIKE', "%{$search}%")
+                    ->orWhere('user_id', 'LIKE', "%{$search}%")
+                    ->paginate(10);
     }
 
     //kết nối đên bảng users thông qua user_id

@@ -30,7 +30,7 @@
                 </li>
                 <li class="nav-item ms-3">
                     <button class="btnCart">
-                        <a class="nav-link active" href="cart.html">
+                        <a class="nav-link active" href="/viewCart">
                             <img width="19" height="19"
                                 src="https://img.icons8.com/windows/32/1A1A1A/shopping-bag.png" alt="shopping-bag" />
                         </a>
@@ -100,7 +100,7 @@
                     </li>
                     <li class="nav-item ps-1">
                         <button class="btnCart">
-                            <a class="nav-link active" href="cart.html">
+                            <a class="nav-link active" href="/viewCart">
                                 <img width="19" height="19"
                                     src="https://img.icons8.com/windows/32/1A1A1A/shopping-bag.png"
                                     alt="shopping-bag" />

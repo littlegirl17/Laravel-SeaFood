@@ -14,22 +14,32 @@ use App\Http\Controllers\CategoryController;
     Route::get('/register', function () {
         return view('register');
     })->name('register');
-
     Route::post('/register',[UserController::class, 'register']);
-
 
     Route::get('/login', function () {
         return view('login');
     })->name('login');
+    Route::post('/login', [UserController::class, 'login']);
+
+    Route::get('/logout', [UserController::class, 'logout']);
 
     Route::get('/forget-password', function () {
         return view('forgetPassword');
     })->name('forgetPassword');
+    Route::post('/forgetPassword', [UserController::class, 'forgetPassword'])->name('form-forget-passwword');
 
-    Route::post('/forgetPassword', [UserController::class, 'forgetPassword']);
-    Route::post('/login', [UserController::class, 'login']);
+    //route view mã xác nhận và handle
+    Route::get('/verify-code', function () {
+        return view('verifyCode');
+    })->name('verify-code');
+    Route::post('/verify-code', [UserController::class, 'verifyCode'])->name('verify-code');
 
-    Route::get('/logout', [UserController::class, 'logout']);
+    // route view nhập lại mật khẩu và handle
+    Route::get('/reset-password', function () {
+        return view('resetPassword');
+    })->name('reset-password');
+    Route::post('/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
+
 
 // ROUTE DETAIL CATEGORY & PRODUCT
     Route::get('/category/{slug}',[CategoryController::class, 'index']);
@@ -43,6 +53,10 @@ use App\Http\Controllers\CategoryController;
     Route::get('/tang-quantity/{id}', [ProductController::class, 'tangQuantity'])->name('tang');
     Route::get('/delete-item-cart/{id}', [ProductController::class, 'deleteItemCart'])->name('deleteItem');
     Route::get('/delete-all-cart', [ProductController::class, 'deleteAllCart'])->name('deleteAll');
+
+    Route::post('/buy-now', [ProductController::class, 'buyNow']);
+    Route::get('/clear-buy-now', [ProductController::class, 'clearBuyNowCart'])->name('clearBuyNow');
+
 
 // ROUTE COMMENT
     Route::post('/add-comment', [ProductController::class, 'comment']);
@@ -59,7 +73,12 @@ use App\Http\Controllers\CategoryController;
 
 //
 Route::get('/search-home', [HomeController::class, 'search'])->name('home.search');
-Route::get('/search', [AdminController::class, 'search'])->name('search');
+Route::get('/search-category', [AdminController::class, 'searchCategory'])->name('searchCategory');
+Route::get('/search-product', [AdminController::class, 'searchProduct'])->name('searchProduct');
+Route::get('/search-coupon', [AdminController::class, 'searchCoupon'])->name('searchCoupon');
+Route::get('/search-order', [AdminController::class, 'searchOrder'])->name('searchOrder');
+Route::get('/search-user', [AdminController::class, 'searchUser'])->name('searchUser');
+Route::get('/search-comment', [AdminController::class, 'searchComment'])->name('searchComment');
 
 
 // ROTE ADMIN

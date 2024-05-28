@@ -145,36 +145,48 @@ body{
 
 /* hover addtocart*/
 .cardhover{
-    margin: 16px0 15px;
-    padding: 10px 10px;
+    /* margin: 16px 15px;
+    padding: 10px 10px; */
 }
 .cardhover2{
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    padding-top: 100%; /* Tỷ lệ 1:1 để tạo khung hình vuông */
+    position: relative;
+    overflow: hidden; /* Đảm bảo hình ảnh không tràn ra ngoài khung */
+    border-radius: 0; /* Đảm bảo không có viền bo tròn nếu không cần thiết */
 }
 
-.cardhover2 img{
-    object-fit: cover;
+.cardhover2 img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 260px;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo hình ảnh bao phủ toàn bộ khung mà không bị méo */
+    object-position: center; /* Đảm bảo hình ảnh được căn giữa */
     transition: transform 500ms; /* Thêm hiệu ứng chuyển động */
+    display: block; /* Đảm bảo không có khoảng trắng dưới hình ảnh */
 }
+
+
 
 .cardhover2:hover img{
     transform: scale(1.1); /* Phóng to hình ảnh khi hover */
 }
 
 .hoverAddcart{
-    position: absolute;
+    /* position: absolute;
     top: 65%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
 }
 
 .hoverAddcart button{
-    opacity: 0;
+     opacity: 0;
     visibility: visible;
 }
 
@@ -188,7 +200,50 @@ body{
 }
 
 /**/
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  .modalBox{
+    margin: 0 auto;
+    width: 1000px;
+    height: 500px;
+  }
 
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    display: flex;
+    justify-content: end;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+/**/
 /* submit addtocart*/
 .submitaddtocart {
     width: 8em;
@@ -282,13 +337,48 @@ body{
     width: 500px;
 }
 .formMau {
-    margin: 0 auto;
-    width: 500px;
-    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
-    padding: 10px 10px;
     display: flex;
     flex-direction: column;
     align-items: center; /* Canh giữa theo chiều dọc */
+}
+.formUser{
+    margin: 0 auto;
+    width: 500px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+}
+.formUser .loginUser_a{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.loginOr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 90%;
+    margin: 20px 20px;
+}
+
+.loginOr p {
+    margin: 0 10px;
+    position: relative;
+    z-index: 1;
+    background-color: #fff; /* Màu nền để che đường viền */
+    color: #c4c3c3;
+    padding: 0 10px; /* Khoảng cách giữa text và đường viền */
+}
+
+.loginOr::before,
+.loginOr::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #d4d4d4;
+    margin: 0 10px;
+    z-index: 0;
 }
 
 .inputGroup {
@@ -327,14 +417,24 @@ padding: 0 .2em;
 color: #31629e;
 }
 
+.btnFormBox{
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    column-gap: 6px;
+}
 
 .btnForm {
     background-color: #ffffff;
     --color: #31629e;
     font-family: inherit;
     display: inline-block;
-    width: 8em;
-    height: 2.6em;
+    width: 2.5em;
+    height: 2.5em;
     line-height: 2.5em;
     position: relative;
     overflow: hidden;
@@ -342,7 +442,7 @@ color: #31629e;
     transition: color .5s;
     z-index: 1;
     font-size: 17px;
-    border-radius: 6px;
+    border-radius: 50%;
     font-weight: 500;
     color: var(--color);
 }
@@ -696,7 +796,7 @@ transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
     outline: none;
     cursor: pointer;
     border: none;
-    padding: 0.9rem 2rem;
+    padding: 1rem 2rem;
     margin: 0;
     font-family: inherit;
     font-size: inherit;
@@ -707,7 +807,7 @@ transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
     font-size: 17px;
     border-radius: 0px;
     overflow: hidden;
-    background: #31629e;
+    background: #e00707;
     color: ghostwhite;
     }
 
@@ -733,7 +833,7 @@ transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
 
     .buttonDetail::before {
     content: "";
-    background: #e00707;
+    background: #31629e;
     width: 120%;
     left: -10%;
     transform: skew(30deg);
@@ -769,7 +869,65 @@ transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
     color: #ffffff;
     padding: 10px 20px;
 }
+/* BUTTON*/
+.btnFormUser{
+    background-color: #31629e;
+    border: none;
+    outline: none;
+    color: #FFFFFF;
+    padding: 10px 40px;
+}
 
+.btnFormUser:hover{
+    background-color: #1f508d;
+    color: #FFFFFF;
+}
+.popupbtn{
+    display: flex;
+}
+.btnCartHome_box{
+    margin-top: 15px;
+    margin-left: -17px;
+    margin-right: 25px;
+}
+.btnCartHome {
+    width: 100%;
+
+    display: inline-block;
+    padding: 0.9rem 1.8rem;
+    font-size: 16px;
+    font-weight: 700;
+    color: #E00707;
+    border: 3px solid #E00707;
+    cursor: pointer;
+    position: relative;
+    background-color: transparent;
+    text-decoration: none;
+    overflow: hidden;
+    z-index: 1;
+    font-family: inherit;
+}
+
+.btnCartHome::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #E00707;
+    transform: translateX(-100%);
+    transition: all .3s;
+    z-index: -1;
+}
+
+.btnCartHome:hover::before {
+    transform: translateX(0);
+}
+
+.btnCartHome:hover {
+    color: #FFFFFF;
+}
 
 /**/
 @media (max-width: 992px) {

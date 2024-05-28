@@ -29,6 +29,13 @@ class OrderProduct extends Model
         return $this->where('order_id', $orderId)->with('product')->get();
     }
 
+    public function orderProductEdit($id){
+        return $this->where('order_id',$id)->with('product')->get();
+    }
+
+    public function getorderProductEdit($order_id,$product_id){
+        return $this->where('order_id',$order_id)->where('product_id',$product_id)->first();
+    }
     //thiết lập mối quan hệ đến với order và product
         public function order(){
             return $this->belongsTo(Order::class,'order_id'); //orderProduct thuộc về 1 order
