@@ -50,8 +50,8 @@
                 </div>
                 <div class="d-flex justify-content-end align-items-end">
                     <button type="submit" class="btn borrder-0 rounded-0 text-light my-3 " style="background: #4099FF"><i
-                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc danh
-                        mục</button>
+                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc sản phẩm
+                    </button>
                 </div>
             </form>
         </div>
@@ -74,7 +74,7 @@
             <div class="border p-2">
                 <h4 class="my-2"><i class="pe-2 fa-solid fa-list"></i>Danh Sách Sản Phẩm</h4>
                 <table class="table table-bordered pt-3">
-                    <thead class="">
+                    <thead class="table-header">
                         <tr>
                             <th class=" py-2"></th>
                             <th class=" py-2">Hình ảnh</th>
@@ -145,7 +145,7 @@
             $('.form-check-input').on('click', function() {
                 // (this) tham chiếu đến phần tử html đó
                 var product_id = $(this).data(
-                    'id'); //lấy ra id danh mục thông qua data-id="{{ $item->id }}"
+                    'id'); //lấy ra id danh mục thông qua data-id="item->id"
                 var status = $(this).is(':checked') ? 1 : 0; //is() trả về true nếu phần tử khớp với bộ chọn
                 var label = $(this).siblings('label'); // Lấy label liền kề
                 updateProductStatus(product_id, status, label);

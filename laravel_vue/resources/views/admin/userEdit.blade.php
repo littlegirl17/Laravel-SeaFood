@@ -5,7 +5,7 @@
     <div class="container-fluid">
 
         <h3 class="title-page ">
-            Chỉnh sửa người dùng
+            Chỉnh sửa khách hàng
         </h3>
         {{--  --}}
         <form action="{{ route('userUpdate', $user->id) }}" method="post" class="formAdmin" enctype="multipart/form-data">
@@ -93,7 +93,6 @@
                             <div class="form-group mt-3">
                                 <label for="description" class="form-label">Nhóm khách hàng</label>
                                 <select class="form-select " name="user_group_id">
-                                    <option value="0">Mặc định</option>
                                     @foreach ($userGroups as $item)
                                         <option value="{{ $item->id }}"
                                             {{ $item->id == $user->user_group_id ? 'selected' : '' }}>
@@ -102,13 +101,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group mt-3">
-                                <label for="description" class="form-label">Quyền quản trị</label>
-                                <select class="form-select " name="role">
-                                    <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Thành viên</option>
-                                    <option value="1" {{ $user->role == 1 ? 'selected' : '' }}>Quản trị viên</option>
-                                </select>
-                            </div>
+
                             <div class="form-group mt-3">
                                 <label for="title" class="form-label">Trạng thái</label>
                                 <select class="form-select " name="status">

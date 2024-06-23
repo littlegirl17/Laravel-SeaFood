@@ -36,7 +36,7 @@ class Banner extends Model
 
     public function bannerAll()
     {
-        return $this->orderBy('id', 'desc')->with('banneImages')->get();
+        return $this->orderBy('id', 'desc')->with('banneImages')->where('status', 1)->get();
     }
 
     public function banneImages()

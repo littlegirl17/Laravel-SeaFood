@@ -3,24 +3,61 @@
 @Section('content')
     <div class="container-fluid">
 
-        <h3 class="title-page ">
-            Đơn hàng
-        </h3>
-        <form action="{{ route('searchOrder') }}" method="GET">
-            <input class="inputSearch_Admin" name="search" placeholder="Nhập từ khóa tìm kiếm" type="search">
-            <button type="submit" class="btn-coupon">Tìm kiếm</button>
-        </form>
 
-        {{-- <button class="btnFormAdd mb-3">
-            <a href="{{ route('orderAdd') }}" class="text-decoration-none ">Thêm</a>
-        </button> --}}
+        <div class="searchAdmin">
+            <form id="filterFormOrder" action="{{ route('searchOrder') }}" method="GET">
+                <div class="row d-flex flex-row justify-content-between align-items-center">
+                    <div class="col-sm-3">
+                        <div class="form-group mt-3">
+                            <label for="title" class="form-label">Lọc theo id đơn hàng</label>
+                            <input class="form-control rounded-0" name="filter_iddh" placeholder="Nhập id đơn hàng"
+                                type="number" value="{{ $filter_iddh ?? '' }}">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group mt-3">
+                            <label for="title" class="form-label">Lọc theo tên khách hàng</label>
+                            <input class="form-control rounded-0" name="filter_userName" placeholder="Nhập tên khách hàng"
+                                type="text" value="{{ $filter_userName ?? '' }}">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group mt-3">
+                            <label for="title" class="form-label">Tình trạng đơn hàng</label>
+                            <select class="form-select  rounded-0" aria-label="Default select example" name="filter_status">
+                                <option value="">Tất cả</option>
+                                @foreach ($orrderStatus as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}
+                                @endforeach
+
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group mt-3">
+                            <label for="title" class="form-label">Lọc tổng tiền</label>
+                            <input class="form-control rounded-0" name="filter_total" placeholder="Nhập tổng tiền"
+                                type="number">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="d-flex justify-content-end align-items-end">
+                    <button type="submit" class="btn borrder-0 rounded-0 text-light my-3 " style="background: #4099FF"><i
+                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc sản phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+
         @if (!$isSearching)
             <div class="row">
                 <div class="col-sm-12 btnOrderAdmin">
                     <a href="{{ route('admin.order', ['status_id' => 'all']) }}" class="btn btn-success rounded-0 border-0"
                         style="background-color: #F38773">Tất cả</a>
                     <a href="{{ route('admin.order', ['status_id' => 1]) }}" class="btn btn-success rounded-0  border-0"
-                        style="background-color: #1A16B5">Mới ({{ $countNew }})</a>
+                        style="background-color: #00bcd4">Mới ({{ $countNew }})</a>
                     <a href="{{ route('admin.order', ['status_id' => 2]) }}" class="btn btn-success rounded-0  border-0"
                         style="background-color: #E8BE21">Đang xử lý ({{ $countProcessing }})</a>
                     <a href="{{ route('admin.order', ['status_id' => 3]) }}" class="btn btn-success rounded-0  border-0"
@@ -36,7 +73,7 @@
 
         <div class="table-responsive">
             <table class="table table-bordered pt-3 mt-3">
-                <thead>
+                <thead class="table-header">
                     <tr class="">
                         <th class="py-2">IDDH</th>
                         <th class="py-2">Khách hàng</th>
@@ -48,7 +85,7 @@
                 <tbody>
                     @foreach ($orders as $item)
                         <tr class="orderAdminTr" style="background: #fff">
-                            <td class="">{{ $loop->iteration }}</td>
+                            <td class="">{{ $item->id }}</td>
                             <td class=" d-flex flex-column p-0 m-0">
                                 <div class="text-start m-0">
                                     <p class="m-0 p-0">Điện thoại: <span>{{ $item->phone }}</span></p>
@@ -109,4 +146,26 @@
 
         </div>
     </div>
+@endsection
+
+@section('scriptOrder')
+    <script>
+        $(document).ready(function() {
+            $('#filterFormOrder').on('submit', function() {
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '{{ route('searchOrder') }}',
+                    type: 'GET',
+                    data: formData,
+                    success: function(response) {
+                        $('.table-body').html(response.html);
+                    },
+                    error: function(error) {
+                        console.error('Lỗi khi lọc' + error);
+                    }
+                })
+            })
+        })
+    </script>
 @endsection

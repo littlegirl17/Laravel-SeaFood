@@ -2,7 +2,15 @@
     <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top">
 
         <div class="col mb-3 px-3">
-            <img src="{{ asset('uploads/LoGo.png') }}" class="imgfluidFooter">
+            @foreach ($banners as $item)
+                @if ($item->position == 5)
+                    @if ($item->banneImages->isNotEmpty())
+                        @foreach ($item->banneImages as $images)
+                            <img src="{{ asset('uploads/' . $images->image) }}" class="imgfluidFooter">
+                        @endforeach
+                    @endif
+                @endif
+            @endforeach
         </div>
 
         <div class="col mb-3 px-5">

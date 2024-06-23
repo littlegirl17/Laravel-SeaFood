@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('district')->nullable();
             $table->string('ward')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->tinyInteger('role')->default(0);
             $table->longText('image')->nullable();
             $table->foreignId('user_group_id')->constrained();
             $table->rememberToken();

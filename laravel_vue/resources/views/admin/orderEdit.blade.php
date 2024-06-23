@@ -181,22 +181,24 @@
     </div>
 
 
-    {{-- <script>
+    <script>
         // Kích hoạt khi trang web đã được tải hoàn toàn
         document.addEventListener('DOMContentLoaded', function() {
             function formatCurrency(amount) {
-                let formatter = new Intl.NumberFormat('vi-VN', {
+                // Định dạng lại thành chuẩn tiền tệ VN
+                return new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0
-                });
-                return formatter.format(amount) + '₫';
+                }).format(amount);
             }
+
             // Lấy ra phần tử có class quantity
             const quantityInputs = document.querySelectorAll('.quantity');
 
             // Duyệt qua từng phần tử trong danh sách các phần tử quantity: một sự kiện input được gắn vào, nghĩa là khi người dùng nhập vào ô này, một hành động sẽ được thực hiện
             quantityInputs.forEach(function(quantityInput) {
-
                 // Event Listener cho sự kiện input:
                 quantityInput.addEventListener('input', function() {
                     // Khi giá trị trong ô nhập thay đổi, sự kiện này được kích hoạt.
@@ -204,26 +206,19 @@
                     // Đầu tiên, nó tìm phần tử cha gần nhất có lớp là trProduct. Điều này giúp xác định sản phẩm tương ứng với ô nhập số lượng. | closest tìm phần tử cha gần nhất
                     const trProduct = this.closest('.trProduct');
 
-                    // Đầu tiên, nó tìm phần tử cha gần nhất có lớp là trOrder. Điều này giúp xác định sản phẩm tương ứng với ô nhập số lượng. | closest tìm phần tử cha gần nhất
-                    const trOrder = this.closest('.trOrder');
-
                     // Lấy phần tử hiển thị giá tiền của sản phẩm bằng cách sử dụng querySelector() với lớp .unit-price
                     const unitPriceElement = trProduct.querySelector('.unit-price');
 
                     // Dòng thứ hai lấy giá trị của phần tử đó, sau đó chuyển đổi nó từ chuỗi sang số dạng float.
-                    const unitPrice = parseFloat(unitPriceElement.innerText.replace(/[^\d.,]+/g, "")
-                        .replace(/\./g, '').replace(',', '.'));
-                    // Một số xử lý chuỗi được thực hiện trước đó để loại bỏ ký tự không phải số và định dạng số theo chuẩn quốc tế.
+                    const unitPrice = parseFloat(unitPriceElement.innerText.replace(/[^\d]+/g, ''));
+                    // Một số xử lý chuỗi được thực hiện trước đó để loại bỏ ký tự không phải số.
 
                     // Lấy số lượng mới của sản phẩm
                     const newQuantity = parseInt(this.value);
                     // Lấy giá trị mới của ô nhập số lượng (this là ô nhập đang được thao tác) và chuyển đổi nó thành số nguyên bằng cách sử dụng parseInt().
 
                     // Tính toán tổng giá trị mới của sản phẩm:
-                    const thanhTienElement = trProduct.querySelector(
-                        '.thanh-tien'
-                    ); // Dòng này tính toán tổng giá trị mới của sản phẩm bằng cách nhân giá tiền của sản phẩm với số lượng mới.
-
+                    const thanhTienElement = trProduct.querySelector('.thanh-tien');
                     const totalOrderProductElement = trProduct.querySelector('.total-orderProduct');
 
                     // Tính toán tổng giá trị mới của sản phẩm
@@ -241,7 +236,7 @@
                     const newTotalOrderProductInput = trProduct.querySelector(
                         'input[name*="[newTotalOrderProduct]"]');
                     newTotalOrderProductInput.value = newThanhTien.toFixed(
-                        2
+                        0
                     ); // toFixed(2) đảm bảo rằng giá trị được hiển thị với chính xác hai chữ số sau dấu thập phân.
 
                     // Code tính toán tổng tiền của đơn hàng và cập nhật giá trị vào ô nhập tổng tiền
@@ -249,7 +244,7 @@
                     document.querySelectorAll('.total-orderProduct').forEach(function(
                         totalOrderProductElement) {
                         totalOrder += parseFloat(totalOrderProductElement.textContent
-                            .replace(/[^0-9.-]+/g, ""));
+                            .replace(/[^\d]+/g, ''));
                     });
 
                     const totalOrderElement = document.querySelector(
@@ -270,7 +265,7 @@
                         productId: productId,
                         newQuantity: newQuantity,
                         newTotalOrderProduct: parseFloat(newThanhTien.toFixed(
-                            2)), // Ensure it is a float with 2 decimal places
+                            0)), // Ensure it is a float with 2 decimal places
                     };
 
                     console.log('Dữ liệu yêu cầu:',
@@ -291,7 +286,6 @@
                 });
             });
         });
-    </script> --}}
-
+    </script>
 
 @endsection

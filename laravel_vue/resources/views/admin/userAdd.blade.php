@@ -5,7 +5,7 @@
     <div class="container-fluid">
 
         <h3 class="title-page ">
-            Thêm người dùng
+            Thêm khách hàng mới
         </h3>
         <div class="row " style="margin-left: 1100px;">
 
@@ -65,14 +65,6 @@
                     @foreach ($userGroups as $item)
                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                     @endforeach
-                </select>
-            </div>
-            <div class="form-group mt-3">
-                <label for="description" class="form-label">Quyền truy cập</label>
-                <select class="form-select " name="role">
-                    <option selected>Quyền truy cập</option>
-                    <option value="0">Thành viên(user)</option>
-                    <option value="1">Quản trị viên(admin)</option>
                 </select>
             </div>
             <div class="form-group mt-3">

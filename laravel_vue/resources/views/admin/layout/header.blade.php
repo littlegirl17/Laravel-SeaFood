@@ -70,26 +70,63 @@
                             <span class="hide-menu">Đơn hàng</span>
                         </a>
                     </li>
+
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
+                        <a class="sidebar-link" aria-expanded="false">
                             <span style="width:20px">
-                                <i class="ti fa-solid fa-user ico-side" style="color: #fa0000;"></i>
+                                <i class="ti fa-solid fa-user ico-side" style="color: #ffffff;"></i>
                             </span>
                             <span class="hide-menu">Khách hàng</span>
                         </a>
+                        <ul class="submenu">
+                            <li class="">
+                                <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
+                                    <span style="width:20px">
+                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                    </span>
+                                    <span class="hide-menu">Khách hàng</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a class="sidebar-link" href="{{ route('admin.userGroup') }}" aria-expanded="false">
+                                    <span style="width:20px">
+                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                    </span>
+                                    <span class="hide-menu">Nhóm khách hàng</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('admin.userGroup') }}" aria-expanded="false">
+                        <a class="sidebar-link" aria-expanded="false">
                             <span style="width:20px">
-                                <i class="ti"><img width="25" height="25"
-                                        src="https://img.icons8.com/material/64/40C057/group-foreground-selected.png"
-                                        alt="group-foreground-selected" /></i>
+                                <i class="fa-solid fa-users" style="color: #ffffff;"></i>
                             </span>
-                            <span class="hide-menu">Nhóm khách hàng</span>
+                            <span class="hide-menu">Người dùng</span>
                         </a>
+                        <ul class="submenu">
+                            <li class="">
+                                <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
+                                    <span style="width:20px">
+                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                    </span>
+                                    <span class="hide-menu">Người dùng</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a class="sidebar-link" href="{{ route('admin.userGroup') }}" aria-expanded="false">
+                                    <span style="width:20px">
+                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                    </span>
+                                    <span class="hide-menu">Nhóm Người dùng</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('comment') }}" aria-expanded="false">
+                        <a class="sidebar-link" href="{{ route('admin.comment') }}" aria-expanded="false">
                             <span style="width:20px">
                                 <i class="ti fa-regular fa-message ico-side" style="color: #74C0FC;"></i> </span>
                             <span class="hide-menu">Bình luận</span>
@@ -132,7 +169,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ asset('uploads/' . Session::get('user')->image) }}" alt=""
+                                <img src="{{ asset('uploads/' . Session::get('admin')->image) }}" alt=""
                                     width="35" height="35" class="rounded-circle">
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"

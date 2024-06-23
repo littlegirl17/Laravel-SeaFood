@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -20,7 +21,6 @@ class User extends Authenticatable
         'district',
         'ward',
         'status',
-        'role',
         'image',
         'verification_code',
         'user_group_id'
@@ -51,28 +51,45 @@ class User extends Authenticatable
     }
 
     //admin
-    public function userAll(){
+    public function userAll()
+    {
         return $this->orderBy('id', 'desc')->paginate(6);
     }
 
 
-    public function searchUser($search){
-        return $this->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('email', 'LIKE', "%{$search}%")
-                    ->orWhere('phone', 'LIKE', "%{$search}%")
-                    ->orWhere('province', 'LIKE', "%{$search}%")
-                    ->orWhere('district', 'LIKE', "%{$search}%")
-                    ->orWhere('ward', 'LIKE', "%{$search}%")
-                    ->paginate(10);
+    public function searchUser($filter_email, $filter_status)
+    {
+        $query = $this->query();
+
+        if (!is_null($filter_email)) {
+            $query->where('email', 'LIKE', "%{$filter_email}%");
+        }
+
+        if (!is_null($filter_status)) {
+            $query->where('status', '=', (int)$filter_status);
+        }
+
+        return $query->paginate(10);
     }
 
-    public function getCheckEmail($email){
-        return $this->where('email',$email)->first();
+    public function getCheckEmail($email)
+    {
+        return $this->where('email', $email)->first();
     }
 
 
+    public function checkLogin($name, $password)
+    {
+        $adminUser = $this->where('name', $name)->Where('password', $password)->first();
 
-    public function userGroup(){
+        if ($adminUser && Hash::check($password, $adminUser->password)) {
+            return $adminUser;
+        }
+        return $adminUser;
+    }
+
+    public function userGroup()
+    {
         return $this->belongsTo(UserGroup::class, 'user_group_id');
     }
 }

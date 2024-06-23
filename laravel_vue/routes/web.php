@@ -88,7 +88,7 @@ Route::get('admin/manage', function () {
     return view('admin.login');
 });
 
-Route::post('manage', [AdminController::class, 'manage']);
+Route::post('manage', [AdminController::class, 'manage'])->name('admin.loginManage');
 
 Route::prefix('admin')->middleware('admin')->group(function () {
 
@@ -132,6 +132,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('edit-coupon/{id}', [AdminController::class, 'couponEdit'])->name('admin.couponEdit');
     Route::put('edit-coupon/{id}', [AdminController::class, 'couponUpdate'])->name('admin.couponUpdate');
     Route::post('delete-checkbox-coupon', [AdminController::class, 'couponDeleteCheckkbox'])->name('admin.checkboxDeleteCoupon');
+    Route::put('update-status-coupon/{id}', [AdminController::class, 'couponUpdateStatus'])->name('couponUpdateStatus');
 
     Route::get('banner', [AdminController::class, 'banner'])->name('admin.banner');
     Route::get('addbanner', [AdminController::class, 'bannerAdd'])->name('admin.bannerAdd');
@@ -139,15 +140,26 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('edit-banner/{id}', [AdminController::class, 'bannerEdit'])->name('admin.bannerEdit');
     Route::put('edit-banner/{id}', [AdminController::class, 'bannerUpdate'])->name('admin.bannerUpdate');
     Route::post('delete-checkbox-banner', [AdminController::class, 'bannerDeleteCheckkbox'])->name('admin.checkboxDeleteBanner');
+    Route::put('update-status-banner/{id}', [AdminController::class, 'bannerUpdateStatus'])->name('bannerUpdateStatus');
 
     Route::get('user', [AdminController::class, 'user'])->name('user');
     Route::get('adduser', [AdminController::class, 'userAdd'])->name('userAdd');
     Route::post('add-user', [AdminController::class, 'userAdd']);
     Route::get('edit-user/{id}', [AdminController::class, 'userEdit'])->name('userEdit');
     Route::put('edit-user/{id}', [AdminController::class, 'userUpdate'])->name('userUpdate');
-    Route::get('delete-user/{id}', [AdminController::class, 'userDelete'])->name('userDelete');
+    Route::post('delete-checkbox-user', [AdminController::class, 'userDeleteCheckkbox'])->name('admin.checkboxDeleteUser');
+    Route::put('update-status-user/{id}', [AdminController::class, 'userUpdateStatus'])->name('userUpdateStatus');
 
-    Route::get('comment', [AdminController::class, 'comment'])->name('comment');
+    Route::get('administration', [AdminController::class, 'administration'])->name('administration');
+    Route::get('addadministration', [AdminController::class, 'administrationAdd'])->name('administrationAdd');
+    Route::post('add-administration', [AdminController::class, 'administrationAdd']);
+    Route::get('edit-administration/{id}', [AdminController::class, 'administrationEdit'])->name('administrationEdit');
+    Route::put('edit-administration/{id}', [AdminController::class, 'administrationUpdate'])->name('administrationUpdate');
+
+    Route::get('comment', [AdminController::class, 'comment'])->name('admin.comment');
+    Route::put('update-status-comment/{id}', [AdminController::class, 'commentUpdateStatus'])->name('commentUpdateStatus');
+    Route::post('delete-checkbox-comment', [AdminController::class, 'commentDeleteCheckkbox'])->name('comment.checkboxDelete');
+    Route::get('delete-comment/{id}', [AdminController::class, 'commentDelete'])->name('admin.commentDelete');
 
     Route::get('logout', [AdminController::class, 'logout'])->name('logout');
 });

@@ -18,23 +18,25 @@ class UserController extends Controller
     private $userModel;
 
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->userModel = new User;
-
     }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
 
         $incommingFields = $request->validate([
-            'name'=>['required','min:3','max:10', Rule::unique('users','name')], //Rule::unique('users', 'name'): Đảm bảo rằng giá trị của 'name' là duy nhất trong bảng 'users'. Điều này ngăn chặn việc người dùng đăng ký với tên đã tồn tại trong hệ thống.
-            'email'=>['required','email', Rule::unique('users','email')], //Rule::unique('users', 'email'): Đảm bảo rằng giá trị của 'email' là duy nhất trong bảng 'users'. Điều này ngăn chặn việc người dùng đăng ký với tên đã tồn tại trong hệ thống.
-            'password'=>['required','min:8', 'max:200'],
-            'phone'=>['required','numeric', 'digits:10', Rule::unique('users','phone')],
+            'name' => ['required', 'min:3', 'max:10', Rule::unique('users', 'name')], //Rule::unique('users', 'name'): Đảm bảo rằng giá trị của 'name' là duy nhất trong bảng 'users'. Điều này ngăn chặn việc người dùng đăng ký với tên đã tồn tại trong hệ thống.
+            'email' => ['required', 'email', Rule::unique('users', 'email')], //Rule::unique('users', 'email'): Đảm bảo rằng giá trị của 'email' là duy nhất trong bảng 'users'. Điều này ngăn chặn việc người dùng đăng ký với tên đã tồn tại trong hệ thống.
+            'password' => ['required', 'min:8', 'max:200'],
+            'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')],
 
         ]);
 
         //băm password
         $incommingFields['password'] = bcrypt($incommingFields['password']);
+        $incommingFields['image'] = 'avatar_3.png';
 
         //tạo một bản ghi mới trong bảng users
         $user = User::create($incommingFields);
@@ -42,34 +44,34 @@ class UserController extends Controller
         return redirect('/');
     }
 
-    public function login(LoginRequest $request){
+    public function login(LoginRequest $request)
+    {
 
-        $incommingFields = $request->validated();
+        $incommingFields = $request->validate([
+            'name' => 'required',
+            'password' => 'required',
+        ]);
 
-        if(auth()->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])){
+        if (auth()->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])) {
             $request->session()->regenerate(); //Laravel sẽ tạo ra một phiên làm việc mới, và tất cả các dữ liệu trong phiên làm việc cũ sẽ không còn có hiệu lực nữa.
 
             $user = auth()->user();
 
-            if($user->status == 0){
+            if ($user->status >= 1) {
+                //Lưu thông tin user vào session
+                Session::put('user', auth()->user());
+                return redirect('/')->with('success', 'Đăng nhập thành công');
+            } else {
                 auth()->logout();
                 return redirect('/login')->with('danger', 'Tài khoản của bạn đã bị khóa');
-            }else{
-                if($user->role == 0){
-                    //Lưu thông tin user vào session
-                    Session::put('user', auth()->user());
-                    return redirect('/')->with('success', 'Đăng nhập thành công');
-                }else{
-                    Session::put('user', auth()->user());
-                    return redirect('admin/dashboard');
-                }
             }
-        }else{
-            return redirect('/login')->withErrors(['danger'=> 'Username hoặc password đã sai! Vui lòng nhập lại']);
+        } else {
+            return redirect('/login')->withErrors(['danger' => 'Username hoặc password đã sai! Vui lòng nhập lại']);
         }
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -78,7 +80,8 @@ class UserController extends Controller
         return redirect('/login');
     }
 
-    public function forgetPassword(Request $request){
+    public function forgetPassword(Request $request)
+    {
         $request->validate(['email' => 'required | email | exists:users,email']);
 
         $code = rand(100000, 999999); //tạo một số ngẫu nhiên trong khoảng từ 100000 đến 999999.
@@ -87,10 +90,10 @@ class UserController extends Controller
 
         $user->verification_code = $code;
 
-        $user->save();//Lưu mã xác thực vào cơ sở dữ liệu
+        $user->save(); //Lưu mã xác thực vào cơ sở dữ liệu
 
         //Gửi email chứa mã xác thực
-        Mail::send('mail.verificationCode',['code' => $code], function ($message) use ($user) {
+        Mail::send('mail.verificationCode', ['code' => $code], function ($message) use ($user) {
             //gửi tới email đấy
             $message->to($user->email); //Địa chỉ email của người nhận
             $message->subject('Mã xác nhận đặt lại mật khẩu');
@@ -100,7 +103,8 @@ class UserController extends Controller
     }
 
     //Xác minh mã code T hay F
-    public function verifyCode(Request $request) {
+    public function verifyCode(Request $request)
+    {
         $request->validate([
             'verification_code' => 'required',
             'email' => 'required | email | exists:users,email'
@@ -108,14 +112,15 @@ class UserController extends Controller
 
         $user = $this->userModel->getCheckEmail($request->email);
 
-        if($user->verification_code == $request->verification_code){
-            return redirect()->route('reset-password')->with('email',$request->email);
-        }else{
+        if ($user->verification_code == $request->verification_code) {
+            return redirect()->route('reset-password')->with('email', $request->email);
+        } else {
             return redirect()->route('verify-code')->with('error', 'Mã xác nhận không hợp lệ');
         }
     }
 
-    public function resetPassword(Request $request) {
+    public function resetPassword(Request $request)
+    {
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'password' => 'required|confirmed|min:6'
@@ -131,5 +136,4 @@ class UserController extends Controller
 
         return redirect()->route('login')->with('success', 'Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập.');
     }
-
 }

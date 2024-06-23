@@ -16,11 +16,10 @@ class Admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->role >= 1) {
-            return $next($request);// Nếu đúng, tiếp tục chuyển yêu cầu tới tuyến đường tiếp theo
+        if (auth()->guard('admin')->check() && auth()->guard('admin')->user()->status >= 1) {
+            return $next($request); //Nếu đúng, tiếp tục chuyển yêu cầu tới tuyến đường tiếp theo
         }
 
         return redirect('admin/manage');
-
     }
 }

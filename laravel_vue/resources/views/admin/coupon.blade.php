@@ -43,8 +43,7 @@
                 </div>
                 <div class="d-flex justify-content-end align-items-end">
                     <button type="submit" class="btn borrder-0 rounded-0 text-light my-3 " style="background: #4099FF"><i
-                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc danh
-                        mục</button>
+                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc mã giảm giá</button>
                 </div>
             </form>
         </div>
@@ -70,6 +69,7 @@
                             <th class="header__item py-2">Tên phiếu giảm giá</th>
                             <th class="header__item py-2">Mã</th>
                             <th class="header__item py-2">Giảm giá</th>
+                            <th class="header__item py-2">Trạng thái</th>
                             <th class="header__item py-2">Hành động</th>
                         </tr>
 
@@ -86,7 +86,15 @@
                                 </td>
                                 <td class="">{{ $item->code }}</td>
                                 <td class="">{{ $item->discount }}</td>
-
+                                <td class="">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            data-id="{{ $item->id }}" id="flexSwitchCheckChecked"
+                                            {{ $item->status == 1 ? 'checked' : '' }}>
+                                        <label class="form-check-label"
+                                            for="flexSwitchCheckChecked">{{ $item->status == 1 ? 'Bật' : 'Tắt' }}</label>
+                                    </div>
+                                </td>
                                 <td class="m-0 p-0">
                                     <div class="actionAdminProduct m-0 py-3">
                                         <button class="btnActionProductAdmin2"><a
@@ -112,6 +120,42 @@
 
 @endsection
 @section('scriptCoupon')
+    <script>
+        $(document).ready(function() {
+            $('.form-check-input').on('click', function() {
+                // (this) tham chiếu đến phần tử html đó
+                var coupon_id = $(this).data(
+                    'id'); //lấy ra id danh mục thông qua data-id="item->id"
+                var status = $(this).is(':checked') ? 1 : 0; //is() trả về true nếu phần tử khớp với bộ chọn
+                var label = $(this).siblings('label'); // Lấy label liền kề
+                updateCouponStatus(coupon_id, status, label);
+            });
+
+        })
+
+        function updateCouponStatus(coupon_id, status, label) {
+            $.ajax({
+                url: '{{ route('couponUpdateStatus', ':id') }}'.replace(':id', coupon_id),
+                type: 'PUT',
+                data: {
+                    '_token': '{{ csrf_token() }}', //Việc gửi mã token này cùng với mỗi request giúp xác thực rằng request đó được gửi từ ứng dụng của bạn, chứ không phải từ một nguồn khác.
+                    'status': status
+                },
+                success: function(response) {
+                    console.log('Cập nhật trạng thái thành công');
+
+                    if (status == 1) {
+                        label.text('Bật');
+                    } else {
+                        label.text('Tắt');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Lỗi khi cập nhật trạng thái sản phẩm: ' + error);
+                }
+            })
+        }
+    </script>
     <script>
         $(document).ready(function() {
             $('#filterFormCoupon').on('submit', function() {

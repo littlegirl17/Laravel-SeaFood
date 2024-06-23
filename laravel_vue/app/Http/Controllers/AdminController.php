@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Banner;
-use App\Models\BannerImage;
-use App\Models\Category;
-use App\Models\Comment;
-use App\Models\Coupon;
-use App\Models\Order;
-use App\Models\OrderProduct;
-use App\Models\OrderStatus;
-use App\Models\Product;
-use App\Models\ProductDiscount;
-use App\Models\ProductImage;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Banner;
+use App\Models\Coupon;
+use App\Models\Comment;
+use App\Models\Product;
+use App\Models\Category;
 use App\Models\UserGroup;
+use App\Models\BannerImage;
+use App\Models\OrderStatus;
+use App\Models\OrderProduct;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use App\Models\Administration;
+use App\Models\ProductDiscount;
+use Illuminate\Support\Facades\DB;
+use App\Models\AdministrationGroup;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,6 +39,8 @@ class AdminController extends Controller
     private $bannerImageModel;
     private $userGroupModel;
     private $productDiscountModel;
+    private $administrationModel;
+    private $administrationGroupModel;
 
     public function __construct()
     {
@@ -51,6 +57,8 @@ class AdminController extends Controller
         $this->bannerImageModel = new BannerImage;
         $this->userGroupModel = new UserGroup;
         $this->productDiscountModel = new ProductDiscount;
+        $this->administrationModel = new Administration;
+        $this->administrationGroupModel = new AdministrationGroup;
     }
 
     public function searchBanner(Request $request)
@@ -103,12 +111,15 @@ class AdminController extends Controller
         return view('admin.coupon', compact('coupons', 'filter_name', 'filter_code', 'filter_total'));
     }
 
-    public function searchorder(Request $request)
+    public function searchOrder(Request $request)
     {
         //Lấy từ khóa tìm kiếm từ yêu cầu
-        $search = $request->input('search');
+        $filter_iddh = $request->input('filter_iddh');
+        $filter_userName = $request->input('filter_userName');
+        $filter_total = $request->input('filter_total');
+        $filter_status = $request->input('filter_status');
 
-        $orders = $this->orderModel->searchOrder($search);
+        $orders = $this->orderModel->searchOrder($filter_iddh, $filter_userName, $filter_total, $filter_status);
 
         $productByOrder = [];
         foreach ($orders as $orderItem) {
@@ -117,27 +128,32 @@ class AdminController extends Controller
 
         $isSearching = true; // Biến trạng thái để kiểm tra xem có đang tìm kiếm hay không
 
-        return view('admin.order', compact('orders', 'productByOrder', 'isSearching'));
+        $orrderStatus = $this->orderStatus->all();
+        return view('admin.order', compact('orders', 'orrderStatus', 'productByOrder', 'isSearching'));
     }
 
     public function searchComment(Request $request)
     {
         //Lấy từ khóa tìm kiếm từ yêu cầu
-        $search = $request->input('search');
+        $filter_idsp = $request->input('filter_idsp');
+        $filter_userName = $request->input('filter_userName');
+        $filter_content = $request->input('filter_content');
+        $filter_status = $request->input('filter_status');
 
-        $comments = $this->commentModel->searchComment($search);
-
-        return view('admin.comment', compact('comments'));
+        $comments = $this->commentModel->searchComment($filter_idsp, $filter_userName, $filter_content, $filter_status);
+        $products = $this->productModel->all();
+        return view('admin.comment', compact('comments', 'products', 'filter_userName', 'filter_content'));
     }
 
     public function searchUser(Request $request)
     {
         //Lấy từ khóa tìm kiếm từ yêu cầu
-        $search = $request->input('search');
+        $filter_email = $request->input('filter_email');
+        $filter_status = $request->input('filter_status');
 
-        $users = $this->userModel->searchUser($search);
+        $users = $this->userModel->searchUser($filter_email, $filter_status);
 
-        return view('admin.user', compact('users'));
+        return view('admin.user', compact('users', 'filter_email'));
     }
     public function logout(Request $request)
     {
@@ -148,40 +164,36 @@ class AdminController extends Controller
 
         return redirect('admin/manage');
     }
-
     public function manage(Request $request)
     {
         try {
-
             $incommingFields = $request->validate([
                 'name' => 'required',
                 'password' => 'required',
             ]);
 
-            if (auth()->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])) {
-                $request->session()->regenerate(); //Laravel sẽ tạo ra một phiên làm việc mới, và tất cả các dữ liệu trong phiên làm việc cũ sẽ không còn có hiệu lực nữa.
+            if (auth()->guard('admin')->attempt(['name' => $incommingFields['name'], 'password' => $incommingFields['password']])) {
+                $request->session()->regenerate();
+                $admin = auth()->guard('admin')->user();
 
-                $user = auth()->user();
-
-                if ($user->status == 0) {
-                    auth()->logout();
-                    return redirect('/login')->with('danger', 'Tài khoản của bạn đã bị khóa');
+                if ($admin->status >= 1) {
+                    Session::put('admin', $admin);
+                    return redirect('admin/dashboard')->with('success', 'Đăng nhập thành công');
                 } else {
-                    if ($user->role >= 1) {
-                        //Lưu thông tin user vào session
-                        Session::put('user', auth()->user());
-                        return redirect('admin/dashboard')->with('success', 'Đăng nhập thành công');
-                    } else {
-                        return redirect()->back()->with(['danger' => 'Email hoặc password không đúng!']);
-                    }
+                    auth()->guard('admin')->logout();
+                    return redirect()->back()->with(['danger' => 'Tài khoản của bạn đã bị khóa']);
                 }
             } else {
-                return redirect()->back()->with(['danger' => 'Email hoặc password không đúng!']);
+                return redirect()->back()->with(['danger' => 'Tên đăng nhập hoặc mật khẩu bị sai!']);
             }
-        } catch (\Throwable $th) {
-            return redirect()->back()->withErrors(['login' => 'Lỗi trong quá trình đăng nhập vui lòng thử lại' . $th->getMessage()]);
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+            return redirect()->back()->with(['danger' => $error]);
         }
     }
+
+
+
 
     public function dashboard()
     {
@@ -559,6 +571,14 @@ class AdminController extends Controller
         return redirect()->route('admin.coupon');
     }
 
+    public function couponUpdateStatus(Request $request, $id)
+    {
+        $coupon = $this->couponModel->findOrFail($id);
+        $coupon->status = $request->status;
+        $coupon->save();
+        return response()->json(['success' => true]);
+    }
+
     public function couponDeleteCheckkbox(Request $request)
     {
         $coupon_id = $request->input('coupon_id');
@@ -590,7 +610,6 @@ class AdminController extends Controller
             $user->province = $request->province;
             $user->district = $request->district;
             $user->ward = $request->ward;
-            $user->role = $request->role;
             $user->status = $request->status;
             $user->user_group_id = $request->user_group_id;
             $user->image = '';
@@ -637,7 +656,6 @@ class AdminController extends Controller
         $user->province = $request->province;
         $user->district = $request->district;
         $user->ward = $request->ward;
-        $user->role = $request->role;
         $user->status = $request->status;
         $user->user_group_id = $request->user_group_id;
         // Chỉ cập nhật mật khẩu nếu người dùng đã nhập mật khẩu mới
@@ -667,11 +685,12 @@ class AdminController extends Controller
         return redirect()->route('user');
     }
 
-    public function userDelete($id)
+    public function userUpdateStatus(Request $request, $id)
     {
         $user = $this->userModel->findOrFail($id);
-        $user->delete();
-        return redirect()->route('user');
+        $user->status = $request->status;
+        $user->save();
+        return response()->json(['success' => true]);
     }
 
     // user group
@@ -753,7 +772,9 @@ class AdminController extends Controller
 
         $isSearching = false; // Biến trạng thái để kiểm tra xem có đang tìm kiếm hay không
 
-        return view('admin.order', compact('orders', 'productByOrder', 'countNew', 'countProcessing', 'countShipped', 'countCompleted', 'countCancelled', 'isSearching'));
+        $orrderStatus = $this->orderStatus->all();
+
+        return view('admin.order', compact('orders', 'orrderStatus', 'productByOrder', 'countNew', 'countProcessing', 'countShipped', 'countCompleted', 'countCancelled', 'isSearching'));
     }
 
     public function orderEdit($id)
@@ -794,7 +815,7 @@ class AdminController extends Controller
         $order->total = $request->total;
         $order->payment = $request->payment;
         $order->status_id = $request->status_id;
-        //$order->total = (float)str_replace(',', '', $request->total); // Chuyển đổi chuỗi tiền tệ thành số
+        $order->total = (float)str_replace(',', '', $request->total); // Chuyển đổi chuỗi tiền tệ thành số
         //dd($order->toArray()); // Kiểm tra dữ liệu của đơn hàng trước khi lưu
 
         $order->save();
@@ -884,6 +905,14 @@ class AdminController extends Controller
         return redirect()->route('admin.banner');
     }
 
+    public function bannerUpdateStatus(Request $request, $id)
+    {
+        $banner = $this->bannerModel->findOrFail($id);
+        $banner->status = $request->status;
+        $banner->save();
+        return response()->json(['success' => true]);
+    }
+
     public function bannerDeleteCheckkbox(Request $request)
     {
         $banner_id = $request->input('banner_id');
@@ -901,6 +930,35 @@ class AdminController extends Controller
     public function comment()
     {
         $comments = $this->commentModel->commentAll();
-        return view('admin.comment', compact('comments'));
+        $products = $this->productModel->all();
+
+        return view('admin.comment', compact('comments', 'products'));
+    }
+
+    public function commentUpdateStatus(Request $request, $id)
+    {
+        $comment = $this->commentModel->findOrFail($id);
+        $comment->status = $request->status;
+        $comment->save();
+        return response()->json(['success' => true]);
+    }
+
+    public function commentDeleteCheckkbox(Request $request)
+    {
+        $comment_id = $request->input('comment_id');
+        if ($comment_id) {
+            foreach ($comment_id as $item) {
+                $comment = $this->commentModel->findOrFail($item);
+                $comment->delete();
+            }
+        }
+        return redirect()->route('admin.comment')->with('success', 'Xóa bình luận thành công.');
+    }
+
+    public function commentDelete($id)
+    {
+        $comment = $this->commentModel->findOrFail($id);
+        $comment->delete();
+        return redirect()->back();
     }
 }

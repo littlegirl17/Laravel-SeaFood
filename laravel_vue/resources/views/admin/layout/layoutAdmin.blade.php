@@ -51,6 +51,7 @@
     <script>
         CKEDITOR.replace('editor1');
     </script>
+
     <script>
         //action lấy từ onclick
         function submitForm(action, method) {
@@ -60,11 +61,16 @@
             form.submit();
         }
     </script>
+
     @yield('productDiscountUserGroup')
     @yield('scriptCategory')
     @yield('scriptProduct')
     @yield('scriptCoupon')
     @yield('scriptBanner')
+    @yield('scriptUser')
+    @yield('scriptComment')
+    @yield('scriptOrder')
+
 </body>
 
 </html>

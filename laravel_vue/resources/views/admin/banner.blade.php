@@ -44,15 +44,15 @@
                 </div>
                 <div class="d-flex justify-content-end align-items-end">
                     <button type="submit" class="btn borrder-0 rounded-0 text-light my-3 " style="background: #4099FF"><i
-                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc danh
-                        mục</button>
+                            class="fa-solid fa-filter pe-2" style="color: #ffffff;"></i>Lọc banner hình ảnh
+                    </button>
                 </div>
             </form>
         </div>
 
         <form id="submitFormAdmin" method="POST">
             @csrf
-            <div class="buttonProductForm">
+            <div class="buttonProductForm mt-3">
                 <button class="btn btnF1">
                     <a href="{{ route('admin.bannerAdd') }}" class="text-decoration-none text-light"><i
                             class="pe-2 fa-solid fa-plus" style="color: #ffffff;"></i>Tạo banner</a>
@@ -100,23 +100,22 @@
                                     @endif
                                 </td>
                                 <td class="">
-                                    @if ($item->status == 0)
-                                        <img src="https://img.icons8.com/material-rounded/24/FA5252/toggle-off.png"
-                                            alt="toggle-off" style="width:25px;height:25px; object-fit:cover;" />
-                                    @else
-                                        <div class="">
-                                            <img src="https://img.icons8.com/ios-filled/50/40C057/toggle-on.png"
-                                                alt="toggle-on" style="width:25px;height:25px; object-fit:cover;" />
-                                        </div>
-                                    @endif
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            data-id="{{ $item->id }}" id="flexSwitchCheckChecked"
+                                            {{ $item->status == 1 ? 'checked' : '' }}>
+                                        <label class="form-check-label"
+                                            for="flexSwitchCheckChecked">{{ $item->status == 1 ? 'Bật' : 'Tắt' }}</label>
+                                    </div>
                                 </td>
-                                <td class="actionAdmin">
-                                    <button class="btn border-0 rounded-0 p-1" style="background-color: #1f508d">
-                                        <a href="{{ route('admin.bannerEdit', $item['id']) }}"
-                                            class="text-decoration-none text-light d-flex justify-content-center align-items-center"><img
-                                                src="https://img.icons8.com/sf-black-filled/64/ffffff/create-new.png"
-                                                alt="create-new" style="width:15px;height:15px; object-fit:cover;" />Sửa</a>
-                                    </button>
+                                <td class="m-0 p-0">
+                                    <div class="actionAdminProduct m-0 py-3">
+                                        <button class="btnActionProductAdmin2"><a
+                                                href="{{ route('admin.bannerEdit', $item['id']) }}"
+                                                class="text-decoration-none text-light"><i class="pe-2 fa-solid fa-pen"
+                                                    style="color: #ffffff;"></i>Sửa
+                                                banner hình ảnh</a></button>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -135,6 +134,44 @@
 @endsection
 
 @section('scriptBanner')
+
+    <script>
+        $(document).ready(function() {
+            $('.form-check-input').on('click', function() {
+                // (this) tham chiếu đến phần tử html đó
+                var banner_id = $(this).data(
+                    'id'); //lấy ra id danh mục thông qua data-id=" item->id "
+                var status = $(this).is(':checked') ? 1 : 0; //is() trả về true nếu phần tử khớp với bộ chọn
+                var label = $(this).siblings('label'); // Lấy label liền kề
+                updateProductStatus(banner_id, status, label);
+            });
+
+        })
+
+        function updateProductStatus(banner_id, status, label) {
+            $.ajax({
+                url: '{{ route('bannerUpdateStatus', ':id') }}'.replace(':id', banner_id),
+                type: 'PUT',
+                data: {
+                    '_token': '{{ csrf_token() }}', //Việc gửi mã token này cùng với mỗi request giúp xác thực rằng request đó được gửi từ ứng dụng của bạn, chứ không phải từ một nguồn khác.
+                    'status': status
+                },
+                success: function(response) {
+                    console.log('Cập nhật trạng thái thành công');
+
+                    if (status == 1) {
+                        label.text('Bật');
+                    } else {
+                        label.text('Tắt');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Lỗi khi cập nhật trạng thái sản phẩm: ' + error);
+                }
+            })
+        }
+    </script>
+
     <script>
         $(document).ready(function() {
             $('#filterFormBanner').on('submit', function() {

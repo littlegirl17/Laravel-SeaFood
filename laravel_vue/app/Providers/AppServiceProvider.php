@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\UserGroup;
 use Illuminate\Support\Facades\View; // nó được sử dụng để đăng ký một composer view. Composer view cho phép chúng ta thêm dữ liệu vào các view trước khi chúng được hiển thị.
@@ -26,7 +27,8 @@ class AppServiceProvider extends ServiceProvider
         //View::composer là một cơ chế để chia sẻ dữ liệu giữa các view một cách dễ dàng
         View::composer('*', function ($view) {
             $categories =  Category::all();
-            $view->with(compact('categories'));
+            $banners = Banner::all();
+            $view->with(compact('categories', 'banners'));
         });
 
         Paginator::useBootstrap();

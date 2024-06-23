@@ -1,7 +1,16 @@
 <nav class="header_1">
     <div class="container header_box ">
         <div class="header_image">
-            <a href="/"><img src="{{ asset('uploads/LoGo.png') }}" alt="img-fluid"></a>
+
+            @foreach ($banners as $item)
+                @if ($item->position == 5)
+                    @if ($item->banneImages->isNotEmpty())
+                        @foreach ($item->banneImages as $images)
+                            <img src="{{ asset('uploads/' . $images->image) }}" class="imgfluidFooter">
+                        @endforeach
+                    @endif
+                @endif
+            @endforeach
         </div>
         <form action="{{ route('home.search') }}" method="GET" class="d-flex">
             <div class="InputContainerSearch">

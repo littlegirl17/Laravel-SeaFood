@@ -50,11 +50,14 @@
                                 <td class="nameAdmin">
                                     <p>{{ $item->name }}</p>
                                 </td>
-                                <td class="actionAdmin">
-                                    <a href="{{ route('admin.userGroupEdit', $item['id']) }}"
-                                        class="text-decoration-none px-2"><img
-                                            src="https://img.icons8.com/sf-black-filled/64/1f508d/create-new.png"
-                                            alt="create-new" style="width:35px;height:35px; object-fit:cover;" /></a>
+                                <td class="m-0 p-0">
+                                    <div class="actionAdminProduct m-0 py-3">
+                                        <button class="btnActionProductAdmin2"><a
+                                                href="{{ route('admin.userGroupEdit', $item['id']) }}"
+                                                class="text-decoration-none text-light"><i class="pe-2 fa-solid fa-pen"
+                                                    style="color: #ffffff;"></i>Sửa
+                                                nhóm khách hàng</a></button>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

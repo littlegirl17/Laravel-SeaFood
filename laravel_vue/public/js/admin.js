@@ -70,3 +70,10 @@ if(alertMessage){
 
 
 
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
