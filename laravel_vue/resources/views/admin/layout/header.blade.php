@@ -17,121 +17,149 @@
             <!-- Sidebar navigation-->
             <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
                 <ul id="sidebarnav">
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('dashboard') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="ti fa-solid fa-gauge-high ico-side" style="color: #B197FC;"></i>
-                            </span>
-                            <span class="hide-menu">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('admin.banner') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="fa-solid fa-image ico-side" style="color: #df076f;"></i>
-                            </span>
-                            <span class="hide-menu">Banner-Hình</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('category') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="ti fa-solid fa-list ico-side" style="color: #FFD43B;"></i> </span>
-                            <span class="hide-menu">Danh mục</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('product') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA1UlEQVR4nO2WMQ6CQBREf2WlF7KQMaClHbueFsbEI3gAPAmGxMLQqZgBMy/ZkmRn3n52I4z5HWDul7zCQai3ABuhvnnYCPVtw0aobxg2Qn2rNsKXJ4qZK1jq/TFGvTE4yIh3GymYOjS5rG/1Kj5k+LZoU1W0+a4z0uQyJmLH80EWpGjr9VRBttfTRhgkVf9hhKkbNvDtjOwv+aidEWpXOAj1FmAj1DcPG6G+bdhI+B7pfbToGen9RMEMfrfwE4X61mEj1DcNG3mibhg2MkLdMGzExOx4ALZ46X829vEOAAAAAElFTkSuQmCC"
-                                    style="width:18px; height:18px;">
-                            </span>
-                            <span class="hide-menu">Sản phẩm</span>
-                        </a>
-                    </li>
+                    @if (in_array('dashboard', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('dashboard') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="ti fa-solid fa-gauge-high ico-side" style="color: #B197FC;"></i>
+                                </span>
+                                <span class="hide-menu">Dashboard</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (in_array('banner', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('admin.banner') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="fa-solid fa-image ico-side" style="color: #df076f;"></i>
+                                </span>
+                                <span class="hide-menu">Banner-Hình</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (in_array('category', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('category') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="ti fa-solid fa-list ico-side" style="color: #FFD43B;"></i> </span>
+                                <span class="hide-menu">Danh mục</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (in_array('product', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('product') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA1UlEQVR4nO2WMQ6CQBREf2WlF7KQMaClHbueFsbEI3gAPAmGxMLQqZgBMy/ZkmRn3n52I4z5HWDul7zCQai3ABuhvnnYCPVtw0aobxg2Qn2rNsKXJ4qZK1jq/TFGvTE4yIh3GymYOjS5rG/1Kj5k+LZoU1W0+a4z0uQyJmLH80EWpGjr9VRBttfTRhgkVf9hhKkbNvDtjOwv+aidEWpXOAj1FmAj1DcPG6G+bdhI+B7pfbToGen9RMEMfrfwE4X61mEj1DcNG3mibhg2MkLdMGzExOx4ALZ46X829vEOAAAAAElFTkSuQmCC"
+                                        style="width:18px; height:18px;">
+                                </span>
+                                <span class="hide-menu">Sản phẩm</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (in_array('coupon', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('admin.coupon') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="ti"><img width="20" height="20"
+                                            src="https://img.icons8.com/sf-regular-filled/20/FAB005/loyalty-card.png"
+                                            alt="loyalty-card" /></i>
+                                </span>
+                                <span class="hide-menu">Mã giảm giá</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (in_array('order', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('admin.order') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="ti"><img width="20" height="20"
+                                            src="https://img.icons8.com/ios/20/FFFFFF/purchase-order.png"
+                                            alt="purchase-order" /></i>
+                                </span>
+                                <span class="hide-menu">Đơn hàng</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (in_array('user', $permission) || in_array('userGroup', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="ti fa-solid fa-user ico-side" style="color: #ffffff;"></i>
+                                </span>
+                                <span class="hide-menu">Khách hàng</span>
+                            </a>
+                            <ul class="submenu">
+                                @if (in_array('user', $permission))
+                                    <li class="">
+                                        <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
+                                            <span style="width:20px">
+                                                <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                            </span>
+                                            <span class="hide-menu">Khách hàng</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (in_array('userGroup', $permission))
+                                    <li class="">
+                                        <a class="sidebar-link" href="{{ route('admin.userGroup') }}"
+                                            aria-expanded="false">
+                                            <span style="width:20px">
+                                                <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                            </span>
+                                            <span class="hide-menu">Nhóm khách hàng</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </li>
+                    @endif
+                    @if (in_array('administration', $permission) || in_array('administrationGroup', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="fa-solid fa-users" style="color: #ffffff;"></i>
+                                </span>
+                                <span class="hide-menu">Người dùng</span>
+                            </a>
+                            <ul class="submenu">
+                                @if (in_array('administration', $permission))
+                                    <li class="">
+                                        <a class="sidebar-link" href="{{ route('administration') }}"
+                                            aria-expanded="false">
+                                            <span style="width:20px">
+                                                <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                            </span>
+                                            <span class="hide-menu">Người dùng</span>
+                                        </a>
+                                    </li>
+                                @endif
 
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('admin.coupon') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="ti"><img width="20" height="20"
-                                        src="https://img.icons8.com/sf-regular-filled/20/FAB005/loyalty-card.png"
-                                        alt="loyalty-card" /></i>
-                            </span>
-                            <span class="hide-menu">Mã giảm giá</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('admin.order') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="ti"><img width="20" height="20"
-                                        src="https://img.icons8.com/ios/20/FFFFFF/purchase-order.png"
-                                        alt="purchase-order" /></i>
-                            </span>
-                            <span class="hide-menu">Đơn hàng</span>
-                        </a>
-                    </li>
+                                @if (in_array('administrationGroup', $permission))
+                                    <li class="">
+                                        <a class="sidebar-link" href="{{ route('administrationGroup') }}"
+                                            aria-expanded="false">
+                                            <span style="width:20px">
+                                                <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
+                                            </span>
+                                            <span class="hide-menu">Nhóm Người dùng</span>
+                                        </a>
+                                    </li>
+                                @endif
 
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="ti fa-solid fa-user ico-side" style="color: #ffffff;"></i>
-                            </span>
-                            <span class="hide-menu">Khách hàng</span>
-                        </a>
-                        <ul class="submenu">
-                            <li class="">
-                                <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
-                                    <span style="width:20px">
-                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
-                                    </span>
-                                    <span class="hide-menu">Khách hàng</span>
-                                </a>
-                            </li>
-                            <li class="">
-                                <a class="sidebar-link" href="{{ route('admin.userGroup') }}" aria-expanded="false">
-                                    <span style="width:20px">
-                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
-                                    </span>
-                                    <span class="hide-menu">Nhóm khách hàng</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
+                    @endif
 
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="fa-solid fa-users" style="color: #ffffff;"></i>
-                            </span>
-                            <span class="hide-menu">Người dùng</span>
-                        </a>
-                        <ul class="submenu">
-                            <li class="">
-                                <a class="sidebar-link" href="{{ route('user') }}" aria-expanded="false">
-                                    <span style="width:20px">
-                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
-                                    </span>
-                                    <span class="hide-menu">Người dùng</span>
-                                </a>
-                            </li>
-                            <li class="">
-                                <a class="sidebar-link" href="{{ route('admin.userGroup') }}" aria-expanded="false">
-                                    <span style="width:20px">
-                                        <i class="fa-solid fa-angles-right" style="color: #ffffff;"></i>
-                                    </span>
-                                    <span class="hide-menu">Nhóm Người dùng</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ route('admin.comment') }}" aria-expanded="false">
-                            <span style="width:20px">
-                                <i class="ti fa-regular fa-message ico-side" style="color: #74C0FC;"></i> </span>
-                            <span class="hide-menu">Bình luận</span>
-                        </a>
-                    </li>
+                    @if (in_array('comment', $permission))
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ route('admin.comment') }}" aria-expanded="false">
+                                <span style="width:20px">
+                                    <i class="ti fa-regular fa-message ico-side" style="color: #74C0FC;"></i> </span>
+                                <span class="hide-menu">Bình luận</span>
+                            </a>
+                        </li>
+                    @endif
 
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="{{ route('logout') }}" aria-expanded="false">

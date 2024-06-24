@@ -14,9 +14,14 @@ class Admin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, $permission = null): Response
     {
-        if (auth()->guard('admin')->check() && auth()->guard('admin')->user()->status >= 1) {
+        $admin =  auth()->guard('admin')->user();
+        if ($admin && $admin->status >= 1) {
+            $permissions = json_decode($admin->administrationGroup->permission, true);
+            if ($permission && !in_array($permission, $permissions)) {
+                return redirect()->route('dashboard')->with(['danger' => 'Bạn không có quyền truy cập trang này']);
+            }
             return $next($request); //Nếu đúng, tiếp tục chuyển yêu cầu tới tuyến đường tiếp theo
         }
 

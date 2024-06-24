@@ -24,11 +24,10 @@
                     <a href="{{ route('admin.userGroupAdd') }}" class="text-decoration-none text-light"><i
                             class="pe-2 fa-solid fa-plus" style="color: #ffffff;"></i>Tạo Nhóm khách hàng</a>
                 </button>
-                <button class="btn btnF2" type="button"
-                    onclick="submitForm('{{ route('userGroup.checkboxDelete') }}','post')"><i class="pe-2 fa-solid fa-trash"
+                {{-- <button class="btn btnF2" type="button"
+                    onclick="submitForm('{{ route('checkboxDeleteUserGroup') }}','post')"><i class="pe-2 fa-solid fa-trash"
                         style="color: #ffffff;"></i>Xóa
-                </button>
-
+                </button>  --}}
             </div>
 
             <div class="border p-2">

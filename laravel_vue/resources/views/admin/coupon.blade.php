@@ -59,6 +59,7 @@
                     onclick="submitForm('{{ route('admin.checkboxDeleteCoupon') }}','post')"><i
                         class="pe-2 fa-solid fa-trash" style="color: #ffffff;"></i>Xóa
                     mã giảm</button>
+
             </div>
             <div class="border p-2">
                 <h4 class="my-2"><i class="pe-2 fa-solid fa-list"></i>Danh Sách Mã Giảm Giá</h4>

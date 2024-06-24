@@ -13,6 +13,11 @@ class AdministrationGroup extends Model
         'permission',
     ];
 
+    public function administrationGroupAll()
+    {
+        return $this->orderBy('id', 'asc')->get();
+    }
+
     public function administration()
     {
         return $this->hasMany(Administration::class, 'admin_group_id');

@@ -20,52 +20,36 @@
                 <input type="text" class="form-control" id="name" name="name">
             </div>
             <div class="form-group mt-3">
+                <label for="description" class="form-label">Chọn nhóm người dùng</label>
+                <select class="form-select " name="admin_group_id">
+                    <option value="0">Mặc định</option>
+                    @foreach ($administrationGroups as $item)
+                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group mt-3">
+                <label for="title" class="form-label">Họ và tên</label>
+                <input type="text" class="form-control" id="fullname" name="fullname">
+            </div>
+            <div class="form-group mt-3">
                 <label for="title" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email">
             </div>
             <div class="form-group mt-3">
-                <label for="title" class="form-label">Mật khẩu</label>
-                <input type="password" class="form-control" id="password" name="password">
-            </div>
-            <div class="form-group mt-3">
-                <label for="title" class="form-label">Số điện thoại</label>
-                <input type="number" class="form-control" id="phone" name="phone">
-            </div>
-            <div class="form-group mt-3">
-                <label for="title" class="form-label">Tỉnh thành</label>
-                <select class="form-select selectForm " name="province" id="province">
-                    <option selected disabled>Tỉnh/Thành phố</option>
-                </select>
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="title" class="form-label">Quận huyện</label>
-                <select class="form-select selectForm " name="district" id="district">
-                    <option selected disabled>Quận/Huyện</option>
-                </select>
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="title" class="form-label">Phường xã</label>
-                <select class="form-select selectForm " name="ward" id="ward">
-                    <option selected disabled>Phường/Xã</option>
-                </select>
-            </div>
-            <div class="form-group mt-3">
-                <label for="exampleInputFile" class="label_admin">Ảnh sản phẩm</label>
+                <label for="exampleInputFile" class="label_admin">Image</label>
                 <div class="custom-file">
                     <input type="file" name="image" id="HinhAnh">
                     <div id="preview"></div>
                 </div>
             </div>
             <div class="form-group mt-3">
-                <label for="description" class="form-label">Chọn nhóm khách hàng</label>
-                <select class="form-select " name="category_id">
-                    <option value="0">Mặc định</option>
-                    @foreach ($userGroups as $item)
-                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                    @endforeach
-                </select>
+                <label for="title" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+            <div class="form-group mt-3">
+                <label for="" class="form-label">Xác nhận mật khẩu </label>
+                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
             </div>
             <div class="form-group mt-3">
                 <select class="form-select " name="status">

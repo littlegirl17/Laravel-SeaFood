@@ -46,13 +46,13 @@ class Administration extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function checkLogin($username, $password)
+    public function getAllAdmin()
     {
-        return $this->where('name', $username)->Where('password', $password)->first();
+        return $this->orderBy('id', 'desc')->get();
+    }
 
-        // if ($adminLogin && Hash::check($password, $adminLogin->password)) {
-        //     return $adminLogin;
-        // }
-        // return $adminLogin;
+    public function administrationGroup()
+    {
+        return $this->belongsTo(AdministrationGroup::class, 'admin_group_id');
     }
 }

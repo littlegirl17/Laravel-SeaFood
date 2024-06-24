@@ -961,4 +961,160 @@ class AdminController extends Controller
         $comment->delete();
         return redirect()->back();
     }
+
+    // administration
+    public function administration()
+    {
+        $administrations = $this->administrationModel->getAllAdmin();
+        return view('admin.administration', compact('administrations'));
+    }
+
+    public function administrationAdd(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $validated = $request->validate([
+                'password' => 'nullable | confirmed',
+            ]);
+
+            $administration = $this->administrationModel;
+            $administration->name = $request->name;
+            $administration->admin_group_id  = $request->admin_group_id;
+            $administration->fullname = $request->fullname;
+            $administration->email = $request->email;
+            $administration->image = '';
+            $administration->status = $request->status;
+            $administration->password =  bcrypt($validated['password']);
+            $administration->save();
+
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+
+                $imageName = "{$administration->id}.{$image->getClientOriginalExtension()}";
+
+                $image->move(public_path('uploads/'), $imageName);
+
+                $administration->image = $imageName;
+
+                $administration->save();
+            }
+
+
+            return redirect()->route('administration')->with('success', 'Thêm người dùng thành công.');
+        }
+
+        $administrationGroups = $this->administrationGroupModel->administrationGroupAll();
+        return view('admin.administrationAdd', compact('administrationGroups'));
+    }
+
+    public function administrationEdit($id)
+    {
+        $administration = $this->administrationModel->findOrFail($id);
+        $administrationGroups = $this->administrationGroupModel->administrationGroupAll();
+        return view('admin.administrationEdit', compact('administration', 'administrationGroups'));
+    }
+
+    public function administrationUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'password' => 'nullable |confirmed',
+        ]);
+
+        $administration = $this->administrationModel->findOrFail($id);
+        $administration->name = $request->name;
+        $administration->admin_group_id  = $request->admin_group_id;
+        $administration->fullname = $request->fullname;
+        $administration->email = $request->email;
+        $administration->image = '';
+        $administration->status = $request->status;
+
+        if ($request->filled('password')) {
+            $administration->password =  bcrypt($validated['password']);
+        }
+
+        $administration->save();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            $imageName = "{$administration->id}.{$image->getClientOriginalExtension()}";
+
+            $image->move(public_path('uploads/'), $imageName);
+
+            $administration->image = $imageName;
+
+            $administration->save();
+        } else {
+            // Nếu không có ảnh mới, giữ nguyên ảnh cũ
+            $administration->image = $administration->image;
+            $administration->save();
+        }
+        return redirect()->route('administration');
+    }
+
+    public function administrationDeleteCheckkbox(Request $request, $id)
+    {
+        $administration_id = $request->input('administration_id');
+
+        if ($administration_id) {
+            foreach ($administration_id as $itemId) {
+                $administration = $this->administrationModel->findOrFail($itemId);
+                $administration->delete();
+            }
+        }
+        return redirect()->route('administration')->with('success', 'Xóa người dùng thành công.');
+    }
+
+    // administration Group
+    public function administrationGroup()
+    {
+        $administrationGroups = $this->administrationGroupModel->administrationGroupAll();
+        return view('admin.administrationGroup', compact('administrationGroups'));
+    }
+
+    public function administrationGroupAdd(Request $request)
+    {
+        if ($request->isMethod('post')) {
+
+            $administrationGroup = $this->administrationGroupModel;
+            $administrationGroup->name = $request->name;
+            $administrationGroup->permission = json_encode($request->permission);
+            $administrationGroup->save();
+
+            return redirect()->route('administrationGroup')->with('success', 'Thêm nhóm người dùng thành công.');
+        }
+
+        $administrationGroups = $this->administrationGroupModel->administrationGroupAll();
+        return view('admin.administrationGroupAdd', compact('administrationGroups'));
+    }
+
+    public function administrationGroupEdit($id)
+    {
+        $administrationGroup = $this->administrationGroupModel->findOrFail($id);
+        $permission = json_decode($administrationGroup->permission, true);
+        return view('admin.administrationGroupEdit', compact('administrationGroup', 'permission'));
+    }
+
+    public function administrationGroupUpdate(Request $request, $id)
+    {
+
+        $administrationGroup = $this->administrationGroupModel->findOrFail($id);
+
+        $administrationGroup->name = $request->name;
+        $administrationGroup->permission = json_encode($request->permission);
+        $administrationGroup->save();
+        return redirect()->route('administrationGroup');
+    }
+
+    public function administrationGroupDeleteCheckkbox(Request $request, $id)
+    {
+        $administrationGroup_id = $request->input('administrationGroup_id');
+
+        if ($administrationGroup_id) {
+            foreach ($administrationGroup_id as $itemId) {
+                $administrationGroup = $this->administrationGroupModel->findOrFail($itemId);
+                $administrationGroup->delete();
+            }
+        }
+        return redirect()->route('administrationGroup')->with('success', 'Xóa nhóm người dùng thành công.');
+    }
 }

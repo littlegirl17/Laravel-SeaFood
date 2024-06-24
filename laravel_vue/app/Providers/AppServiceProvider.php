@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\AdministrationGroup;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\UserGroup;
@@ -28,7 +29,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $categories =  Category::all();
             $banners = Banner::all();
-            $view->with(compact('categories', 'banners'));
+
+            $admin = auth()->guard('admin')->user();
+            $permission = $admin ? json_decode($admin->administrationGroup->permission, true) : [];
+            $view->with(compact('categories', 'banners', 'permission'));
         });
 
         Paginator::useBootstrap();

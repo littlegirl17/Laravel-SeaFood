@@ -91,75 +91,104 @@ Route::get('admin/manage', function () {
 Route::post('manage', [AdminController::class, 'manage'])->name('admin.loginManage');
 
 Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::middleware(['admin:dashboard'])->group(function () {
+        Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    });
 
-    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::middleware(['admin:category'])->group(function () {
+        Route::get('category', [AdminController::class, 'category'])->name('category');
+        Route::get('addcategory', [AdminController::class, 'categoryAdd'])->name('categoryAdd');
+        Route::post('add-category', [AdminController::class, 'categoryAdd']);
+        Route::get('edit-category/{id}', [AdminController::class, 'categoryEdit'])->name('categoryEdit');
+        Route::put('edit-category/{id}', [AdminController::class, 'categoryUpdate'])->name('categoryUpdate');
+        Route::post('delete-checkbox-category', [AdminController::class, 'categoryDeleteCheckkbox'])->name('category.checkboxDelete');
+        Route::put('update-status-category/{id}', [AdminController::class, 'categoryUpdateStatus'])->name('categoryUpdateStatus');
+    });
 
-    Route::get('category', [AdminController::class, 'category'])->name('category');
-    Route::get('addcategory', [AdminController::class, 'categoryAdd'])->name('categoryAdd');
-    Route::post('add-category', [AdminController::class, 'categoryAdd']);
-    Route::get('edit-category/{id}', [AdminController::class, 'categoryEdit'])->name('categoryEdit');
-    Route::put('edit-category/{id}', [AdminController::class, 'categoryUpdate'])->name('categoryUpdate');
-    Route::post('delete-checkbox-category', [AdminController::class, 'categoryDeleteCheckkbox'])->name('category.checkboxDelete');
-    Route::put('update-status-category/{id}', [AdminController::class, 'categoryUpdateStatus'])->name('categoryUpdateStatus');
+    Route::middleware(['admin:product'])->group(function () {
+        Route::get('product', [AdminController::class, 'product'])->name('product');
+        Route::get('addproduct', [AdminController::class, 'productAdd'])->name('productAdd');
+        Route::post('add-product', [AdminController::class, 'productAdd']);
+        Route::get('edit-product/{id}', [AdminController::class, 'productEdit'])->name('productEdit');
+        Route::put('edit-product/{id}', [AdminController::class, 'productUpdate'])->name('productUpdate');
+        Route::post('delete-checkbox-product', [AdminController::class, 'productDeleteCheckkbox'])->name('product.checkboxDelete');
+        Route::post('copy-checkbox-product', [AdminController::class, 'productCopyCheckkbox'])->name('product.checkboxCopy');
+        Route::get('product/{id}/delete-image/{product_id}', [AdminController::class, 'deleteImages'])->name('product.delete-images');
+        Route::put('update-status-product/{id}', [AdminController::class, 'productUpdateStatus'])->name('productUpdateStatus');
+    });
 
-    Route::get('product', [AdminController::class, 'product'])->name('product');
-    Route::get('addproduct', [AdminController::class, 'productAdd'])->name('productAdd');
-    Route::post('add-product', [AdminController::class, 'productAdd']);
-    Route::get('edit-product/{id}', [AdminController::class, 'productEdit'])->name('productEdit');
-    Route::put('edit-product/{id}', [AdminController::class, 'productUpdate'])->name('productUpdate');
-    Route::post('delete-checkbox-product', [AdminController::class, 'productDeleteCheckkbox'])->name('product.checkboxDelete');
-    Route::post('copy-checkbox-product', [AdminController::class, 'productCopyCheckkbox'])->name('product.checkboxCopy');
-    Route::get('product/{id}/delete-image/{product_id}', [AdminController::class, 'deleteImages'])->name('product.delete-images');
-    Route::put('update-status-product/{id}', [AdminController::class, 'productUpdateStatus'])->name('productUpdateStatus');
+    Route::middleware(['admin:order'])->group(function () {
+        Route::get('order', [AdminController::class, 'order'])->name('admin.order');
+        Route::get('addorder', [AdminController::class, 'orderAdd'])->name('admin.orderAdd');
+        Route::post('add-order', [AdminController::class, 'orderAdd']);
+        Route::get('edit-order/{id}', [AdminController::class, 'orderEdit'])->name('admin.orderEdit');
+        Route::put('edit-order/{id}', [AdminController::class, 'orderUpdate'])->name('admin.orderUpdate');
+        Route::get('delete-order/{id}', [AdminController::class, 'orderDelete'])->name('admin.orderDelete');
+    });
 
-    Route::get('userGroup', [AdminController::class, 'userGroup'])->name('admin.userGroup');
-    Route::get('adduserGroup', [AdminController::class, 'userGroupAdd'])->name('admin.userGroupAdd');
-    Route::post('add-userGroup', [AdminController::class, 'userGroupAdd']);
-    Route::get('edit-userGroup/{id}', [AdminController::class, 'userGroupEdit'])->name('admin.userGroupEdit');
-    Route::put('edit-userGroup/{id}', [AdminController::class, 'userGroupUpdate'])->name('admin.userGroupUpdate');
-    Route::post('delete-checkbox-userGroup', [AdminController::class, 'userGroupDeleteCheckkbox'])->name('userGroup.checkboxDelete');
+    Route::middleware(['admin:coupon'])->group(function () {
+        Route::get('coupon', [AdminController::class, 'coupon'])->name('admin.coupon');
+        Route::get('addcoupon', [AdminController::class, 'couponAdd'])->name('admin.couponAdd');
+        Route::post('add-coupon', [AdminController::class, 'couponAdd']);
+        Route::get('edit-coupon/{id}', [AdminController::class, 'couponEdit'])->name('admin.couponEdit');
+        Route::put('edit-coupon/{id}', [AdminController::class, 'couponUpdate'])->name('admin.couponUpdate');
+        Route::post('delete-checkbox-coupon', [AdminController::class, 'couponDeleteCheckkbox'])->name('admin.checkboxDeleteCoupon');
+        Route::put('update-status-coupon/{id}', [AdminController::class, 'couponUpdateStatus'])->name('couponUpdateStatus');
+    });
 
-    Route::get('order', [AdminController::class, 'order'])->name('admin.order');
-    Route::get('addorder', [AdminController::class, 'orderAdd'])->name('admin.orderAdd');
-    Route::post('add-order', [AdminController::class, 'orderAdd']);
-    Route::get('edit-order/{id}', [AdminController::class, 'orderEdit'])->name('admin.orderEdit');
-    Route::put('edit-order/{id}', [AdminController::class, 'orderUpdate'])->name('admin.orderUpdate');
-    Route::get('delete-order/{id}', [AdminController::class, 'orderDelete'])->name('admin.orderDelete');
+    Route::middleware(['admin:banner'])->group(function () {
+        Route::get('banner', [AdminController::class, 'banner'])->name('admin.banner');
+        Route::get('addbanner', [AdminController::class, 'bannerAdd'])->name('admin.bannerAdd');
+        Route::post('add-banner', [AdminController::class, 'bannerAdd']);
+        Route::get('edit-banner/{id}', [AdminController::class, 'bannerEdit'])->name('admin.bannerEdit');
+        Route::put('edit-banner/{id}', [AdminController::class, 'bannerUpdate'])->name('admin.bannerUpdate');
+        Route::post('delete-checkbox-banner', [AdminController::class, 'bannerDeleteCheckkbox'])->name('admin.checkboxDeleteBanner');
+        Route::put('update-status-banner/{id}', [AdminController::class, 'bannerUpdateStatus'])->name('bannerUpdateStatus');
+    });
 
-    Route::get('coupon', [AdminController::class, 'coupon'])->name('admin.coupon');
-    Route::get('addcoupon', [AdminController::class, 'couponAdd'])->name('admin.couponAdd');
-    Route::post('add-coupon', [AdminController::class, 'couponAdd']);
-    Route::get('edit-coupon/{id}', [AdminController::class, 'couponEdit'])->name('admin.couponEdit');
-    Route::put('edit-coupon/{id}', [AdminController::class, 'couponUpdate'])->name('admin.couponUpdate');
-    Route::post('delete-checkbox-coupon', [AdminController::class, 'couponDeleteCheckkbox'])->name('admin.checkboxDeleteCoupon');
-    Route::put('update-status-coupon/{id}', [AdminController::class, 'couponUpdateStatus'])->name('couponUpdateStatus');
+    Route::middleware(['admin:user'])->group(function () {
+        Route::get('user', [AdminController::class, 'user'])->name('user');
+        Route::get('adduser', [AdminController::class, 'userAdd'])->name('userAdd');
+        Route::post('add-user', [AdminController::class, 'userAdd']);
+        Route::get('edit-user/{id}', [AdminController::class, 'userEdit'])->name('userEdit');
+        Route::put('edit-user/{id}', [AdminController::class, 'userUpdate'])->name('userUpdate');
+        Route::post('delete-checkbox-user', [AdminController::class, 'userDeleteCheckkbox'])->name('admin.checkboxDeleteUser');
+        Route::put('update-status-user/{id}', [AdminController::class, 'userUpdateStatus'])->name('userUpdateStatus');
+    });
 
-    Route::get('banner', [AdminController::class, 'banner'])->name('admin.banner');
-    Route::get('addbanner', [AdminController::class, 'bannerAdd'])->name('admin.bannerAdd');
-    Route::post('add-banner', [AdminController::class, 'bannerAdd']);
-    Route::get('edit-banner/{id}', [AdminController::class, 'bannerEdit'])->name('admin.bannerEdit');
-    Route::put('edit-banner/{id}', [AdminController::class, 'bannerUpdate'])->name('admin.bannerUpdate');
-    Route::post('delete-checkbox-banner', [AdminController::class, 'bannerDeleteCheckkbox'])->name('admin.checkboxDeleteBanner');
-    Route::put('update-status-banner/{id}', [AdminController::class, 'bannerUpdateStatus'])->name('bannerUpdateStatus');
+    Route::middleware(['admin:userGroup'])->group(function () {
+        Route::get('userGroup', [AdminController::class, 'userGroup'])->name('admin.userGroup');
+        Route::get('adduserGroup', [AdminController::class, 'userGroupAdd'])->name('admin.userGroupAdd');
+        Route::post('add-userGroup', [AdminController::class, 'userGroupAdd']);
+        Route::get('edit-userGroup/{id}', [AdminController::class, 'userGroupEdit'])->name('admin.userGroupEdit');
+        Route::put('edit-userGroup/{id}', [AdminController::class, 'userGroupUpdate'])->name('admin.userGroupUpdate');
+        Route::post('delete-checkbox-userGroup', [AdminController::class, 'userGroupDeleteCheckkbox'])->name('checkboxDeleteUserGroup');
+    });
 
-    Route::get('user', [AdminController::class, 'user'])->name('user');
-    Route::get('adduser', [AdminController::class, 'userAdd'])->name('userAdd');
-    Route::post('add-user', [AdminController::class, 'userAdd']);
-    Route::get('edit-user/{id}', [AdminController::class, 'userEdit'])->name('userEdit');
-    Route::put('edit-user/{id}', [AdminController::class, 'userUpdate'])->name('userUpdate');
-    Route::post('delete-checkbox-user', [AdminController::class, 'userDeleteCheckkbox'])->name('admin.checkboxDeleteUser');
-    Route::put('update-status-user/{id}', [AdminController::class, 'userUpdateStatus'])->name('userUpdateStatus');
+    Route::middleware(['admin:administration'])->group(function () {
+        Route::get('administration', [AdminController::class, 'administration'])->name('administration');
+        Route::get('addadministration', [AdminController::class, 'administrationAdd'])->name('administrationAdd');
+        Route::post('add-administration', [AdminController::class, 'administrationAdd']);
+        Route::get('edit-administration/{id}', [AdminController::class, 'administrationEdit'])->name('administrationEdit');
+        Route::put('edit-administration/{id}', [AdminController::class, 'administrationUpdate'])->name('administrationUpdate');
+        Route::post('delete-checkbox-administration', [AdminController::class, 'administrationDeleteCheckkbox'])->name('checkboxDeleteAdministration');
+    });
 
-    Route::get('administration', [AdminController::class, 'administration'])->name('administration');
-    Route::get('addadministration', [AdminController::class, 'administrationAdd'])->name('administrationAdd');
-    Route::post('add-administration', [AdminController::class, 'administrationAdd']);
-    Route::get('edit-administration/{id}', [AdminController::class, 'administrationEdit'])->name('administrationEdit');
-    Route::put('edit-administration/{id}', [AdminController::class, 'administrationUpdate'])->name('administrationUpdate');
+    Route::middleware(['admin:administrationGroup'])->group(function () {
+        Route::get('administrationGroup', [AdminController::class, 'administrationGroup'])->name('administrationGroup');
+        Route::get('addadministrationGroup', [AdminController::class, 'administrationGroupAdd'])->name('administrationGroupAdd');
+        Route::post('add-administrationGroup', [AdminController::class, 'administrationGroupAdd']);
+        Route::get('edit-administrationGroup/{id}', [AdminController::class, 'administrationGroupEdit'])->name('administrationGroupEdit');
+        Route::put('edit-administrationGroup/{id}', [AdminController::class, 'administrationGroupUpdate'])->name('administrationGroupUpdate');
+        Route::post('delete-checkbox-userGroup', [AdminController::class, 'administrationGroupDeleteCheckkbox'])->name('checkboxDeleteAdministrationGroup');
+    });
 
-    Route::get('comment', [AdminController::class, 'comment'])->name('admin.comment');
-    Route::put('update-status-comment/{id}', [AdminController::class, 'commentUpdateStatus'])->name('commentUpdateStatus');
-    Route::post('delete-checkbox-comment', [AdminController::class, 'commentDeleteCheckkbox'])->name('comment.checkboxDelete');
-    Route::get('delete-comment/{id}', [AdminController::class, 'commentDelete'])->name('admin.commentDelete');
+    Route::middleware(['admin:comment'])->group(function () {
+        Route::get('comment', [AdminController::class, 'comment'])->name('admin.comment');
+        Route::put('update-status-comment/{id}', [AdminController::class, 'commentUpdateStatus'])->name('commentUpdateStatus');
+        Route::post('delete-checkbox-comment', [AdminController::class, 'commentDeleteCheckkbox'])->name('comment.checkboxDelete');
+        Route::get('delete-comment/{id}', [AdminController::class, 'commentDelete'])->name('admin.commentDelete');
+    });
 
     Route::get('logout', [AdminController::class, 'logout'])->name('logout');
 });
