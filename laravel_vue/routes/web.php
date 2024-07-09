@@ -48,7 +48,7 @@ Route::get('/category/{slug}', [CategoryController::class, 'index']);
 Route::get('/detail-product/{slug}', [ProductController::class, 'detail']);
 
 // ROUTE PRODUCT CART
-Route::get('/viewCart', [ProductController::class, 'viewCart']);
+//Route::get('/viewCart', [ProductController::class, 'viewCart']);
 Route::post('/add-to-cart', [ProductController::class, 'addToCart']);
 Route::get('/giam-quantity/{id}', [ProductController::class, 'giamQuantity'])->name('giam');
 Route::get('/tang-quantity/{id}', [ProductController::class, 'tangQuantity'])->name('tang');
@@ -81,7 +81,7 @@ Route::get('/search-coupon', [AdminController::class, 'searchCoupon'])->name('se
 Route::get('/search-order', [AdminController::class, 'searchOrder'])->name('searchOrder');
 Route::get('/search-user', [AdminController::class, 'searchUser'])->name('searchUser');
 Route::get('/search-comment', [AdminController::class, 'searchComment'])->name('searchComment');
-
+Route::get('/search-administration', [AdminController::class, 'searchAdministration'])->name('searchAdministration');
 
 // ROTE ADMIN
 Route::get('admin/manage', function () {
@@ -91,9 +91,7 @@ Route::get('admin/manage', function () {
 Route::post('manage', [AdminController::class, 'manage'])->name('admin.loginManage');
 
 Route::prefix('admin')->middleware('admin')->group(function () {
-    Route::middleware(['admin:dashboard'])->group(function () {
-        Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    });
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     Route::middleware(['admin:category'])->group(function () {
         Route::get('category', [AdminController::class, 'category'])->name('category');
@@ -180,7 +178,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::post('add-administrationGroup', [AdminController::class, 'administrationGroupAdd']);
         Route::get('edit-administrationGroup/{id}', [AdminController::class, 'administrationGroupEdit'])->name('administrationGroupEdit');
         Route::put('edit-administrationGroup/{id}', [AdminController::class, 'administrationGroupUpdate'])->name('administrationGroupUpdate');
-        Route::post('delete-checkbox-userGroup', [AdminController::class, 'administrationGroupDeleteCheckkbox'])->name('checkboxDeleteAdministrationGroup');
+        Route::post('delete-checkbox-administrationGroup', [AdminController::class, 'administrationGroupDeleteCheckkbox'])->name('checkboxDeleteAdministrationGroup');
     });
 
     Route::middleware(['admin:comment'])->group(function () {
@@ -199,10 +197,13 @@ Route::fallback(function () {
 
 
 
+Route::get('cart', [CartController::class, 'getCart']);
 
 // api
 Route::prefix('api')->group(function () {
     Route::get('comment/product/{product_id}', [CommentController::class, 'comment']);
     Route::post('comment', [CommentController::class, 'store']);
+
+    // cart
     Route::post('addToCart/product', [CartController::class, 'store']);
 });

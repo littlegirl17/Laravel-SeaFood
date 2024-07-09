@@ -3,7 +3,7 @@
 @Section('content')
     <div class="container-fluid">
 
-        <div class="d-flex justify-content-between align-items-center formAdminAlert">
+        <div class="d-flex justify-content-between align-items-center  my-3">
             <h3 class="title-page ">
                 Chỉnh sửa nhóm khách hàng
             </h3>
@@ -13,9 +13,11 @@
         <form action="{{ route('admin.userGroupUpdate', $userGroup->id) }}" method="post" class="formAdmin"
             enctype="multipart/form-data">
             @csrf
-            <button class="btnFormAdd ">
-                Lưu
-            </button>
+            <div class="buttonProductForm ">
+                <button class="btn btnF3">
+                    Lưu
+                </button>
+            </div>
             @method('PUT')
 
             <div class="form-group mt-3">

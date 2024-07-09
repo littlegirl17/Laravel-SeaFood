@@ -39,7 +39,7 @@
                 </li>
                 <li class="nav-item ms-3">
                     <div class="position-relative">
-                        <a class="nav-link active" href="/viewCart">
+                        <a class="nav-link active" href="/cart">
                             <img width="40" height="40"
                                 src="https://img.icons8.com/windows/32/1A1A1A/shopping-bag.png" alt="shopping-bag" />
                         </a>
@@ -110,7 +110,7 @@
                     </li>
                     <li class="nav-item ps-1">
                         <button class="btnCart position-relative">
-                            <a class="nav-link active" href="/viewCart">
+                            <a class="nav-link active" href="/cart">
                                 <img width="19" height="19"
                                     src="https://img.icons8.com/windows/32/1A1A1A/shopping-bag.png"
                                     alt="shopping-bag" />

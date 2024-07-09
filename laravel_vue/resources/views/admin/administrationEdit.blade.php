@@ -12,9 +12,11 @@
             enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <button class="btnFormAdd ">
-                Lưu
-            </button>
+            <div class="buttonProductForm ">
+                <button class="btn btnF3">
+                    Lưu
+                </button>
+            </div>
 
             <div class="row">
                 <div class="form-group mt-3">

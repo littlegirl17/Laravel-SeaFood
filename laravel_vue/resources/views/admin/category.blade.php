@@ -3,7 +3,11 @@
 @Section('content')
 
     <div class="container-fluid">
-
+        @if (session('danger'))
+            <div id="alert-message" class="alertDanger">
+                {{ session('danger') }}
+            </div>
+        @endif
         <div class="searchAdmin">
             <form id="filterFormCategory" action="{{ route('searchCategory') }}" method="GET">
                 <div class="row d-flex flex-row justify-content-between align-items-center">

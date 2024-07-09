@@ -3,7 +3,7 @@
 @Section('content')
     <div class="container-fluid">
 
-        <div class="d-flex justify-content-between align-items-center ">
+        <div class="d-flex justify-content-between align-items-center  my-3">
             <h2 class="title-page ">
                 Chỉnh sửa đơn hàng
             </h2>
@@ -12,9 +12,11 @@
 
         <form action="{{ route('admin.orderUpdate', $order->id) }}" method="post" class="mt-5" enctype="multipart/form-data">
             @csrf
-            <button class="btnFormAdd ">
-                Lưu
-            </button>
+            <div class="buttonProductForm ">
+                <button class="btn btnF3">
+                    Lưu
+                </button>
+            </div>
             @method('PUT')
             <div class="row">
                 <div class="col-md-10">

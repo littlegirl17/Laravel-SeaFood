@@ -214,8 +214,8 @@
                                     </p>
                                     <div class="hoverAddcart btnFormBox">
                                         {{-- đây là component cha : cho phép truyền dữ liệu từ thành phần cha sang thành phần con --}}
-                                        <add-to-cart-component
-                                            :product-data="{{ json_encode($item) }}"></add-to-cart-component>
+                                        <add-to-cart-component :product-data="{{ json_encode($item) }}"
+                                            :user_id="{{ Session::has('user') ? Session::get('user')->id : 0 }}"></add-to-cart-component>
                                         <button class="btnForm"
                                             onclick="showPopup('{{ $item->id }}', '{{ $item->name }}', '{{ $item->image }}', '{{ $item->price }}','{{ $user }}','{{ $userProductDiscount ? $userProductDiscount->price : $item->price }}', '{{ $userProductDiscountDefault ? $userProductDiscountDefault->price : $item->price }}')">
                                             <i class="fa-solid fa-eye" style="color: #1f508ds;"></i>

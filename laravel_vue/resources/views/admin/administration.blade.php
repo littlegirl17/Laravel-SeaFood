@@ -5,25 +5,27 @@
     <div class="container-fluid">
 
         <div class="searchAdmin">
-            <form id="filterFormProduct" action="{{ route('searchUser') }}" method="GET">
+            <form id="filterFormAdministration" action="{{ route('searchAdministration') }}" method="GET">
                 <div class="row d-flex flex-row justify-content-between align-items-center">
                     <div class="col-sm-6">
                         <div class="form-group mt-3">
-                            <label for="title" class="form-label">Lọc theo email người dùng</label>
-                            <input class="form-control rounded-0" name="filter_email" placeholder="Email người dùng"
-                                type="text" value="{{ $filter_email ?? '' }}">
+                            <label for="title" class="form-label">Lọc theo tên đăng nhập</label>
+                            <input class="form-control rounded-0" name="filter_name" placeholder="Tên đăng nhập"
+                                type="text" value="{{ $filter_name ?? '' }}">
                         </div>
                     </div>
 
                     <div class="col-sm-6">
                         <div class="form-group mt-3">
-                            <label for="title" class="form-label">Trạng thái</label>
-                            <select class="form-select  rounded-0" aria-label="Default select example" name="filter_status">
+                            <label for="title" class="form-label">Lọc theo nhóm người dùng</label>
+                            <select class="form-select rounded-0" aria-label="Default select example"
+                                name="filter_adminGroupId">
                                 <option value="">Tất cả</option>
-                                <option value="1">Kích hoạt
-                                </option>
-                                <option value="0">Vô hiệu hóa
-                                </option>
+                                @foreach ($administrationGroups as $item)
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -64,7 +66,9 @@
                     <tbody class="table-body">
                         @foreach ($administrations as $item)
                             <tr class="">
-                                <td><input type="checkbox" name="administration_id[]" value="{{ $item->id }}"></td>
+                                <td>
+                                    <input type="checkbox" name="administration_id[]" value="{{ $item->id }}">
+                                </td>
                                 <td>{{ $item->name }}</td>
                                 <td class="">
                                     <div class="form-check form-switch">
@@ -75,7 +79,7 @@
                                             for="flexSwitchCheckChecked">{{ $item->status == 1 ? 'Bật' : 'Tắt' }}</label>
                                     </div>
                                 </td>
-                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->administrationGroup->name }}</td>
                                 <td class="m-0 p-0">
                                     <div class="actionAdminProduct m-0 py-3">
                                         <button class="btnActionProductAdmin2"><a
@@ -92,4 +96,26 @@
             </div>
         </form>
     </div>
+@endsection
+
+@section('scriptAdministration')
+    <script>
+        $(document).ready(function() {
+            $('#filterFormAdministration').on('submit', function() {
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '{{ route('searchAdministration') }}',
+                    type: 'GET',
+                    data: formData,
+                    success: function(response) {
+                        $('.table-body').html(response.html);
+                    },
+                    error: function(error) {
+                        console.error('Lỗi khi lọc' + error);
+                    }
+                })
+            })
+        })
+    </script>
 @endsection

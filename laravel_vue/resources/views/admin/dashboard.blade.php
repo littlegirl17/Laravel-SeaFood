@@ -10,7 +10,7 @@
             <div class="col-md-3 col-sm-6 col-12 pb-3">
                 <a class="sidebar-link" href="{{ route('category') }}">
                     <div class="cardDashboard_1">
-                        <div class="row">
+                        <div class="row backBlur">
                             <div class="col-md-4 col-sm-4 col-4 iconDashboard">
                                 <img width="30" height="30"
                                     src="https://img.icons8.com/external-xnimrodx-lineal-xnimrodx/64/ff5370/external-categories-shopping-mall-xnimrodx-lineal-xnimrodx.png"
@@ -27,7 +27,7 @@
             <div class="col-md-3 col-sm-6 col-12 pb-3 ">
                 <a class="sidebar-link" href="{{ route('product') }}">
                     <div class="cardDashboard_2">
-                        <div class="row">
+                        <div class="row backBlur">
                             <div class="col-md-4 col-sm-4 col-4 iconDashboard">
                                 <img width="30" height="30"
                                     src="https://img.icons8.com/ios-filled/64/4099ff/open-box.png" alt="open-box" />
@@ -43,7 +43,7 @@
             <div class="col-md-3 col-sm-6 col-12 pb-3 ">
                 <a class="sidebar-link" href="{{ route('user') }}">
                     <div class="cardDashboard_3">
-                        <div class="row">
+                        <div class="row backBlur">
                             <div class="col-md-4 col-sm-4 col-4 iconDashboard">
                                 <img width="30" height="30"
                                     src="https://img.icons8.com/external-tanah-basah-glyph-tanah-basah/64/2ed8b6/external-user-social-media-ui-tanah-basah-glyph-tanah-basah.png"
@@ -59,7 +59,7 @@
             </div>
             <div class="col-md-3 col-sm-6 col-12 pb-3 ">
                 <div class="cardDashboard_4">
-                    <div class="row">
+                    <div class="row backBlur">
                         <div class="col-md-4 col-sm-4 col-4  iconDashboard">
                             <img width="30" height="30"
                                 src="https://img.icons8.com/external-creatype-outline-colourcreatype/64/ffb64d/external-blog-user-interface-creatype-outline-colourcreatype.png"

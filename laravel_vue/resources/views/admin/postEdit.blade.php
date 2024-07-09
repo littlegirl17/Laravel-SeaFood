@@ -8,9 +8,11 @@
     </h3>
     <form action="{{ route('postUpdate', $post->id) }}" method="post" class="formAdmin" enctype="multipart/form-data">
         @csrf
-        <button class="btnFormAdd ">
-            Lưu
-        </button>
+        <div class="buttonProductForm ">
+            <button class="btn btnF3">
+                Lưu
+            </button>
+        </div>
         @method('PUT')
 
         <div class="form-group mt-3">

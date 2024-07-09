@@ -70,7 +70,7 @@
     @yield('scriptUser')
     @yield('scriptComment')
     @yield('scriptOrder')
-
+    @yield('scriptAdministration')
 </body>
 
 </html>

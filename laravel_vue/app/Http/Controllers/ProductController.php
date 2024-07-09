@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Coupon;
@@ -12,8 +13,8 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Type\Decimal;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
 {
@@ -24,6 +25,7 @@ class ProductController extends Controller
     private $userModel;
     private $orderModel;
     private $orderProductModel;
+    private $cartModel;
 
 
     public function __construct()
@@ -35,6 +37,7 @@ class ProductController extends Controller
         $this->userModel = new User;
         $this->orderModel = new Order;
         $this->orderProductModel = new OrderProduct;
+        $this->cartModel = new Cart;
     }
 
     public function detail($slug)
@@ -61,45 +64,47 @@ class ProductController extends Controller
         return response()->json(['count' => $cartCount]);
     }
 
-    public function viewCart(Request $request)
-    {
-        // session()->forget('cart');
-        $cart = session()->get('cart', []);
-        $user = auth()->user(); //Lấy thông tin người dùng đã đăng nhập hiện tại.
-        $products = $this->productModel;
-        return view('cart', compact('cart', 'user', 'products'));
-    }
+    // public function viewCart(Request $request)
+    // {
+    //     // $cart = cookie()->get('cart', []);
+    //     $cart = json_decode(request()->cookie('cart'), true);
 
-    public function addToCart(Request $request)
-    {
+    //     $user = auth()->user(); //Lấy thông tin người dùng đã đăng nhập hiện tại.
+    //     //$products = $this->productModel->whereIn('id', array_column($cart, 'product_id'))->get();
+    //     $products = $this->productModel;
+    //     return view('cart', compact('cart', 'user', 'products'));
+    // }
 
-        $id = $request->input('id');
-        $name = $request->input('name');
-        $image = $request->input('image');
-        $price = $request->input('price');
-        $quantity = $request->input('quantity');
+    // public function addToCart(Request $request)
+    // {
 
-        //Kiểm tra product có trong cart chưa
-        $cart = session()->get('cart', []);
+    //     $id = $request->input('id');
+    //     $name = $request->input('name');
+    //     $image = $request->input('image');
+    //     $price = $request->input('price');
+    //     $quantity = $request->input('quantity');
 
-        if (isset($cart[$id])) {
-            //Có rồi thì tăng số lượng
-            $cart[$id]['quantity'] += $quantity;
-        } else {
-            // chưa có, thì lưu các item đó vào mảng $cart[$id] $id để xác định sản phẩm trong giỏ hàng bằng một định danh duy nhất
-            $cart[$id] = [
-                'id' => $id,
-                'name' => $name,
-                'image' => $image,
-                'price' => $price,
-                'quantity' => $quantity,
-            ];
-        }
+    //     //Kiểm tra product có trong cart chưa
+    //     $cart = session()->get('cart', []);
 
-        //Lưu cart vào session
-        session()->put('cart', $cart);
-        return redirect()->back();
-    }
+    //     if (isset($cart[$id])) {
+    //         //Có rồi thì tăng số lượng
+    //         $cart[$id]['quantity'] += $quantity;
+    //     } else {
+    //         // chưa có, thì lưu các item đó vào mảng $cart[$id] $id để xác định sản phẩm trong giỏ hàng bằng một định danh duy nhất
+    //         $cart[$id] = [
+    //             'id' => $id,
+    //             'name' => $name,
+    //             'image' => $image,
+    //             'price' => $price,
+    //             'quantity' => $quantity,
+    //         ];
+    //     }
+
+    //     //Lưu cart vào session
+    //     session()->put('cart', $cart);
+    //     return redirect()->back();
+    // }
 
     public function buyNow(Request $request)
     {
@@ -137,50 +142,83 @@ class ProductController extends Controller
 
     public function tangQuantity($id)
     {
-        $cart = session()->get('cart', []);
 
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-            session()->put('cart', $cart);
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            $cart = Cart::where('user_id', $user)->where('product_id', $id)->first();
+            if ($cart) {
+                $cart->quantity++;
+                $cart->save();
+                return redirect('/cart');
+            }
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true);
+            $existingItem = array_search($id, array_column($cart, 'product_id'));
+            if ($existingItem !== false) {
+                $cart[$existingItem]['quantity']++;
+            }
+            $cookie = cookie('cart', json_encode($cart), 0);
+            return redirect('/cart')->withCookie($cookie);
         }
-
-        return redirect('/viewCart');
     }
 
     public function giamQuantity($id)
     {
-        $cart = session()->get('cart', []);
+        if (Auth::check()) {
+            $user = Auth::user()->id;
 
-        if (isset($cart[$id])) {
-            if ($cart[$id]['quantity'] > 1) {
-                $cart[$id]['quantity']--;
-                session()->put('cart', $cart);
-            } else {
-                return redirect('/viewCart')->with('warning', 'Số lượng ít nhất là 1.');
+            $cart = Cart::where('user_id', $user)->where('product_id', $id)->first();
+
+            if ($cart) {
+                if ($cart->quantity > 1) {
+                    $cart->quantity--;
+                    $cart->save();
+                    return redirect('/cart');
+                } else {
+                    return redirect('/cart')->with('warning', 'Số lượng ít nhất là 1.');
+                }
             }
+        } else {
         }
-
-        return redirect('/viewCart');
     }
 
     public function deleteItemCart($id)
     {
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            $product_id = $id;
+            Cart::where('user_id', $user)->where('product_id', $product_id)->delete();
+            return redirect('cart');
+        } else {
+            //lấy ra giỏ hàng từ cookie
+            $cart = json_decode(request()->cookie('cart', '[]'), true); // sử dụng json_decode để giải mã chuỗi thành mảng kết hợp(key-value: product_id- thông tin san phẩm đó)
+            $product_id = array_column($cart, 'product_id');
+            $key = array_search($id, $product_id);
+            // array_column lấy 1 cột trong mảng $cart là (product_id) và trả về giá trị từ 1 cột duy nhất đó
+            // array_search : tìm $id trong mảng $product_id vừa tạo
 
-        //lấy ra giỏ hàng từ session
-        $cart = session()->get('cart', []);
-
-        //Nếu có thì tiến hành xóa
-        if (isset($cart[$id])) {
-            session()->forget('cart.' . $id);
+            if ($key !== false) {
+                unset($cart[$key]);
+                $cart = array_values($cart); //  array_values: lấy tất cả các giá trị trong một mảng và gán các khóa số cho chúng theo thứ tự.
+                $cookie = cookie('cart', json_encode($cart), 0);
+                return redirect('/cart')->withCookie($cookie);
+            }
         }
-        return redirect('/viewCart');
     }
 
     public function deleteAllCart()
     {
-        $cart = session()->get('cart', []);
-        session()->forget('cart');
-        return redirect('/viewCart');
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            Cart::where('user_id', $user)->delete();
+            return redirect('cart');
+        } else {
+            $cart = json_decode(request()->cookie('cart', '[]'), true);
+            if (is_array($cart)) {
+                $cookie = cookie()->forget('cart');
+                return redirect('cart')->withCookie($cookie); // và trả về cookie mới cùng với phan hoi http
+            }
+        }
     }
 
     public function vieworder()

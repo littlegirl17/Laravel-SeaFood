@@ -11,9 +11,11 @@
         <form action="{{ route('productUpdate', $product->id) }}" method="post" class="formAdmin"
             enctype="multipart/form-data">
             @csrf
-            <button class="btnFormAdd mb-5">
-                Lưu
-            </button>
+            <div class="buttonProductForm ">
+                <button class="btn btnF3">
+                    Lưu
+                </button>
+            </div>
             @method('PUT')
 
             <ul class="nav nav-tabs mt-5" id="myTab" role="tablist">

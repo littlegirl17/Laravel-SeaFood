@@ -4,11 +4,11 @@
 
     <div class="container-fluid">
 
-        <h3 class="title-page ">
-            Nhóm người dùng
-        </h3>
         @if (session('danger'))
-            <div id="alert-message" class="alert alert-danger py-2">{{ session('danger') }}</div>
+            <div id="alert-message" class="alertDanger">{{ session('danger') }}</div>
+        @endif
+        @if (session('success'))
+            <div id="alert-message" class="alertSuccess">{{ session('success') }}</div>
         @endif
         <form id="submitFormAdmin" method="">
             @csrf

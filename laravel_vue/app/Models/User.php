@@ -78,14 +78,9 @@ class User extends Authenticatable
     }
 
 
-    public function checkLogin($name, $password)
+    public function countUserGroup($userGroupId)
     {
-        $adminUser = $this->where('name', $name)->Where('password', $password)->first();
-
-        if ($adminUser && Hash::check($password, $adminUser->password)) {
-            return $adminUser;
-        }
-        return $adminUser;
+        return $this->where('user_group_id', $userGroupId)->count();
     }
 
     public function userGroup()

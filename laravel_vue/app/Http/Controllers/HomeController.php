@@ -22,7 +22,8 @@ class HomeController extends Controller
     private $userGroupModel;
     private $productDiscountModel;
 
-    public function __construct(Product $productModel, Category $categoryModel,OrderProduct $orderProductModel){
+    public function __construct(Product $productModel, Category $categoryModel, OrderProduct $orderProductModel)
+    {
         $this->productModel = $productModel;
         $this->categoryModel = $categoryModel;
         $this->orderProductModel = $orderProductModel;
@@ -30,24 +31,25 @@ class HomeController extends Controller
         $this->bannerImageModel = new BannerImage;
         $this->userGroupModel = new UserGroup;
         $this->productDiscountModel = new ProductDiscount;
-
     }
 
-    public function search(Request $request){
+    public function search(Request $request)
+    {
         $search = $request->input('search');
         $products = $this->productModel->search($search);
         $user = auth()->user();
 
-        return view('search', ['products' => $products, 'search' => $search,'user' => $user]);
+        return view('search', ['products' => $products, 'search' => $search, 'user' => $user]);
     }
 
-    public function index() {
+    public function index()
+    {
         //lấy ra tất cả danh mục
         $categories = $this->categoryModel->categoryHome();
 
         //mảng này sử dụng để lưu trữ sản phẩm theo danh mục tương ứng
         $productByCategory = [];
-        foreach($categories as $category){
+        foreach ($categories as $category) {
             $productByCategory[$category->id] = $category->productByCate(); //lấy ra sản phẩm theo IDDM cụ thể
         }
 
@@ -72,6 +74,4 @@ class HomeController extends Controller
         Session::forget('buyNowCart');
         return view('home', $data);
     }
-
-
 }

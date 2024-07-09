@@ -112,10 +112,11 @@ class Product extends Model
         // lấy danh mục dựa trên slug, sau đó $category->id trả về ID của danh mục này.
     }
 
-    // public function getProductID($cart){
-    //     $product_id = array_column($cart,'id');
-    //     return $this->where('id',$product_id)->get();
-    // }
+    public function countCategory($categoryId)
+    {
+        return $this->where('category_id', $categoryId)->count();
+    }
+
 
 
 

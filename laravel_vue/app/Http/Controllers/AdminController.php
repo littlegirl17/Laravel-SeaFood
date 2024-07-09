@@ -155,6 +155,19 @@ class AdminController extends Controller
 
         return view('admin.user', compact('users', 'filter_email'));
     }
+
+    public function searchAdministration(Request $request)
+    {
+        //Lấy từ khóa tìm kiếm từ yêu cầu
+        $filter_name = $request->input('filter_name');
+        $filter_adminGroupId = $request->input('filter_adminGroupId');
+
+        $administrations = $this->administrationModel->searchAdministration($filter_adminGroupId, $filter_name);
+        $administrationGroups = $this->administrationGroupModel->administrationGroupAll();
+        return view('admin.administration', compact('administrations', 'administrationGroups', 'filter_name'));
+    }
+
+
     public function logout(Request $request)
     {
         Auth::logout();
@@ -197,6 +210,11 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        // $countProduct = $this->productModel->countProduct();
+        // $countCategory = $this->categoryModel->countCategory();
+        // $countUser = $this->userModel->countUser();``
+        // $countBlog = $this->blogModel->countBlog();
+
         return view('admin.dashboard');
     }
 
@@ -281,8 +299,17 @@ class AdminController extends Controller
         $category_id = $request->input('category_id');
         if ($category_id) {
             foreach ($category_id as $item) {
+
                 $category = $this->categoryModel->findOrFail($item);
-                $category->delete();
+
+                $countCategory = $this->productModel->countCategory($item);
+
+                //nếu bảng product có category_id lớn hơn 0 thì ko cho xóa: nghĩa là nó đang có kết nối đến 1 bảng ghi trong bảng category
+                if ($countCategory > 0) {
+                    return redirect()->route('category')->with('danger', ' Cảnh báo: Nhóm danh mục này không thể bị xóa vì nó hiện được chỉ định cho ' . $countCategory . ' sản phẩm!');
+                } else {
+                    $category->delete();
+                }
             }
         }
         return redirect()->route('category')->with('success', 'Xóa sản phẩm thành công.');
@@ -735,9 +762,15 @@ class AdminController extends Controller
 
         if ($userGroup_id) {
             foreach ($userGroup_id as $idUserGroup) {
+
                 $userGroup = $this->userGroupModel->findOrFail($idUserGroup);
-                if ($userGroup->id == 1) {
-                    return redirect()->route('admin.userGroup')->with('danger', ' Cảnh báo: Nhóm khách hàng này không thể bị xóa vì nó hiện được chỉ định cho 1 khách hàng!');
+
+                //count user_group_id trong bảng user
+                $countUserGroup = $this->userModel->countUserGroup($idUserGroup);
+
+                //nếu bảng user có user_group_id lớn hơn 0 thì ko cho xóa: nghĩa là nó đang có kết nối đến 1 bảng ghi trong bảng userGroup
+                if ($countUserGroup > 0) {
+                    return redirect()->route('admin.userGroup')->with('danger', ' Cảnh báo: Nhóm khách hàng này không thể bị xóa vì nó hiện được chỉ định cho ' . $countUserGroup . ' khách hàng!');
                 } else {
                     $userGroup->delete();
                 }
@@ -966,7 +999,8 @@ class AdminController extends Controller
     public function administration()
     {
         $administrations = $this->administrationModel->getAllAdmin();
-        return view('admin.administration', compact('administrations'));
+        $administrationGroups = $this->administrationGroupModel->administrationGroupAll();
+        return view('admin.administration', compact('administrations', 'administrationGroups'));
     }
 
     public function administrationAdd(Request $request)
@@ -1051,7 +1085,7 @@ class AdminController extends Controller
         return redirect()->route('administration');
     }
 
-    public function administrationDeleteCheckkbox(Request $request, $id)
+    public function administrationDeleteCheckkbox(Request $request)
     {
         $administration_id = $request->input('administration_id');
 
@@ -1090,8 +1124,8 @@ class AdminController extends Controller
     public function administrationGroupEdit($id)
     {
         $administrationGroup = $this->administrationGroupModel->findOrFail($id);
-        $permission = json_decode($administrationGroup->permission, true);
-        return view('admin.administrationGroupEdit', compact('administrationGroup', 'permission'));
+        $permissionGroup = json_decode($administrationGroup->permission, true);
+        return view('admin.administrationGroupEdit', compact('administrationGroup', 'permissionGroup'));
     }
 
     public function administrationGroupUpdate(Request $request, $id)
@@ -1105,14 +1139,21 @@ class AdminController extends Controller
         return redirect()->route('administrationGroup');
     }
 
-    public function administrationGroupDeleteCheckkbox(Request $request, $id)
+    public function administrationGroupDeleteCheckkbox(Request $request)
     {
         $administrationGroup_id = $request->input('administrationGroup_id');
 
         if ($administrationGroup_id) {
             foreach ($administrationGroup_id as $itemId) {
                 $administrationGroup = $this->administrationGroupModel->findOrFail($itemId);
-                $administrationGroup->delete();
+
+                $countAdministrationGroup = $this->administrationModel->countAdministrationGroup($itemId);
+                if ($countAdministrationGroup > 0) {
+                    return redirect()->route('administrationGroup')->with('danger', ' Cảnh báo: Nhóm người dùng này không thể bị xóa vì nó hiện được chỉ định cho ' . $countAdministrationGroup . ' người dùng!');
+                } else {
+                    $administrationGroup->delete();
+                    return redirect()->route('administrationGroup')->with('success', ' Thành công: Nhóm người dùng này đã được xóa');
+                }
             }
         }
         return redirect()->route('administrationGroup')->with('success', 'Xóa nhóm người dùng thành công.');

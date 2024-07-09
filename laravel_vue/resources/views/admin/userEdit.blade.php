@@ -11,9 +11,11 @@
         <form action="{{ route('userUpdate', $user->id) }}" method="post" class="formAdmin" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <button class="btnFormAdd ">
-                Lưu
-            </button>
+            <div class="buttonProductForm ">
+                <button class="btn btnF3">
+                    Lưu
+                </button>
+            </div>
             <ul class="nav nav-tabs mt-5" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"

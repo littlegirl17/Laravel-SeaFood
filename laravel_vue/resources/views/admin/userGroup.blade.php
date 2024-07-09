@@ -4,11 +4,8 @@
 
     <div class="container-fluid">
 
-        <h3 class="title-page ">
-            Nhóm khách hàng
-        </h3>
         @if (session('danger'))
-            <div id="alert-message" class="alert alert-danger py-2">{{ session('danger') }}</div>
+            <div id="alert-message" class="alertDanger">{{ session('danger') }}</div>
         @endif
         <div class="d-flex justify-content-between  align-items-center">
             {{-- <form action="{{ route('searchCategory') }}" method="GET">
@@ -24,10 +21,12 @@
                     <a href="{{ route('admin.userGroupAdd') }}" class="text-decoration-none text-light"><i
                             class="pe-2 fa-solid fa-plus" style="color: #ffffff;"></i>Tạo Nhóm khách hàng</a>
                 </button>
-                {{-- <button class="btn btnF2" type="button"
+
+                <button class="btn btnF2" type="button"
                     onclick="submitForm('{{ route('checkboxDeleteUserGroup') }}','post')"><i class="pe-2 fa-solid fa-trash"
                         style="color: #ffffff;"></i>Xóa
-                </button>  --}}
+                </button>
+
             </div>
 
             <div class="border p-2">

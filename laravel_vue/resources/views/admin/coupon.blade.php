@@ -86,7 +86,14 @@
                                     <p>{{ $item->name_coupon }}</p>
                                 </td>
                                 <td class="">{{ $item->code }}</td>
-                                <td class="">{{ $item->discount }}</td>
+                                <td class="">
+                                    @if ($item->type >= 1)
+                                        {{ number_format($item->discount, 0, ',', '.') . 'đ' }}
+                                    @else
+                                        {{ number_format($item->discount, 0, ',', '.') . '%' }}
+                                    @endif
+                                </td>
+
                                 <td class="">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" role="switch"

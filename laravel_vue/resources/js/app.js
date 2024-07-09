@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import AddToCartComponent from './components/AddToCartComponent.vue';
 
+
 const app = createApp({
     methods: {
         initializeOwlCarousel() {
@@ -20,7 +21,7 @@ const app = createApp({
                             items: 5
                         }
                     }
-                });
+                });CartComponent
             });
         }
     },
@@ -33,4 +34,6 @@ const app = createApp({
 });
 
 app.component('add-to-cart-component', AddToCartComponent);
+
 app.mount('#mainApp');
+
