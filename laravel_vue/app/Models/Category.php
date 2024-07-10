@@ -38,7 +38,10 @@ class Category extends Model
     }
 
 
-
+    public function countCategory()
+    {
+        return $this->count('id');
+    }
 
     public function categoryHome()
     {

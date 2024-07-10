@@ -6,7 +6,8 @@
                 @if ($item->position == 5)
                     @if ($item->banneImages->isNotEmpty())
                         @foreach ($item->banneImages as $images)
-                            <img src="{{ asset('uploads/' . $images->image) }}" class="imgfluidFooter">
+                            <a href="/"> <img src="{{ asset('uploads/' . $images->image) }}"
+                                    class="imgfluidFooter"></a>
                         @endforeach
                     @endif
                 @endif

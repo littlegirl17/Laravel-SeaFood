@@ -645,7 +645,8 @@ table tbody tr:nth-child(even) {
 /**/
 .cardDashboard {
     padding: 15px 5px;
-    background-color: #FFFFFF;
+    background-color: #F1F1F0;
+    border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
 }
 
@@ -731,6 +732,36 @@ table tbody tr:nth-child(even) {
 .cardDashboard_3 h4,
 .cardDashboard_4 h4 {
     color: #FFFFFF;
+}
+
+/**/
+.cardTwoDashboard {
+    background-color: #FFFFFF;
+    border-radius: 5px;
+}
+
+.cardTwoDashboardItem {
+    background-color: #F1F1F0;
+    padding: 10px 10px;
+    margin: 0 0;
+    height: 130px;
+    border-radius: 5px;
+    position: relative;
+
+}
+
+.iconCardDash {
+    position: absolute;
+    top: 20px;
+    left: 220px;
+    border-radius: 50%;
+    background-color: #000000;
+    width: 35px;
+    height: 35px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /**/

@@ -210,12 +210,16 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        // $countProduct = $this->productModel->countProduct();
-        // $countCategory = $this->categoryModel->countCategory();
-        // $countUser = $this->userModel->countUser();``
+        $countProduct = $this->productModel->countProduct();
+        $countCategory = $this->categoryModel->countCategory();
+        $countUser = $this->userModel->countUser();
+        $countOrder = $this->orderModel->countOrder();
+
         // $countBlog = $this->blogModel->countBlog();
 
-        return view('admin.dashboard');
+        // doanh số
+        $totalRevenue = $this->orderModel->totalRevenue();
+        return view('admin.dashboard', compact('totalRevenue', 'countProduct', 'countCategory', 'countUser', 'countOrder'));
     }
 
     // category

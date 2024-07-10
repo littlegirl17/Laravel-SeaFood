@@ -240,56 +240,56 @@
                         </div>
                     @else
                         @php
-                            $cart = Session::get('cart');
                             $TongTien = 0;
                             $ThanhTien = 0;
                         @endphp
-                        @if (is_array($cart))
-                            @foreach ($cart as $item)
-                                @if (is_array($item))
-                                    @php
-                                        $SoTien = intval($item['price']);
+                        {{-- @if (is_array($cart)) --}}
+                        @foreach ($cart as $item)
+                            {{-- @if (is_array($item)) --}}
+                            @php
+                                $product = $products->where('id', $item['product_id'])->first();
 
-                                        $product = $products->where('id', $item['id'])->first();
-                                        if ($user && $user->userGroup) {
-                                            $userGroup = $user->userGroup->id;
-                                            $userProductDiscount = $product->productDiscounts
-                                                ->where('user_group_id', $userGroup)
-                                                ->first();
-                                            if ($userProductDiscount) {
-                                                $SoTien = $userProductDiscount->price;
-                                            }
-                                        }
+                                $SoTien = $product ? $product->price : 0; // giá bth chưa có giá giảm
 
-                                        $userGroup = 1; // ID của nhóm khách hàng "Bình thường (default)", mặc định là 1
-                                        $userProductDiscountDefault = $product->productDiscounts
-                                            ->where('user_group_id', $userGroup)
-                                            ->first();
-                                        if ($userProductDiscountDefault) {
-                                            $SoTien = $userProductDiscountDefault->price;
-                                        }
+                                if ($user && $user->userGroup) {
+                                    $userGroup = $user->userGroup->id; // lấy ra id trong bảng userGroups
+                                    $userProductDiscount = $product->productDiscounts
+                                        ->where('user_group_id', $userGroup)
+                                        ->first(); //check trong bảng productDiscount nếu user_group_id trong bảng(PD) khớp với id trong bảng(UG) hay không, có thì lấy ra
 
-                                        $ThanhTien = $SoTien * $item['quantity'];
-                                        $TongTien += $ThanhTien;
-                                    @endphp
-                                    <div class="row mt-3 ">
-                                        <input type="hidden" name="id" value="{{ $item['id'] }}">
+                                    if ($userProductDiscount) {
+                                        $SoTien = $userProductDiscount->price; // GIÁ giảm của sản phẩm trong bảng (PD)
+                                    }
+                                }
 
-                                        <div class="col-md-3 col-sm-3 imgCheckout">
-                                            <img src="{{ asset('uploads/' . $item['image']) }}" class="rounded-3"
-                                                alt="">
-                                        </div>
-                                        <div class="col-md-6 col-sm-9">
-                                            <h5>{{ $item['name'] }}</h5>
-                                            <p>Số lượng: {{ $item['quantity'] }}</p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h5 class="m-0 p-0">{{ number_format($ThanhTien, 0, ',', '.') . 'đ' }}</h5>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        @endif
+                                $userGroup = 1; // ID của nhóm khách hàng "Bình thường (default)", mặc định là 1
+                                $userProductDiscountDefault = $product->productDiscounts
+                                    ->where('user_group_id', $userGroup)
+                                    ->first();
+                                if ($userProductDiscountDefault) {
+                                    $SoTien = $userProductDiscountDefault->price;
+                                }
+
+                                $ThanhTien = $SoTien * $item['quantity'];
+                                $TongTien += $ThanhTien;
+                            @endphp
+                            <div class="row mt-3 ">
+                                <input type="hidden" name="id" value="{{ $item['product_id'] }}">
+                                <div class="col-md-3 col-sm-3 imgCheckout">
+                                    <img src="{{ asset('uploads/' . $product->image) }}" class="rounded-3"
+                                        alt="">
+                                </div>
+                                <div class="col-md-6 col-sm-9">
+                                    <h5>{{ $product->name }}</h5>
+                                    <p>Số lượng: {{ $item['quantity'] }}</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h5 class="m-0 p-0">{{ number_format($ThanhTien, 0, ',', '.') . 'đ' }}</h5>
+                                </div>
+                            </div>
+                            {{-- @endif --}}
+                        @endforeach
+                        {{-- @endif --}}
                     @endif
                     <hr>
 

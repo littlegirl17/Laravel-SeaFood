@@ -59,7 +59,7 @@
                     <a href="{{ route('admin.order', ['status_id' => 1]) }}" class="btn btn-success rounded-0  border-0"
                         style="background-color: #00bcd4">Mới ({{ $countNew }})</a>
                     <a href="{{ route('admin.order', ['status_id' => 2]) }}" class="btn btn-success rounded-0  border-0"
-                        style="background-color: #E8BE21">Đang xử lý ({{ $countProcessing }})</a>
+                        style="background-color: #FFB356">Đang xử lý ({{ $countProcessing }})</a>
                     <a href="{{ route('admin.order', ['status_id' => 3]) }}" class="btn btn-success rounded-0  border-0"
                         style="background-color: #188DD1">Đã giao hàng ({{ $countShipped }})</a>
                     <a href="{{ route('admin.order', ['status_id' => 4]) }}" class="btn btn-success rounded-0  border-0"

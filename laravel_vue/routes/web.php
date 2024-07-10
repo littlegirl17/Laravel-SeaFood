@@ -50,10 +50,10 @@ Route::get('/detail-product/{slug}', [ProductController::class, 'detail']);
 // ROUTE PRODUCT CART
 //Route::get('/viewCart', [ProductController::class, 'viewCart']);
 Route::post('/add-to-cart', [ProductController::class, 'addToCart']);
-Route::get('/giam-quantity/{id}', [ProductController::class, 'giamQuantity'])->name('giam');
-Route::get('/tang-quantity/{id}', [ProductController::class, 'tangQuantity'])->name('tang');
-Route::get('/delete-item-cart/{id}', [ProductController::class, 'deleteItemCart'])->name('deleteItem');
-Route::get('/delete-all-cart', [ProductController::class, 'deleteAllCart'])->name('deleteAll');
+Route::get('/giam-quantity/{id}', [CartController::class, 'giamQuantity'])->name('giam');
+Route::get('/tang-quantity/{id}', [CartController::class, 'tangQuantity'])->name('tang');
+Route::get('/delete-item-cart/{id}', [CartController::class, 'deleteItemCart'])->name('deleteItem');
+Route::get('/delete-all-cart', [CartController::class, 'deleteAllCart'])->name('deleteAll');
 
 Route::post('/buy-now', [ProductController::class, 'buyNow']);
 Route::get('/clear-buy-now', [ProductController::class, 'clearBuyNowCart'])->name('clearBuyNow');

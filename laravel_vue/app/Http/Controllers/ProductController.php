@@ -64,48 +64,6 @@ class ProductController extends Controller
         return response()->json(['count' => $cartCount]);
     }
 
-    // public function viewCart(Request $request)
-    // {
-    //     // $cart = cookie()->get('cart', []);
-    //     $cart = json_decode(request()->cookie('cart'), true);
-
-    //     $user = auth()->user(); //Lấy thông tin người dùng đã đăng nhập hiện tại.
-    //     //$products = $this->productModel->whereIn('id', array_column($cart, 'product_id'))->get();
-    //     $products = $this->productModel;
-    //     return view('cart', compact('cart', 'user', 'products'));
-    // }
-
-    // public function addToCart(Request $request)
-    // {
-
-    //     $id = $request->input('id');
-    //     $name = $request->input('name');
-    //     $image = $request->input('image');
-    //     $price = $request->input('price');
-    //     $quantity = $request->input('quantity');
-
-    //     //Kiểm tra product có trong cart chưa
-    //     $cart = session()->get('cart', []);
-
-    //     if (isset($cart[$id])) {
-    //         //Có rồi thì tăng số lượng
-    //         $cart[$id]['quantity'] += $quantity;
-    //     } else {
-    //         // chưa có, thì lưu các item đó vào mảng $cart[$id] $id để xác định sản phẩm trong giỏ hàng bằng một định danh duy nhất
-    //         $cart[$id] = [
-    //             'id' => $id,
-    //             'name' => $name,
-    //             'image' => $image,
-    //             'price' => $price,
-    //             'quantity' => $quantity,
-    //         ];
-    //     }
-
-    //     //Lưu cart vào session
-    //     session()->put('cart', $cart);
-    //     return redirect()->back();
-    // }
-
     public function buyNow(Request $request)
     {
 
@@ -140,90 +98,14 @@ class ProductController extends Controller
     }
 
 
-    public function tangQuantity($id)
-    {
-
-        if (Auth::check()) {
-            $user = Auth::user()->id;
-            $cart = Cart::where('user_id', $user)->where('product_id', $id)->first();
-            if ($cart) {
-                $cart->quantity++;
-                $cart->save();
-                return redirect('/cart');
-            }
-        } else {
-            $cart = json_decode(request()->cookie('cart'), true);
-            $existingItem = array_search($id, array_column($cart, 'product_id'));
-            if ($existingItem !== false) {
-                $cart[$existingItem]['quantity']++;
-            }
-            $cookie = cookie('cart', json_encode($cart), 0);
-            return redirect('/cart')->withCookie($cookie);
-        }
-    }
-
-    public function giamQuantity($id)
-    {
-        if (Auth::check()) {
-            $user = Auth::user()->id;
-
-            $cart = Cart::where('user_id', $user)->where('product_id', $id)->first();
-
-            if ($cart) {
-                if ($cart->quantity > 1) {
-                    $cart->quantity--;
-                    $cart->save();
-                    return redirect('/cart');
-                } else {
-                    return redirect('/cart')->with('warning', 'Số lượng ít nhất là 1.');
-                }
-            }
-        } else {
-        }
-    }
-
-    public function deleteItemCart($id)
-    {
-        if (Auth::check()) {
-            $user = Auth::user()->id;
-            $product_id = $id;
-            Cart::where('user_id', $user)->where('product_id', $product_id)->delete();
-            return redirect('cart');
-        } else {
-            //lấy ra giỏ hàng từ cookie
-            $cart = json_decode(request()->cookie('cart', '[]'), true); // sử dụng json_decode để giải mã chuỗi thành mảng kết hợp(key-value: product_id- thông tin san phẩm đó)
-            $product_id = array_column($cart, 'product_id');
-            $key = array_search($id, $product_id);
-            // array_column lấy 1 cột trong mảng $cart là (product_id) và trả về giá trị từ 1 cột duy nhất đó
-            // array_search : tìm $id trong mảng $product_id vừa tạo
-
-            if ($key !== false) {
-                unset($cart[$key]);
-                $cart = array_values($cart); //  array_values: lấy tất cả các giá trị trong một mảng và gán các khóa số cho chúng theo thứ tự.
-                $cookie = cookie('cart', json_encode($cart), 0);
-                return redirect('/cart')->withCookie($cookie);
-            }
-        }
-    }
-
-    public function deleteAllCart()
-    {
-        if (Auth::check()) {
-            $user = Auth::user()->id;
-            Cart::where('user_id', $user)->delete();
-            return redirect('cart');
-        } else {
-            $cart = json_decode(request()->cookie('cart', '[]'), true);
-            if (is_array($cart)) {
-                $cookie = cookie()->forget('cart');
-                return redirect('cart')->withCookie($cookie); // và trả về cookie mới cùng với phan hoi http
-            }
-        }
-    }
-
     public function vieworder()
     {
-        $cart = session()->get('cart', []);
+        $cart = [];
+        if (Auth::check()) {
+            $cart = $this->cartModel->getCartAll();
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true) ?? [];
+        }
         if (empty($cart)) {
             return redirect('/');
         }
@@ -236,16 +118,28 @@ class ProductController extends Controller
 
     public function viewcheckout()
     {
-        $cart = session()->get('cart', []);
+        $cart = [];
+        $user = auth()->user();
+        if (Auth::check()) {
+            $cart = $this->cartModel->getCartAll();
+            // Trích xuất ra tất cả các ID của sản phẩm trong bảng cart
+            $productIds = $cart->pluck('product_id')->all(); // pluck: có thể được hiểu lấy 1 fields nào đó và trả về một mảng
+            // Lấy ra thông tin chi tiết của 1 san phẩm dựa trên productIds đã trích xuất từ table cart
+            $products = $this->productModel->whereIn('id', $productIds)->get(); // whereIn kiểm tra giá trị của cột nằm trong một mảng
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true) ?? [];
+            //array_column() trích xuất một cột (dựa vào key) từ tất cả các phần tử trong mảng $cart và trả về một mảng mới chỉ chứa các giá trị của cột đó (trong trường hợp này là các ID sản phẩm)
+            $products = $this->productModel->whereIn('id', array_column($cart, 'product_id'))->get();
+        }
+
+
         $buyNowCart = session()->get('buyNowCart', []);
         if (empty($cart) && empty($buyNowCart)) {
             return redirect('/');
         }
 
-        $user = auth()->user();
-        $products = $this->productModel;
 
-        return view('checkout', compact('user', 'products'));
+        return view('checkout', compact('cart', 'user', 'products'));
     }
 
     public function checkout(Request $request)
@@ -304,28 +198,23 @@ class ProductController extends Controller
         $order->coupon_code = $request->input('coupon_code');
         $order->note = $request->input('note');
         $order->status_id = 1; //mặc định là 1
+        $order->payment = 1; //mặc định là 1
         $order->order_code = 'SEAFOOD-' . rand(10000, 999999);
         $order->save();
 
         session()->put('iddh', $order);
 
         // Lưu các sản phẩm vào bảng OrderProduct
-        $cart = session()->get('cart', []);
-        foreach ($cart as $item) {
-            // $total += $item['price'] * $item['quantity'];
-            $orderProduct = new OrderProduct();
-            $orderProduct->order_id = $order->id; //Đây là ID của đơn hàng mới vừa được tạo. Khi tạo một mẫu OrderProduct, cần liên kết nó với ID của đơn hàng đó.
-            $orderProduct->product_id = $item['id']; //ID của sản phẩm trong giỏ hàng.
-            $orderProduct->name = $item['name'];
-            $orderProduct->price =  $item['discount_price'] ?? $item['price'];
-            $orderProduct->quantity = $item['quantity'];
-            $orderProduct->total =  $orderProduct->price * $item['quantity']; //Điều này có nghĩa là giá (price) có thể là giá giảm (discount_price) nếu nó tồn tại, nếu không sẽ sử dụng giá gốc (price).
-            $orderProduct->save();
 
-            $product = $this->productModel->findOrFail($item['id']);
-            $product->quantity -= $item['quantity'];
-            $product->save();
+        $cart = [];
+        if (Auth::check()) {
+            $cart = $this->cartModel->getCartAll();
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true) ?? [];
         }
+
+        //LINK HÀM: lưu thông tin sản phẩm, số lượng, thành tiền vào bảng (OrderProduct)(MỤC ĐÍCH: tách ra từng phần dễ quản lý)
+        $this->checkoutProductCart($cart, $order);
 
         $buyNowCart = session()->get('buyNowCart', []);
         if (!empty($buyNowCart)) {
@@ -345,11 +234,58 @@ class ProductController extends Controller
         }
 
         // Xóa sản phẩm khỏi giỏ hàng sau khi tạo đơn hàng
-        session()->forget('cart');
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            $cart = $this->cartModel->where('user_id', $user)->delete();
+        }
+        $removeCookieCart = cookie()->forget('cart');
+
         session()->forget('buyNowCart');
         session()->forget('coupon');
 
-        return redirect('/vieworder');
+        return redirect('/vieworder')->withCookie($removeCookieCart);
+    }
+
+
+    public function checkoutProductCart($cart, $order)
+    {
+        //lưu thông tin sản phẩm, số lượng, thành tiền vào bảng (OrderProduct)
+        foreach ($cart as $item) {
+            $product = $this->productModel->where('id', $item['product_id'])->first();
+            $user = auth()->user();
+            $price = $product ? $product->price : 0;
+            if ($user && $user->userGroup) {
+                $userGroup = $user->userGroup->id;
+                $userProductDiscount = $product->productDiscounts
+                    ->where('user_group_id', $userGroup)
+                    ->first();
+                if ($userProductDiscount) {
+                    $price = $userProductDiscount->price;
+                }
+            }
+
+            $userGroup = 1; // ID của nhóm khách hàng "Bình thường (default)", mặc định là 1
+            $userProductDiscountDefault = $product->productDiscounts
+                ->where('user_group_id', $userGroup)
+                ->first();
+            if ($userProductDiscountDefault) {
+                $price = $userProductDiscountDefault->price;
+            }
+            $ThanhTien = $price * $item['quantity'];
+
+            $orderProduct = new OrderProduct();
+            $orderProduct->order_id = $order->id; //Đây là ID của đơn hàng mới vừa được tạo. Khi tạo một mẫu OrderProduct, cần liên kết nó với ID của đơn hàng đó.
+            $orderProduct->product_id = $item['product_id']; //ID của sản phẩm
+            $orderProduct->name = $product->name;
+            $orderProduct->price =  $price;
+            $orderProduct->quantity = $item['quantity'];
+            $orderProduct->total =  $ThanhTien;
+            $orderProduct->save();
+
+            $product = $this->productModel->findOrFail($item['product_id']);
+            $product->quantity -= $item['quantity'];
+            $product->save();
+        }
     }
 
     public function couponDelete()
@@ -357,38 +293,55 @@ class ProductController extends Controller
         $coupon = Session::get('coupon');
         if ($coupon == true) {
             session()->forget('coupon');
-            return redirect('/viewCart')->with('message', 'Xóa mã giảm giá thành công');
+            return redirect('/cart')->with('message', 'Xóa mã giảm giá thành công');
         }
     }
 
     public function couponApply(Request $request)
     {
 
-        // Kiểm tra tồn tại giỏ hàng
-        if (!Session::has('cart')) {
-            return redirect('/');
-        }
-
         $data = $request->all(); // Lấy dữ liệu từ yêu cầu
 
         $coupon = $this->couponModel->where('code', $data['couponCode'])->where('status', 1)->first(); // Tìm kiếm mã giảm giá trong cơ sở dữ liệu
 
-        // Kiểm tra xem giỏ hàng có sản phẩm nào không
-        $cart = Session::get('cart', []);
-        if (empty($cart) || count($cart) == 0) {
-            return redirect('/viewCart')->with('error', 'Không có sản phẩm trong giỏ hàng để áp mã giảm giá');
-        }
         // Nếu tìm thấy mã giảm giá
         if ($coupon) {
             $count_coupon = $coupon->count(); //Đếm số lượng mã giảm giá.
 
+            $cart = [];
+            if (Auth::check()) {
+                $cart = $this->cartModel->getCartAll();
+            } else {
+                $cart = json_decode(request()->cookie('cart'), true) ?? [];
+            }
+            if (empty($cart) || count($cart) == 0) {
+                return redirect('/cart')->with('error', 'Không có sản phẩm trong giỏ hàng để áp mã giảm giá');
+            }
             // Tính tổng giá trị của giỏ hàng
             $total = 0;
             foreach ($cart as $item) {
-                if (is_array($item)) { // Kiểm tra xem $item có phải là một mảng hay không
-                    $ThanhTien = isset($item['discount_price']) ? $item['discount_price'] * $item['quantity'] : $item['price'] * $item['quantity'];
-                    $total += $ThanhTien;
+                $product = $this->productModel->where('id', $item['product_id'])->first();
+                $user = auth()->user();
+                $price = $product ? $product->price : 0;
+                if ($user && $user->userGroup) {
+                    $userGroup = $user->userGroup->id;
+                    $userProductDiscount = $product->productDiscounts
+                        ->where('user_group_id', $userGroup)
+                        ->first();
+                    if ($userProductDiscount) {
+                        $price = $userProductDiscount->price;
+                    }
                 }
+
+                $userGroup = 1; // ID của nhóm khách hàng "Bình thường (default)", mặc định là 1
+                $userProductDiscountDefault = $product->productDiscounts
+                    ->where('user_group_id', $userGroup)
+                    ->first();
+                if ($userProductDiscountDefault) {
+                    $price = $userProductDiscountDefault->price;
+                }
+                $ThanhTien = $price * $item['quantity'];
+                $total += $ThanhTien;
             }
 
             // Kiểm tra điều kiện mã giảm giá có hợp lệ không
@@ -402,13 +355,13 @@ class ProductController extends Controller
                     );
                     Session::put('coupon', $cou);
                     Session::save();
-                    return redirect('/viewCart')->with('message', 'Thêm mã giảm giá thành công');
+                    return redirect('/cart')->with('message', 'Thêm mã giảm giá thành công');
                 } else {
-                    return redirect('/viewCart')->with('error', 'Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá này');
+                    return redirect('/cart')->with('error', 'Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá này');
                 }
             }
         } else {
-            return redirect('/viewCart')->with('error', 'Mã giảm giá không tồn tại');
+            return redirect('/cart')->with('error', 'Mã giảm giá không tồn tại');
         }
     }
 }

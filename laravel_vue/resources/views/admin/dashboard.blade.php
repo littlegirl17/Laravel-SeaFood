@@ -18,7 +18,7 @@
                             </div>
                             <div class="col-md-8 col-sm-8 col-8">
                                 <h4>Danh mục</h4>
-                                <p class="">10 danh mục</p>
+                                <p class="">{{ $countCategory }} danh mục</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                             </div>
                             <div class="col-md-8 col-sm-8 col-8">
                                 <h4>Sản phẩm</h4>
-                                <p>10 danh mục</p>
+                                <p>{{ $countProduct }} sản phẩm</p>
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                             </div>
                             <div class="col-md-8 col-sm-8 col-8">
                                 <h4>Thành viên</h4>
-                                <p>10 danh mục</p>
+                                <p>{{ $countUser }} danh mục</p>
                             </div>
                         </div>
                     </div>
@@ -72,6 +72,33 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="row mt-4 cardTwoDashboard">
+            <div class="col-md-3">
+                <div class="cardTwoDashboardItem">
+                    <h6 class="text-black">
+                        Tổng đơn hàng
+                    </h6>
+                    <h3>{{ $countOrder }} đơn hàng</h3>
+                    <div class="iconCardDash">
+                        <span><i class="fa-solid fa-cart-plus" style="color: #ffffff;"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="cardTwoDashboardItem">
+                    <h6 class="text-black">
+                        Tổng doanh số
+                    </h6>
+                    <h3>{{ number_format($totalRevenue, 0, ',', '.') }}đ</h3>
+                    <div class="iconCardDash">
+                        <span>$</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3"></div>
         </div>
     </div>
 

@@ -255,9 +255,78 @@
                         <div id="noneCoupon" class="alert alert-danger">{{ session('error') }}</div>
                     @endif
                 </div>
+                <div class="col-md-6 col-sm-6 col-12 my-4 totalAll_cart">
+                    <div class="totalCart">
+                        <h4>Tổng tiền giỏ hàng</h4>
+                        <div class="row totalCartIt ">
 
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between py-2">
+                                    <span class="">Tạm tính</span><span
+                                        class="price text-light ">{{ number_format($TongTien, 0, ',', ',') }}đ</span>
+                                </div>
+                                <div class="d-flex justify-content-between py-2">
+                                    <span class="">Giảm giá</span>
+                                    <span class="price text-light ">
+                                        @if (Session::has('coupon'))
+                                            @foreach (Session::get('coupon') as $key => $cou)
+                                                @if (isset($cou['type']))
+                                                    @if ($cou['type'] == 0)
+                                                        <span>
+                                                            @php
+                                                                $total_coupon = ($TongTien * $cou['discount']) / 100;
+                                                                // echo '<p>Tổng giảm:'.number_format($total_coupon, 0, ',', '.').'đ</p>';
+                                                            @endphp
+                                                        </span>
+                                                        <span>{{ number_format($TongTien - $total_coupon, 0, ',', '.') . 'đ' }}</span>(
+                                                        {{ $cou['discount'] }}%)
+                                                    @else
+                                                        {{ number_format($cou['discount'], 0, ',', '.') . 'đ' }}
+                                                        <span>
+                                                            @php
+                                                                $total_coupon = $TongTien - $cou['discount'];
+                                                            @endphp
+                                                        </span>
+                                                        {{-- <p>{{number_format($total_coupon, 0, ',', '.').'đ'}}</p> --}}
+                                                    @endif
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between py-2">
+                                    <span class="">Thành tiền</span>
+                                    <span class="price text-light ">
+                                        @if (Session::has('coupon'))
+                                            @php
+                                                if (isset($total_coupon)) {
+                                                    if ($cou['type'] == 0) {
+                                                        $final_total = $TongTien - $total_coupon;
+                                                    } else {
+                                                        $final_total = $TongTien - $cou['discount'];
+                                                    }
+                                                } else {
+                                                    $final_total = $TongTien;
+                                                }
+                                            @endphp
+                                            <p>{{ number_format($final_total, 0, ',', '.') }}đ</p>
+                                        @else
+                                            <p>{{ number_format($TongTien, 0, ',', '.') }}đ</p>
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <button id="btnCheckout" class="btnCartCheckout mt-3"><a href="/checkout"
+                                onclick="return checkCart()">Thanh toán</a></button>
+                    </div>
+                </div>
             </div>
         </div>
+
+
+
 
         <script>
             function deleteAllCart() {
@@ -293,7 +362,7 @@
         </script>
         <script>
             function checkCart() {
-                var cartEmpy = {{ is_array($cart) && count($cart) > 0 ? 'false' : 'true' }};
+                var cartEmpy = {{ $cart && count($cart) > 0 ? 'false' : 'true' }};
                 if (cartEmpy) { //nếu nó là true
                     alert('Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.');
                     return false; // Ngăn không cho chuyển hướng đến trang thanh toán

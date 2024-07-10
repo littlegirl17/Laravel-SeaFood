@@ -117,7 +117,10 @@ class Product extends Model
         return $this->where('category_id', $categoryId)->count();
     }
 
-
+    public function countProduct()
+    {
+        return $this->count('id');
+    }
 
 
 

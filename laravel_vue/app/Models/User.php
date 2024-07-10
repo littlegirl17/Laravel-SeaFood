@@ -77,6 +77,11 @@ class User extends Authenticatable
         return $this->where('email', $email)->first();
     }
 
+    public function countUser()
+    {
+        return $this->count('id');
+    }
+
 
     public function countUserGroup($userGroupId)
     {

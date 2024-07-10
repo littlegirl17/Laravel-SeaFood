@@ -87,7 +87,7 @@ class CartController extends Controller
                 }
 
                 //tạo ra cookie mới
-                $cookie = cookie('cart', json_encode($cart), 0); // 0 nghĩa là lưu vĩnh viễn
+                $cookie = cookie('cart', json_encode($cart), 5256000); // 10 năm
                 // tar về phản hồi http, kèm thro cookie cart, khi trình duyệt nhận được phản hồi thì no se lưu cookie cart vào bộ nhớ =>cập nhật lên giao diện
                 return response()->json($cart)->cookie($cookie);
             }
@@ -98,6 +98,109 @@ class CartController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function tangQuantity($id)
+    {
+
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            $cart = Cart::where('user_id', $user)->where('product_id', $id)->first();
+            if ($cart) {
+                $cart->quantity++;
+                $cart->save();
+                return redirect('/cart');
+            }
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true);
+            $existingItem = array_search($id, array_column($cart, 'product_id'));
+            if ($existingItem !== false) {
+                $cart[$existingItem]['quantity']++;
+            }
+            $cookie = cookie('cart', json_encode($cart), 0);
+            return redirect('/cart')->withCookie($cookie);
+        }
+    }
+
+    public function giamQuantity($id)
+    {
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+
+            $cart = Cart::where('user_id', $user)->where('product_id', $id)->first();
+
+            if ($cart) {
+                if ($cart->quantity > 1) {
+                    $cart->quantity--;
+                    $cart->save();
+                    return redirect('/cart');
+                } else {
+                    return redirect('/cart')->with('warning', 'Số lượng ít nhất là 1.');
+                }
+            }
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true);
+            $existingItem = array_search($id, array_column($cart, 'product_id'));
+            if ($existingItem !== false) {
+                if ($cart[$existingItem]['quantity'] > 1) {
+                    $cart[$existingItem]['quantity']--;
+                    $cookie = cookie('cart', json_encode($cart), 0);
+                    return redirect('/cart')->withCookie($cookie);
+                } else {
+                    return redirect('/cart')->with('warning', 'Số lượng ít nhất là 1.');
+                }
+            }
+        }
+    }
+
+    public function deleteItemCart($id)
+    {
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            $product_id = $id;
+            Cart::where('user_id', $user)->where('product_id', $product_id)->delete();
+            return redirect('cart');
+        } else {
+            //lấy ra giỏ hàng từ cookie
+            $cart = json_decode(request()->cookie('cart', '[]'), true); // sử dụng json_decode để giải mã chuỗi thành mảng kết hợp(key-value: product_id- thông tin san phẩm đó)
+            $product_id = array_column($cart, 'product_id');
+            $key = array_search($id, $product_id);
+            // array_column lấy 1 cột trong mảng $cart là (product_id) và trả về giá trị từ 1 cột duy nhất đó
+            // array_search : tìm $id trong mảng $product_id vừa tạo
+
+            if ($key !== false) {
+                unset($cart[$key]);
+                $cart = array_values($cart); //  array_values: lấy tất cả các giá trị trong một mảng và gán các khóa số cho chúng theo thứ tự.
+                $cookie = cookie('cart', json_encode($cart), 0);
+                return redirect('/cart')->withCookie($cookie);
+            }
+        }
+    }
+
+    public function deleteAllCart()
+    {
+        if (Auth::check()) {
+            $user = Auth::user()->id;
+            Cart::where('user_id', $user)->delete();
+            return redirect('cart');
+        } else {
+            $cart = json_decode(request()->cookie('cart', '[]'), true);
+            if (is_array($cart)) {
+                $cookie = cookie()->forget('cart');
+                return redirect('cart')->withCookie($cookie); // và trả về cookie mới cùng với phan hoi http
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**

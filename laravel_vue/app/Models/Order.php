@@ -94,6 +94,7 @@ class Order extends Model
         return $this->where('id', $iddh->id)->get();
     }
 
+    // hàm này trả về mảng các PTTT
     public function getPaymentMethod()
     {
         return [
@@ -102,5 +103,15 @@ class Order extends Model
             3 => 'Thanh toán VNPAY',
             4 => 'Thanh toán MoMo',
         ];
+    }
+
+    public function totalRevenue()
+    {
+        return $this->sum('total');
+    }
+
+    public function countOrder()
+    {
+        return $this->count('id');
     }
 }
