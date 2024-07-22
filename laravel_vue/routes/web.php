@@ -48,8 +48,7 @@ Route::get('/category/{slug}', [CategoryController::class, 'index']);
 Route::get('/detail-product/{slug}', [ProductController::class, 'detail']);
 
 // ROUTE PRODUCT CART
-//Route::get('/viewCart', [ProductController::class, 'viewCart']);
-Route::post('/add-to-cart', [ProductController::class, 'addToCart']);
+Route::post('/add-to-cart', [ProductController::class, 'addToCartPopup']);
 Route::get('/giam-quantity/{id}', [CartController::class, 'giamQuantity'])->name('giam');
 Route::get('/tang-quantity/{id}', [CartController::class, 'tangQuantity'])->name('tang');
 Route::get('/delete-item-cart/{id}', [CartController::class, 'deleteItemCart'])->name('deleteItem');
@@ -111,7 +110,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::put('edit-product/{id}', [AdminController::class, 'productUpdate'])->name('productUpdate');
         Route::post('delete-checkbox-product', [AdminController::class, 'productDeleteCheckkbox'])->name('product.checkboxDelete');
         Route::post('copy-checkbox-product', [AdminController::class, 'productCopyCheckkbox'])->name('product.checkboxCopy');
-        Route::get('product/{id}/delete-image/{product_id}', [AdminController::class, 'deleteImages'])->name('product.delete-images');
+        Route::get('delete-images-product/{product_id}', [AdminController::class, 'deleteProductImages'])->name('product.delete-images');
         Route::put('update-status-product/{id}', [AdminController::class, 'productUpdateStatus'])->name('productUpdateStatus');
     });
 
@@ -141,6 +140,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('edit-banner/{id}', [AdminController::class, 'bannerEdit'])->name('admin.bannerEdit');
         Route::put('edit-banner/{id}', [AdminController::class, 'bannerUpdate'])->name('admin.bannerUpdate');
         Route::post('delete-checkbox-banner', [AdminController::class, 'bannerDeleteCheckkbox'])->name('admin.checkboxDeleteBanner');
+        Route::get('delete-banner-images/{id}', [AdminController::class, 'deleteBannerImages'])->name('banner.delete-images');
         Route::put('update-status-banner/{id}', [AdminController::class, 'bannerUpdateStatus'])->name('bannerUpdateStatus');
     });
 
@@ -191,12 +191,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('logout', [AdminController::class, 'logout'])->name('logout');
 });
 
-Route::fallback(function () {
-    return view('notFound');
-});
-
-
-
+//
 Route::get('cart', [CartController::class, 'getCart']);
 
 // api
@@ -206,4 +201,13 @@ Route::prefix('api')->group(function () {
 
     // cart
     Route::post('addToCart/product', [CartController::class, 'store']);
+});
+
+// my account
+Route::get('user/account/profile', function () {
+    return view('account.profile');
+})->name('account.profile');
+
+Route::fallback(function () {
+    return view('notFound');
 });

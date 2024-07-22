@@ -71,6 +71,7 @@
     @yield('scriptComment')
     @yield('scriptOrder')
     @yield('scriptAdministration')
+    @yield('addBannerAdmin')
 </body>
 
 </html>

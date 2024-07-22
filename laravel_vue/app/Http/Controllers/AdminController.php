@@ -17,10 +17,8 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use App\Models\Administration;
 use App\Models\ProductDiscount;
-use Illuminate\Support\Facades\DB;
 use App\Models\AdministrationGroup;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
@@ -204,9 +202,6 @@ class AdminController extends Controller
             return redirect()->back()->with(['danger' => $error]);
         }
     }
-
-
-
 
     public function dashboard()
     {
@@ -417,7 +412,20 @@ class AdminController extends Controller
         $product->status = $request->status;
         $product->save();
 
-        /// Lưu hình ảnh chính của sản phẩm
+        // update nhiều hình ảnh và ảnh gốc
+        $this->productUpdateImages($request, $product);
+
+        //update luôn hàm của nhóm : chia ra dầy viết cho gọn
+        $this->handleUpdate_ProductDiscount_userGroup($request, $product);
+
+        $product->save();
+
+        return redirect()->route('product')->with('success', 'Cập nhật sản phẩm thành công.');
+    }
+
+    public function productUpdateImages($request, $product)
+    {
+        /// Lưu hình ảnh chính của sản phẩm product
         if ($request->hasFile('image')) {
             // Lấy tên gốc của tệp
             $image = $request->file('image');
@@ -435,6 +443,7 @@ class AdminController extends Controller
             $product->save();
         }
 
+        // nhiều hình ảnh productImages
         if ($request->hasFile('images')) {
             $productImages = $this->productImage->productImages($product->id);
 
@@ -455,19 +464,10 @@ class AdminController extends Controller
                         $request->file("images.$key")->move(public_path('uploads/'), $imageName);
                         $item->images = $imageName;
                         $item->update();
-                    } elseif ($request->has("delete_image.$key")) {
-                        $item->delete();
                     }
                 }
             }
         }
-
-        //update luôn hàm của nhóm : chia ra dầy viết cho gọn
-        $this->handleUpdate_ProductDiscount_userGroup($request, $product);
-
-        $product->save();
-
-        return redirect()->route('product')->with('success', 'Cập nhật sản phẩm thành công.');
     }
 
     public function productUpdateStatus(Request $request, $id)
@@ -546,7 +546,7 @@ class AdminController extends Controller
         return redirect()->route('product')->with('success', 'Copy sản phẩm thành công.');
     }
 
-    public function deleteImages($id, $product_id)
+    public function deleteProductImages($product_id)
     {
         $productImages = $this->productImage->findOrFail($product_id);
         $productImages->delete();
@@ -863,6 +863,7 @@ class AdminController extends Controller
     // banner
     public function banner()
     {
+
         $banners = $this->bannerModel->bannerAll();
         $positionGet = $this->bannerModel->getPosition();
         return view('admin.banner', compact('banners', 'positionGet'));
@@ -917,29 +918,57 @@ class AdminController extends Controller
         $banner->status = $request->status;
         $banner->save();
 
-        if ($request->has('image')) {
-            foreach ($request->file('image') as $key => $file) {
-                $imagePath = $file->getClientOriginalName();
-                $file->storeAs('public/uploads', $imagePath);
-                $this->bannerImageModel->create([
-                    'title' => $request->title[$key],
-                    'image' => $imagePath,
-                    'sort_order' => $request->sort_order[$key],
-                ]);
+        $this->bannerUpdateImages($request, $banner);
+        return redirect()->route('admin.banner');
+    }
+
+    public function bannerUpdateImages($request, $banner)
+    {
+        // kiểm tra xem có ảnh tải lên hay không
+        if ($request->hasFile('image')) {
+
+            // kiểm tra trong bảng bannerImages đã có ảnh chưa
+            $bannerImages = $this->bannerImageModel->bannerImageId($banner->id);
+
+            if (count($request->file('image'))) {
+
+                //lấy danh sách ảnh được gửi lên từ request
+                $imageList = $request->file('image');
+                //Lặp qua danh sách các hình ảnh được tải lên.
+                foreach ($imageList as $key => $img) {
+                    // tạo ra một tên file cho ảnh được tải lên.
+                    $imageName = "{$banner->id}.{$key}.{$img->getClientOriginalExtension()}";
+
+                    //Di chuyển hình ảnh được tải lên vào thư mục public/uploads/ với tên tệp tin mới vừa tạo.
+                    $img->move(public_path('uploads/'), $imageName);
+                    //Tạo mới một bản ghi trong bảng bannerImages với các thông tin như banner_id, title, image, sort_order.
+                    $this->bannerImageModel->create([
+                        'banner_id' => $banner->id,
+                        'title' => $request->title,
+                        'image' => $imageName,
+                        'sort_order' => $request->sort_order,
+                    ]);
+                }
+            }
+            //Lặp qua danh sách các hình ảnh hiện có.
+            foreach ($bannerImages as $key => $item) {
+                if ($request->hasFile("image.$key")) {
+                    $newImage = $request->file("image.$key");
+                    $imageName = "{$banner->id}.{$key}.{$newImage->getClientOriginalExtension()}";
+                    $newImage->move(public_path('uploads/'), $imageName);
+                    $item->image = $imageName;
+                    $item->save();
+                }
             }
         } else {
-            // foreach($request->banner_ids as $key => $valueId){
-            //     $bannerImage = $this->bannerImageModel->findOrFail($valueId);
-            //     if ($bannerImage) {
-            //         $bannerImage->update([
-            //             'title' => $request->title[$key],
-            //             'sort_order' => $request->sort_order[$key]
-            //         ]);
-            //     }
-            // }
+            // cập nhật tiêu đề và thứu tự, khi ko thay đổi hình ảnh
+            $bannerImages = $this->bannerImageModel->bannerImageId($banner->id);
+            foreach ($bannerImages as $key => $item) {
+                $item->title = $request->title[$key];
+                $item->sort_order = $request->sort_order[$key];
+                $item->save();
+            }
         }
-
-        return redirect()->route('admin.banner');
     }
 
     public function bannerUpdateStatus(Request $request, $id)
@@ -952,17 +981,31 @@ class AdminController extends Controller
 
     public function bannerDeleteCheckkbox(Request $request)
     {
+        $response = $this->administrationGroupCRUD();
+
+        if ($response) {
+            return $response;
+        }
         $banner_id = $request->input('banner_id');
 
         if ($banner_id) {
             foreach ($banner_id as $itemId) {
-                $coupon = $this->bannerModel->findOrFail($itemId);
-                $coupon->delete();
+                //xóa trong bảng banner
+                $banner = $this->bannerModel->findOrFail($itemId);
+                // khi xóa banner thì xóa luôn trong bảng bannerImages nếu nó có liên kết đến
+                $this->bannerImageModel->where('banner_id', $itemId)->delete();
+                $banner->delete();
             }
         }
         return redirect()->route('admin.banner')->with('success', 'Xóa sản phẩm thành công.');
     }
 
+    public function deleteBannerImages($id)
+    {
+        $bannerImages = $this->bannerImageModel->findOrFail($id);
+        $bannerImages->delete();
+        return redirect()->back();
+    }
     //comment
     public function comment()
     {
@@ -1161,5 +1204,14 @@ class AdminController extends Controller
             }
         }
         return redirect()->route('administrationGroup')->with('success', 'Xóa nhóm người dùng thành công.');
+    }
+
+    public function administrationGroupCRUD()
+    {
+        $admin = auth()->guard('admin')->user();
+        $permissions = json_decode($admin->administrationGroup->permission, true);
+        if (array_search('bannerCheckboxDelete', $permissions) === false) {
+            return redirect()->back()->with('danger', 'Bạn không có quyền xóa sản phẩm.');
+        }
     }
 }

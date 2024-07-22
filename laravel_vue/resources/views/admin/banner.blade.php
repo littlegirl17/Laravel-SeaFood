@@ -3,7 +3,9 @@
 @Section('content')
 
     <div class="container-fluid">
-
+        @if (session('danger'))
+            <div id="alert-message" class="alertDanger">{{ session('danger') }}</div>
+        @endif
         <div class="searchAdmin">
             <form id="filterFormBanner" action="{{ route('searchBanner') }}" method="GET">
                 <div class="row d-flex flex-row justify-content-between align-items-center">
@@ -50,7 +52,7 @@
             </form>
         </div>
 
-        <form id="submitFormAdmin" method="POST">
+        <form id="submitFormAdmin">
             @csrf
             <div class="buttonProductForm mt-3">
                 <button class="btn btnF1">

@@ -50,7 +50,7 @@ class Banner extends Model
             1 => 'Banner slide đầu trang chủ',
             2 => 'Banner dài ở trong trang chủ',
             3 => 'Hai banner nhỏ dưới banner dài',
-            4 => 'Banner chung các trang khác',
+            4 => 'Banner trang danh mục',
             5 => 'Footer',
         ];
     }

@@ -22,4 +22,10 @@ class AdministrationGroup extends Model
     {
         return $this->hasMany(Administration::class, 'admin_group_id');
     }
+
+    public function checkGetPermission($perrmission)
+    {
+        $perrmissionDatabase = json_decode($this->perrmission, true);
+        return in_array($perrmission, $perrmissionDatabase);
+    }
 }

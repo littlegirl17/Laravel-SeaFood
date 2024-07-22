@@ -742,6 +742,8 @@
 
             var modalProductDetails = document.getElementById("modalProductDetails");
 
+            var userId = '{{ auth()->user() ? auth()->user()->id : 0 }}';
+
             var priceDisplay = 0;
 
             // Lấy thông tin về giá giảm dành cho người dùng đang đăng nhập
@@ -793,10 +795,8 @@
 
                             <form action="/add-to-cart" method="post">
                                 @csrf
-                                <input type="hidden" name="id" value="${id}">
-                                <input type="hidden" name="name" value="${name}">
-                                <input type="hidden" name="image" value="${image}">
-                                <input type="hidden" name="price" value="${price}">
+                                <input type="hidden" name="product_id" value="${id}">
+                                <input type="hidden" name="user_id" value="${userId}">
                                 <input type="hidden" id="quantityHidden" name="quantity" value="1">
                                 <button type="submit" class="buttonDetail"><span>Thêm vào giỏ</span></button>
                             </form>

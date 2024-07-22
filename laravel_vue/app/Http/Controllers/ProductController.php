@@ -71,7 +71,6 @@ class ProductController extends Controller
         $name = $request->input('name');
         $image = $request->input('image');
         $price = $request->input('price');
-        $discount_price = $request->input('discount_price');
         $quantity = $request->input('quantity');
 
 
@@ -81,10 +80,8 @@ class ProductController extends Controller
             'name' => $name,
             'image' => $image,
             'price' => $price,
-            'discount_price' => $discount_price,
             'quantity' => $quantity,
         ];
-
 
         //Lưu cart vào session
         session()->put('buyNowCart', $buyNowCart);
@@ -97,29 +94,54 @@ class ProductController extends Controller
         return redirect('/');
     }
 
-
-    public function vieworder()
+    public function addToCartPopup(Request $request)
     {
-        $cart = [];
-        if (Auth::check()) {
-            $cart = $this->cartModel->getCartAll();
-        } else {
-            $cart = json_decode(request()->cookie('cart'), true) ?? [];
-        }
-        if (empty($cart)) {
-            return redirect('/');
-        }
-        $iddh = session()->get('iddh', []);
-        $viewOrderUser = $this->orderModel->getIdUserOrder($iddh);
-        $viewOrderProduct = $this->orderProductModel->getIdProductOrder($iddh);
 
-        return view('viewOrder', compact('viewOrderUser', 'viewOrderProduct'));
+        $userID = $request->user_id ?? (Auth::check() ? Auth::user()->id : 0);
+        $productID = $request->product_id;
+        $cart = $this->cartModel->checkProductCart($userID, $productID);
+        if ($userID > 0) {
+            if ($cart) {
+                $cart->quantity += 1;
+                $cart->save();
+            } else {
+                $cart = new Cart();
+                $cart->product_id = $productID;
+                $cart->user_id = $userID;
+                $cart->quantity = $request->quantity;
+                $cart->save();
+            }
+        } else {
+            // nếu chưa đăng nhập thì lưu nó vào cookie của trình duyệt đó
+            $cart = json_decode(request()->cookie('cart'), true) ?? []; // giải mã chuổi thành mảng
+
+            // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+            $existingItem = array_search($productID, array_column($cart, 'product_id'));
+            if ($existingItem !== false) {
+                $cart[$existingItem]['quantity'] += 1;
+            } else {
+                $newItem = [
+                    'product_id' => $productID,
+                    'quantity' => $request->quantity,
+                ];
+                $cart[] = $newItem;
+            }
+
+            //tạo ra cookie mới
+            $cookie = cookie('cart', json_encode($cart), 5256000); // 10 năm
+            // tar về phản hồi http, kèm thro cookie cart, khi trình duyệt nhận được phản hồi thì no se lưu cookie cart vào bộ nhớ =>cập nhật lên giao diện
+            return response()->json($cart)->cookie($cookie);
+        }
+
+        return redirect('/cart');
     }
 
     public function viewcheckout()
     {
         $cart = [];
         $user = auth()->user();
+        $products = $this->productModel;
+
         if (Auth::check()) {
             $cart = $this->cartModel->getCartAll();
             // Trích xuất ra tất cả các ID của sản phẩm trong bảng cart
@@ -134,11 +156,10 @@ class ProductController extends Controller
 
 
         $buyNowCart = session()->get('buyNowCart', []);
+        $products = $this->productModel;
         if (empty($cart) && empty($buyNowCart)) {
             return redirect('/');
         }
-
-
         return view('checkout', compact('cart', 'user', 'products'));
     }
 
@@ -288,6 +309,24 @@ class ProductController extends Controller
         }
     }
 
+
+    public function vieworder()
+    {
+        $cart = [];
+        if (Auth::check()) {
+            $cart = $this->cartModel->getCartAll();
+        } else {
+            $cart = json_decode(request()->cookie('cart'), true) ?? [];
+        }
+        if (empty($cart)) {
+            return redirect('/');
+        }
+        $iddh = session()->get('iddh', []);
+        $viewOrderUser = $this->orderModel->getIdUserOrder($iddh);
+        $viewOrderProduct = $this->orderProductModel->getIdProductOrder($iddh);
+
+        return view('viewOrder', compact('viewOrderUser', 'viewOrderProduct'));
+    }
     public function couponDelete()
     {
         $coupon = Session::get('coupon');

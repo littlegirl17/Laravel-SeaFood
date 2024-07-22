@@ -31,6 +31,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         @auth
+                            <li><a class="dropdown-item" href="{{ route('account.profile') }}">Tài khoản của tôi</a></li>
                             <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
                         @else
                             <li><a class="dropdown-item" href="{{ route('login') }}">Đăng nhập</a></li>
@@ -102,6 +103,8 @@
                         </a>
                         <ul class="dropdown-menu">
                             @auth
+                                <li><a class="dropdown-item" href="{{ route('account.profile') }}">Tài khoản của tôi</a>
+                                </li>
                                 <li><a class="dropdown-item" href="/logout">Đăng xuất</a></li>
                             @else
                                 <li><a class="dropdown-item" href="{{ route('login') }}">Đăng nhập</a></li>

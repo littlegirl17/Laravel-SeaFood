@@ -19142,7 +19142,7 @@ textarea.form-control-lg {
 }
 
 .left-sidebar {
-    width: 270px;
+    width: 233px;
     background-color: #242d37;
     position: absolute;
     -webkit-transition: 0.2s ease-in;
@@ -19509,17 +19509,17 @@ textarea.form-control-lg {
     }
 
     #main-wrapper[data-layout=vertical][data-header-position=fixed] .app-header {
-        width: calc(100% - 270px)
+        width: calc(100% - 233px)
     }
 
     #main-wrapper[data-layout=vertical][data-sidebartype=full] .body-wrapper {
-        margin-left: 270px
+        margin-left: 233px
     }
 }
 
 @media (max-width:1199px) {
     #main-wrapper[data-layout=vertical][data-sidebartype=full] .left-sidebar, #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar] .left-sidebar {
-        left: -270px
+        left: -233px
     }
 
     #main-wrapper[data-layout=vertical][data-sidebartype=full].show-sidebar .left-sidebar, #main-wrapper[data-layout=vertical][data-sidebartype=mini-sidebar].show-sidebar .left-sidebar {

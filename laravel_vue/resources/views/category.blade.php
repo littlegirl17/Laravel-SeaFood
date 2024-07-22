@@ -16,7 +16,26 @@
                     </ul>
                 </div>
                 <div class="col-sm-9 col-12">
-                    <div class="row">
+                    <div class="row ">
+                        @foreach ($banners as $item)
+                            @if ($item->position === 4)
+                                @if ($item->banneImages->isNotEmpty())
+                                    @foreach ($item->banneImages as $images)
+                                        <div class="col-md-6 col-12 ">
+                                            <div class="imageCategory"> <img src="{{ asset('uploads/' . $images->image) }}"
+                                                    alt="" class="img-fluid"></div>
+
+                                        </div>
+                                    @endforeach
+                                @endif
+                            @endif
+                        @endforeach
+
+                    </div>
+                    <div class="row mt-5">
+                        <div>
+                            <hr>
+                        </div>
                         @foreach ($products as $product)
                             {{-- Giá giảm default áp dụng cho user chưa login or login mà chưa có nhóm vào rank đồng bạc vàng --}}
                             @php

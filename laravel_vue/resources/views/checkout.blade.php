@@ -176,10 +176,15 @@
                         </div>
                     </div>
                 </div>
+                @php
+
+                @endphp
                 <div class="col-md-6 col-sm-6 col-12 bg-body-tertiary checkoutbox2">
                     @if (Session::has('buyNowCart'))
                         @php
                             $buyNowCart = Session::get('buyNowCart');
+                            $userProductDiscount = 0;
+                            $userProductDiscountDefault = 0;
 
                             $product = $products->where('id', $buyNowCart['id'])->first();
                             if ($user && $user->userGroup) {

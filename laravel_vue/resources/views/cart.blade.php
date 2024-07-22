@@ -1,5 +1,5 @@
 @extends('layout.layout')
-@Section('title', 'Giỏ hàng')
+@Section('title', '')
 @Section('content')
 
     <div class="container mt-3">

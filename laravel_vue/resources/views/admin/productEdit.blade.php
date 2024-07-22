@@ -159,7 +159,7 @@
                                             class="img-fluid mt-5" style="width:80px; height:80px; object-fit:cover;">
                                         <input type="file" name="images[{{ $i }}]" id="HinhAnh">
                                         <a class="btn btn-danger"
-                                            href="{{ route('product.delete-images', ['id' => $product->id, 'product_id' => $productImages[$i]->id]) }}">Xóa</a>
+                                            href="{{ route('product.delete-images', ['product_id' => $productImages[$i]->id]) }}">Xóa</a>
                                     @else
                                         <div class="form-group mt-3">
                                             <label for="exampleInputFile" class="label_admin">Ảnh sản phẩm</label>

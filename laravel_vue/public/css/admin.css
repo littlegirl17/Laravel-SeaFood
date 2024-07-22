@@ -917,3 +917,37 @@ table tbody tr:nth-child(even) {
         transform: translate(-50%, -50%) rotate(0deg) scale(1.6);
     }
 }
+
+/**/
+.bannerImageAdd {
+    background-color: #1f508d;
+    color: #fff;
+    padding: 10px 10px;
+}
+
+.bannerImageAdd label {
+    color: #fff;
+}
+
+/**/
+.bannnerImagesEdit {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+
+.bannnerImagesEdit .row {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 0;
+}
+
+
+
+.bannnerImagesEdit .row div {
+    border-right: 1px solid #dee2e6;
+    padding: 0rem 1rem;
+}
+
+.bannnerImagesEdit .row div:last-child {
+    border-right: none;
+}
