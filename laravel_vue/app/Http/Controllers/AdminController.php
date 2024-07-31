@@ -470,6 +470,72 @@ class AdminController extends Controller
         }
     }
 
+
+    // public function handleUpdate_ProductDiscount_userGroup(Request $request, $product)
+    // {
+
+    //     //Kiểm tra có thông tin của user_group_id NHÓM KHÁCH HÀNG đucợ gửi lên hay khoong
+    //     if ($request->has('user_group_id')) {
+    //         foreach ($request->input('user_group_id') as $index => $userGroupId) {
+    //             //Lấy ra id của sản phẩm trong bảng productDiscount
+
+    //             $checkExitsProductDiscount = $this->productDiscountModel->where('product_id', $product->id)->where('user_group_id', $userGroupId)->first();
+    //             if ($checkExitsProductDiscount) {
+    //                 $checkExitsProductDiscount->price = $request->input('priceUserGroup.' . $userGroupId);
+    //                 $checkExitsProductDiscount->quantity = $request->input('quantityUserGroup.' . $userGroupId);
+    //                 $checkExitsProductDiscount->save();
+    //             } else {
+    //                 //   dành cho san pham đã có giả giảm
+    //                 $productDiscount = new ProductDiscount;
+    //                 $productDiscount->user_group_id = $userGroupId;
+    //                 $productDiscount->product_id = $product->id;
+    //                 $productDiscount->price = $request->input('priceUserGroup.' . $userGroupId); // . $userGroupId nghĩa là mình đang truy cập giá trị của thg price thay vì chỉ số mảng Ví dụ, nếu user_group_id là 1, bạn sẽ lấy giá từ priceUserGroup.1.
+
+    //                 $productDiscount->quantity = $request->input('quantityUserGroup.' . $userGroupId);
+    //                 $productDiscount->save();
+
+    //                 //dành cho san pham chưa có giá giảm ban đầu
+    //                 $productDiscount = new ProductDiscount;
+    //                 $productDiscount->user_group_id = $userGroupId;
+    //                 $productDiscount->product_id = $product->id;
+    //                 $productDiscount->price = $request->input('priceUserGroup')[$index]; // [$index] như mảng dữ liệu, có thể thêm nhiều giá giảm cùng 1 lúc
+    //                 $productDiscount->quantity = $request->input('quantityUserGroup')[$index];
+    //                 $productDiscount->save();
+    //             }
+    //         }
+    //     }
+    // }
+
+    public function handleUpdate_ProductDiscount_userGroup(Request $request, $product)
+    {
+        // Kiểm tra có thông tin của user_group_id NHÓM KHÁCH HÀNG được gửi lên hay không
+        if ($request->has('user_group_id')) {
+            foreach ($request->input('user_group_id') as $index => $userGroupId) {
+                // Kiểm tra xem đã có giá giảm cho nhóm khách hàng này chưa
+                $checkExitsProductDiscount = $this->productDiscountModel
+                    ->where('product_id', $product->id)
+                    ->where('user_group_id', $userGroupId)
+                    ->first();
+
+                if ($checkExitsProductDiscount) {
+                    // Nếu đã có, cập nhật giá và số lượng
+                    $checkExitsProductDiscount->price = $request->input('priceUserGroup.' . $userGroupId);
+                    $checkExitsProductDiscount->quantity = $request->input('quantityUserGroup.' . $userGroupId);
+                    $checkExitsProductDiscount->save();
+                } else {
+                    // Nếu chưa có, tạo mới một đối tượng ProductDiscount
+                    $productDiscount = new ProductDiscount;
+                    $productDiscount->user_group_id = $userGroupId;
+                    $productDiscount->product_id = $product->id;
+                    $productDiscount->price = $request->input('priceUserGroup')[$index];
+                    $productDiscount->quantity = $request->input('quantityUserGroup')[$index];
+                    $productDiscount->save();
+                }
+            }
+        }
+    }
+
+
     public function productUpdateStatus(Request $request, $id)
     {
         $product = $this->productModel->findOrFail($id);
@@ -478,29 +544,7 @@ class AdminController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function handleUpdate_ProductDiscount_userGroup(Request $request, $product)
-    {
-        $checkExitsProductDiscount = $this->productDiscountModel->where('product_id', $product->id)->get();
-        //Kiểm tra có thông tin của user_group_id NHÓM KHÁCH HÀNG đucợ gửi lên hay khoong
-        if ($request->has('user_group_id')) {
-            foreach ($request->input('user_group_id') as $index => $userGroupId) {
-                $ExitsDiscount = $checkExitsProductDiscount->where('user_group_id', $userGroupId)->first();
-                if ($ExitsDiscount) {
-                    $ExitsDiscount->price = $request->input('priceUserGroup.' . $userGroupId);
-                    $ExitsDiscount->quantity = $request->input('quantityUserGroup.' . $userGroupId);
-                    $ExitsDiscount->save();
-                } else {
-                    // Lưu các bản ghi Product Discount mới
-                    $this->productDiscountModel->updateOrCreate([
-                        'user_group_id' => $userGroupId,
-                        'product_id' => $product->id,
-                        'price' => $request->input('priceUserGroup.' . $userGroupId),
-                        'quantity' => $request->input('quantityUserGroup.' . $userGroupId),
-                    ]);
-                }
-            }
-        }
-    }
+
 
     public function productDeleteCheckkbox(Request $request)
     {

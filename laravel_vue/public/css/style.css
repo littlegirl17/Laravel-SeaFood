@@ -1158,15 +1158,19 @@ tbody .itemcart {
 
 
 /* my account */
+.container-account {
+    width: 1000px;
+    margin: 0 auto;
+}
+
 .menuLeftAccount {
-    width: 250px;
-    height: 500px;
+    width: 100%;
+    height: 100%;
     /* Chiều rộng của menu */
-    background: #f1f1f0;
-    backdrop-filter: blur(10px);
+    background: #395886;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     /* Màu nền menu */
-    color: #000;
+    color: #fff;
     /* Màu chữ */
     padding: 15px;
     /* Khoảng cách bên trong menu */
@@ -1193,7 +1197,7 @@ tbody .itemcart {
 }
 
 .menuLeftAccount a {
-    color: #000;
+    color: #fff;
     /* Màu chữ cho các liên kết */
     text-decoration: none;
     /* Bỏ gạch chân */
@@ -1204,7 +1208,8 @@ tbody .itemcart {
 }
 
 .menuLeftAccount a:hover {
-    background-color: #575757;
+    background-color: #FFFFFF;
+    color: #395886;
     /* Màu nền khi hover */
 }
 
@@ -1217,7 +1222,7 @@ tbody .itemcart {
     /* Đưa submenu sang bên phải */
     top: 110%;
     /* Đặt submenu ở đầu */
-    background-color: #444;
+    background-color: #395886;
     /* Màu nền cho submenu */
     padding: 10px;
     /* Khoảng cách bên trong submenu */
@@ -1236,15 +1241,126 @@ tbody .itemcart {
 
 .sub_menuLeftAccount a {
     padding: 8px;
+
     /* Khoảng cách bên trong cho liên kết submenu */
 
 }
 
 .sub_menuLeftAccount a:hover {
-    background-color: #575757;
+    background-color: #FFFFFF;
+    color: #395886;
     /* Màu nền khi hover trên submenu */
 }
 
+/* myaccount profile*/
+.myaccount_image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 20px 20px;
+}
+
+.myaccount_image_inputfile {
+    position: relative;
+    width: 100px;
+    padding-top: 70px;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.myaccount_image_inputfile input[type="file"] {
+    display: none;
+    /* Ẩn input file gốc */
+}
+
+.container-account .container-account-right-item {
+    padding-top: 10px;
+    padding: 10px 10px;
+}
+
+.account_purchase {
+    padding: 10px 10px;
+    margin: 10px 0;
+    background-color: #FFFFFF;
+}
+
+.account_purchase_list_order img {
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account_purchase .form-group input {
+    width: 400px;
+    border: none;
+    outline: none;
+    border-radius: 0;
+}
+
+.account_purchase .col-md-12 {
+    padding-top: 20px;
+}
+
+.account_purchase_thanhtien .col-md-12 {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.account_purchase_thanhtien .col-md-12 p {
+    padding: 0 0;
+    margin: 0 0;
+}
+
+.account_purchase_thanhtien .col-md-12 h4 {
+    padding: 0 0;
+    margin: 0 0;
+    color: #FF0000;
+    font-weight: 400;
+}
+
+.price_purchase {
+    display: flex;
+    justify-content: end;
+    padding-right: 34px;
+}
+
+.account_purchase_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 0.5px solid #bababa;
+
+}
+
+.account_purchase_header_right {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+}
+
+.account_purchase_header_right .account_purchase_header_right_1 {
+    color: #26AA99;
+    border-right: 0.5px solid #bababa;
+    padding: 0 5px;
+}
+
+.account_purchase_header_right .account_purchase_header_right_2 {
+    color: #FF0000;
+    padding: 0 5px;
+
+}
 
 /**/
 @media (max-width: 992px) {
@@ -1267,6 +1383,20 @@ tbody .itemcart {
         justify-content: center;
         flex-direction: column;
     }
+
+    .container-account {
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+        padding: 0 0;
+    }
+
+
+    .container-account .container-account-right-item {
+        padding: 0 0;
+    }
+
+
 }
 
 /**/
@@ -1476,5 +1606,69 @@ tbody .itemcart {
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+
+    .container-account {
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 0;
+        box-sizing: border-box;
+    }
+
+    .account_purchase_header {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+        padding-bottom: 5px;
+        border-bottom: 0.5px solid #bababa;
+
+    }
+
+    .account_purchase_header_left h5 {
+        font-size: 1rem;
+    }
+
+    .account_purchase_list_order {}
+
+    .account_purchase_list_order .account_purchase_list_order_image {
+        padding-left: 10px;
+        margin: 0 0;
+    }
+
+    .account_purchase_list_order img {
+        border-radius: 10px;
+        width: 4rem;
+        height: 4rem;
+        object-fit: cover;
+    }
+
+    .account_purchase_list_order h5 {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .price_purchase {
+        display: flex;
+        justify-content: start;
+        padding-right: 34px;
+    }
+
+    .account_purchase .col-md-12 {
+        padding-top: 0;
+    }
+
+    .account_purchase_thanhtien .col-md-12 {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+    }
+
+    .account_purchase_thanhtien .col-md-12 h4 {
+        padding: 0 0;
+        margin: 0 0;
+        color: #FF0000;
+        font-weight: 400;
+        font-size: 1.1rem;
     }
 }

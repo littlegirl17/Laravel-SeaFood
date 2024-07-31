@@ -1,11 +1,13 @@
 <div class="menuLeftAccount menuLeftAccount_back">
     <ul>
-        <li>Tài khoản của tôi</li>
-        <li><a href="">Hồ sơ</a></li>
+        <li><i class="fa-regular fa-user pe-1"></i>Tài khoản của tôi</li>
+        <li><a href="{{ route('account.profile') }}">Hồ sơ</a></li>
+        <li><a href="{{ route('account.address') }}">Địa chỉ</a></li>
+        <li><a href="{{ route('account.password') }}">Đổi mật khẩu</a></li>
         <li>
-            <a href="#" class="toggle-submenu">Đơn mua</a>
+            <span class="toggle-submenu">Đơn mua</span>
             <ul class="sub_menuLeftAccount">
-                <li><a href="">Tất cả</a></li>
+                <li><a href="{{ route('account.purchase') }}">Tất cả</a></li>
                 <li><a href="">Chờ thanh toán</a></li>
                 <li><a href="">Vận chuyển</a></li>
                 <li><a href="">Hoàn thành</a></li>

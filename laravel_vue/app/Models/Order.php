@@ -30,6 +30,11 @@ class Order extends Model
         return $this->orderBy('id', 'asc')->get();
     }
 
+    public function orderByUser($user_id)
+    {
+        return $this->where('user_id', $user_id)->orderBy('id', 'desc')->get();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id'); //mỗi Order sẽ có một User

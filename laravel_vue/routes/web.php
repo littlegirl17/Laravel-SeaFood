@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
@@ -207,6 +208,16 @@ Route::prefix('api')->group(function () {
 Route::get('user/account/profile', function () {
     return view('account.profile');
 })->name('account.profile');
+
+Route::get('user/account/address', function () {
+    return view('account.address');
+})->name('account.address');
+
+Route::get('user/account/password', function () {
+    return view('account.password');
+})->name('account.password');
+
+Route::get('user/account/purchase', [AccountController::class, 'purchase'])->name('account.purchase');
 
 Route::fallback(function () {
     return view('notFound');
